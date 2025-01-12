@@ -1,9 +1,9 @@
 /* Background styling */
 body {
     background-image: url("https://nsm0101.github.io/nsm/images/bg2.jpg"); /* Replace with your image path */
-    background-size: cover;
-    background-repeat: repeat;
-    background-position: center;
+    background-size: auto; /* Keeps the original size of the image for seamless tiling */
+    background-repeat: repeat; /* Ensures the image tiles */
+    background-position: top left; /* Aligns the tiling from the top left */
     font-family: Arial, sans-serif;
     color: #fff; /* Makes text readable on dark backgrounds */
     margin: 0;
