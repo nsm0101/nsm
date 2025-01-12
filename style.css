@@ -1,8 +1,8 @@
 /* Background styling */
 body {
-    background-image: url("https://nsm0101.github.io/nsm/background.jpg"); /* Replace with your image path */
+    background-image: url("https://nsm0101.github.io/nsm/bg.png"); /* Replace with your image path */
     background-size: cover;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-position: center;
     font-family: Arial, sans-serif;
     color: #fff; /* Makes text readable on dark backgrounds */
