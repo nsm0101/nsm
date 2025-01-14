@@ -1,6 +1,6 @@
 /* Background styling */
 body {
-    background-image: url('https://nsm0101.github.io/nsm/images/bg2.jpg');
+    background-image: url('nsm/bg2.jpg');
     background-size: cover;
     background-repeat: repeat;
     background-position: top-left;
@@ -138,4 +138,3 @@ footer {
     text-align: left;
     font-size: 14px;
 }
-    
