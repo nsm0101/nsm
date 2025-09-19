@@ -16,12 +16,9 @@ body {
   font-family: Arial, sans-serif;
   color: var(--text-light);
   background-image: url('bg.png');
-  background-size: auto;
-=======
-  background-image: url('https://nsm0101.github.io/nsm/images/bg2.jpg');
   background-size: cover;
-  background-repeat: repeat;
-  background-position: top left;
+  background-repeat: no-repeat;
+  background-position: center;
   display: flex;
   flex-direction: column;
 }
@@ -96,20 +93,6 @@ body {
   border-radius: 16px;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
   border: 2px solid rgba(255, 255, 255, 0.35);
-=======
-  width: min(640px, 100%);
-  background-color: var(--overlay);
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-}
-
-#message {
-  width: min(640px, 100%);
-  background-color: rgba(220, 53, 69, 0.9);
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
   font-weight: bold;
   text-align: center;
 }
@@ -178,8 +161,6 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 16px;
-=======
-  gap: 12px;
 }
 
 #results p {
@@ -236,15 +217,6 @@ button:hover {
   text-align: center;
   margin-top: 32px;
   font-weight: bold;
-}
-
-.carousel-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-=======
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.85);
 }
