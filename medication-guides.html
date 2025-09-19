@@ -10,8 +10,8 @@
   <nav class="tabs">
     <a href="index.html">Calculator</a>
     <a href="medication-guides.html" class="active">Medication Guides</a>
-    <button type="button" class="tab-button" data-open-translations aria-haspopup="dialog" aria-expanded="false">
-      Translate
+    <button type="button" class="tab-button" data-open-translations aria-haspopup="dialog" aria-expanded="false" aria-label="Open Spanish translation">
+      Spanish
     </button>
   </nav>
 
@@ -23,7 +23,7 @@
         Always double-check the medication concentration and confirm dosing with your pediatrician or pharmacist.
       </p>
       <div class="guide-grid">
-        <article class="guide-card">
+        <article class="guide-card guide-card-acetaminophen">
           <h2>Acetaminophen</h2>
           <section class="carousel-section" data-carousel>
             <h3>Children's Tylenol (160 mg / 5 mL)</h3>
@@ -51,16 +51,18 @@
               <button type="button" data-carousel-next aria-label="Show next acetaminophen product">&#8594;</button>
             </div>
           </section>
-          <h3>Safety Tips:</h3>
-          <ul>
-            <li>Do not exceed 6 doses in 24 hours.</li>
-            <li><6 months old: dose every 4 hours as needed.</li>
-            <li>>6 months old: dose every 6 hours as needed; may consider alternating dosing with ibuprofen (every 6 hour dosing) to allow medication to be given every 3 hours. </li>
-            <li>Contact a healthcare provider for children under 2 months of age with a fever or for persistent fever >3 days.</li>
-            <li>Keep a log of medication given, time, and dose to avoid accidental repeat dosing.</li>
-          </ul>
+          <div class="acetaminophen-safety">
+            <h3>Safety Tips</h3>
+            <ul>
+              <li>Do not exceed 6 doses in 24 hours.</li>
+              <li>&lt;6 months old: dose every 4 hours as needed.</li>
+              <li>&gt;6 months old: dose every 6 hours as needed; may consider alternating dosing with ibuprofen (every 6 hour dosing) to allow medication to be given every 3 hours. </li>
+              <li>Contact a healthcare provider for children under 2 months of age with a fever or for persistent fever &gt;3 days.</li>
+              <li>Keep a log of medication given, time, and dose to avoid accidental repeat dosing.</li>
+            </ul>
+          </div>
         </article>
-        <article class="guide-card">
+        <article class="guide-card guide-card-ibuprofen">
           <h2>Ibuprofen</h2>
           <div class="guide-subgrid">
             <section class="guide-subcard">
@@ -132,7 +134,7 @@
               <p>Highly concentrated infant drops dosed with the included dropper.</p>
             </section>
           </div>
-          <h3>Safety Tips:</h3>
+          <h3>Safety Tips</h3>
           <ul>
             <li>Do not use in infants under 6 months unless directed by a doctor.</li>
             <li>Allow at least 6 hours between doses.</li>
@@ -154,23 +156,14 @@
     <div class="translation-modal" role="dialog" aria-modal="true" aria-labelledby="translation-heading">
       <button type="button" class="translation-close" data-close-translations aria-label="Close translation options">&times;</button>
       <div class="translation-hero">
-        <h2 id="translation-heading">Explore Global Language Support</h2>
+        <h2 id="translation-heading">Ver esta página en Español</h2>
         <p>
-          Choose from our most requested languages&mdash;Spanish, Portuguese, Chinese, Vietnamese, Arabic, and French&mdash;or
-          open Google Translate to pick another language. A new tab will display the translated version of this page.
-                                                  
-          Choose a language below to view this guide through Google Translate. A new tab will open with the translated
-          version of the current page.
+          Abra una versión traducida de esta página en una nueva pestaña mediante Google Translate. Seleccione Español para
+          cargar el contenido completo en ese idioma.
         </p>
       </div>
       <div class="translation-options" role="list">
-        <button type="button" class="translation-option" data-translate="es" data-lang-name="Spanish">Spanish</button>
-        <button type="button" class="translation-option" data-translate="pt" data-lang-name="Portuguese">Portuguese</button>
-        <button type="button" class="translation-option" data-translate="zh-CN" data-lang-name="Chinese">Chinese</button>
-        <button type="button" class="translation-option" data-translate="vi" data-lang-name="Vietnamese">Vietnamese</button>
-        <button type="button" class="translation-option" data-translate="ar" data-lang-name="Arabic">Arabic</button>
-        <button type="button" class="translation-option" data-translate="fr" data-lang-name="French">French</button>
-        <button type="button" class="translation-option" data-translate="other" data-lang-name="Other Languages">Other Languages</button>
+        <button type="button" class="translation-option" data-translate="es" data-lang-name="Español">Español</button>
       </div>
       <p class="translation-status" data-selection-status aria-live="polite"></p>
     </div>

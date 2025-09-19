@@ -141,6 +141,11 @@ function initCarousels() {
     const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
     if (slides.length === 0) return;
 
+    slides.forEach((slide) => {
+      slide.classList.remove('is-active');
+      slide.setAttribute('aria-hidden', 'true');
+    });
+
     let index = -1;
 
     const prevButton = carousel.querySelector('[data-carousel-prev]');
@@ -152,6 +157,7 @@ function initCarousels() {
       dot.type = 'button';
       dot.className = 'carousel-dot';
       dot.setAttribute('aria-label', `Show slide ${slideIndex + 1}`);
+      dot.setAttribute('aria-pressed', 'false');
       dot.addEventListener('click', () => goToSlide(slideIndex));
       if (dotsContainer) {
         dotsContainer.appendChild(dot);
@@ -162,15 +168,27 @@ function initCarousels() {
     function goToSlide(newIndex) {
       if (index >= 0) {
         slides[index].classList.remove('is-active');
+        slides[index].setAttribute('aria-hidden', 'true');
         if (dots[index]) {
           dots[index].classList.remove('is-active');
+          dots[index].setAttribute('aria-pressed', 'false');
         }
       }
 
       index = (newIndex + slides.length) % slides.length;
       slides[index].classList.add('is-active');
+      slides[index].setAttribute('aria-hidden', 'false');
       if (dots[index]) {
         dots[index].classList.add('is-active');
+        dots[index].setAttribute('aria-pressed', 'true');
+      }
+
+      const controlsDisabled = slides.length <= 1;
+      if (prevButton) {
+        prevButton.disabled = controlsDisabled;
+      }
+      if (nextButton) {
+        nextButton.disabled = controlsDisabled;
       }
     }
 
@@ -282,18 +300,13 @@ function initTranslations() {
         return;
       }
 
-      const baseUrl = `${translationBase}?sl=en&u=${encodeURIComponent(window.location.href)}`;
-      const url =
-        languageCode === 'other'
-          ? baseUrl
-          : `${baseUrl}&tl=${encodeURIComponent(languageCode)}`;
+      const url = `${translationBase}?sl=en&tl=${encodeURIComponent(languageCode)}&u=${encodeURIComponent(
+        window.location.href
+      )}`;
 
       window.open(url, '_blank', 'noopener');
       if (status) {
-        status.textContent =
-          languageCode === 'other'
-            ? 'Google Translate is opening so you can choose another language.'
-            : `${languageName || 'Selected'} translation opening in a new tab.`;
+        status.textContent = `${languageName || 'Español'} translation opening in a new tab.`;
       }
     });
   });
