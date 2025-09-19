@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ibuprofen Guide</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <nav class="tabs">
+    <a href="index.html">Calculator</a>
+    <details class="tabs-dropdown">
+      <summary class="active">Medication Guides</summary>
+      <div class="tabs-dropdown-menu">
+        <a href="acetaminophen-guide.html">Acetaminophen Guide</a>
+        <a href="ibuprofen-guide.html" class="active">Ibuprofen Guide</a>
+      </div>
+    </details>
+  </nav>
+
+  <main class="page">
+    <section class="panel panel-guides">
+      <h1>Ibuprofen Guide</h1>
+      <p>
+        Use this quick reference to review common ibuprofen options for infants and children. Always double-check the
+        medication concentration and confirm dosing with your pediatrician or pharmacist.
+      </p>
+      <div class="guide-grid">
+        <article class="guide-card">
+          <h2>Ibuprofen</h2>
+          <section class="carousel-section" data-carousel>
+            <h3>Common Infant &amp; Child Products</h3>
+            <div class="carousel-track">
+              <figure class="carousel-slide">
+                <img src="images/ibuprofen-infant.svg" alt="Infant's Motrin ibuprofen 50 mg per 1.25 mL label" />
+                <figcaption>Infant's Motrin<sup>&reg;</sup> Concentrated Drops (50 mg per 1.25 mL)</figcaption>
+              </figure>
+              <figure class="carousel-slide">
+                <img src="images/ibuprofen-children.svg" alt="Children's Advil ibuprofen 100 mg per 5 mL label" />
+                <figcaption>Children's Advil<sup>&reg;</sup> Suspension (100 mg per 5 mL)</figcaption>
+              </figure>
+            </div>
+            <div class="carousel-controls">
+              <button type="button" data-carousel-prev aria-label="Show previous ibuprofen product">&#8592;</button>
+              <div class="carousel-dots" aria-hidden="true"></div>
+              <button type="button" data-carousel-next aria-label="Show next ibuprofen product">&#8594;</button>
+            </div>
+          </section>
+          <h3>When to Use</h3>
+          <ul>
+            <li>Fever or pain in children 6 months and older.</li>
+            <li>Inflammation-related discomforts such as sprains.</li>
+            <li>As advised by your pediatrician after immunizations.</li>
+          </ul>
+          <h3>Safety Tips</h3>
+          <ul>
+            <li>Do not use in infants under 6 months unless directed by a doctor.</li>
+            <li>Allow at least 6 hours between doses.</li>
+            <li>Do not exceed 4 doses in 24 hours.</li>
+            <li>Give with food or milk to lessen stomach upset.</li>
+          </ul>
+        </article>
+      </div>
+      <p class="guide-return">Need a quick calculation? Visit the <a href="index.html">dose calculator</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.</p>
+    <p>Updated 1.13.2025 &bull; Created by Nickolas Mancini, MD, MBA</p>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

@@ -1,60 +1,172 @@
-function updateForm() {
-    const age = document.getElementById('age').value;
-    const message = document.getElementById('message');
-    const form = document.getElementById('form');
-    const results = document.getElementById('results');
-    
-    message.style.display = 'none';
-    form.style.display = 'block';
-    results.innerHTML = '';
+function getElements() {
+  return {
+    ageSelect: document.getElementById('age'),
+    weightInput: document.getElementById('weight'),
+    weightUnit: document.getElementById('weight-unit'),
+    message: document.getElementById('message'),
+    results: document.getElementById('results'),
+    calculateButton: document.querySelector('#calculator button'),
+  };
+}
 
-    if (age === '0-2') {
-        message.style.display = 'block';
-        message.innerHTML = 
-            'If a child <60 days of age has a fever it is a medical emergency: ' + 
-            'contact your primary care provider and/or present for evaluation by a healthcare provider.';
-        form.style.display = 'none';
-    }
+function clearResults(elements) {
+  if (elements.results) {
+    elements.results.innerHTML = '';
+  }
+}
+
+function updateForm() {
+  const elements = getElements();
+  if (
+    !elements.ageSelect ||
+    !elements.weightInput ||
+    !elements.weightUnit ||
+    !elements.message ||
+    !elements.calculateButton ||
+    !elements.results
+  ) {
+    return;
+  }
+  const age = elements.ageSelect.value;
+
+  clearResults(elements);
+  elements.message.hidden = true;
+  elements.message.innerHTML = '';
+  elements.calculateButton.disabled = false;
+  elements.weightInput.disabled = false;
+  elements.weightUnit.disabled = false;
+
+  if (age === '0-2') {
+    elements.message.hidden = false;
+    elements.message.innerHTML =
+      'If a child less than 60 days old has a fever it is a medical emergency. ' +
+      'Please contact your pediatrician or seek care with a healthcare provider immediately.';
+
+    elements.calculateButton.disabled = true;
+    elements.weightInput.disabled = true;
+    elements.weightUnit.disabled = true;
+  }
 }
 
 function calculateDose() {
-    const age = document.getElementById('age').value;
-    const weightInput = parseFloat(document.getElementById('weight').value);
-    const weightUnit = document.getElementById('weight-unit').value;
-    const results = document.getElementById('results');
-    results.innerHTML = '';
+  const elements = getElements();
+  if (!elements.ageSelect || !elements.weightInput || !elements.weightUnit || !elements.results) {
+    return;
+  }
+  const age = elements.ageSelect.value;
+  const weightInput = parseFloat(elements.weightInput.value);
+  const weightUnit = elements.weightUnit.value;
 
-    if (isNaN(weightInput) || weightInput <= 0) {
-        results.innerHTML = '<p><strong>Please enter a valid weight.</strong></p>';
-        return;
-    }
+  clearResults(elements);
 
-    // Convert weight to kg if it's in lbs
-    const weight = weightUnit === 'lbs' ? weightInput / 2.20462 : weightInput;
+  if (!age) {
+    elements.results.innerHTML = '<p><strong>Please select an age group to continue.</strong></p>';
+    return;
+  }
 
-    if (age === '2-6') {
-        const acetaminophenDoseMg = 12.5 * weight;
-        const acetaminophenMl = (acetaminophenDoseMg / 160) * 5;
-        results.innerHTML = `
-            <p><strong>Acetaminophen [160mg/5ml]:</strong><br>
-            ${acetaminophenMl.toFixed(1)} ml (${acetaminophenDoseMg.toFixed(1)} mg) every 4 hours as needed for fever/pain.</p>
-        `;
-    } else if (age === '6+') {
-        const acetaminophenDoseMg = 15 * weight;
-        const acetaminophenMl = (acetaminophenDoseMg / 160) * 5;
-        const ibuprofenDoseMg = 10 * weight;
-        const ibuprofenMl50 = (ibuprofenDoseMg / 50) * 1.25;
-        const ibuprofenMl100 = (ibuprofenDoseMg / 100) * 5;
+  if (isNaN(weightInput) || weightInput <= 0) {
+    elements.results.innerHTML = '<p><strong>Please enter a valid weight.</strong></p>';
+    return;
+  }
 
-        results.innerHTML = `
-            <p><strong>Acetaminophen [160mg/5ml]:</strong><br>
-            ${acetaminophenMl.toFixed(1)} ml (${acetaminophenDoseMg.toFixed(1)} mg) every 6 hours as needed for fever/pain.</p>
-            <br>
-            <p><strong>Ibuprofen (Infant's) [50mg/1.25ml]:</strong><br>
-            ${ibuprofenMl50.toFixed(1)} ml (${ibuprofenDoseMg.toFixed(1)} mg) every 6 hours as needed for fever/pain.</p>
-            <br>
-            <p><strong>Ibuprofen (Children's) [100mg/5ml]:</strong><br>
-            ${ibuprofenMl100.toFixed(1)} ml (${ibuprofenDoseMg.toFixed(1)} mg) every 6 hours as needed for fever/pain.</p>
-        `;
-    }
+  const weightKg = weightUnit === 'lbs' ? weightInput / 2.20462 : weightInput;
+  const weightLbs = weightUnit === 'lbs' ? weightInput : weightInput * 2.20462;
+
+  let html = `<p><strong>Patient weight:</strong> ${weightKg.toFixed(1)} kg (${weightLbs.toFixed(1)} lbs)</p>`;
+
+  if (age === '2-6') {
+    const acetaMgCalculated = 12.5 * weightKg;
+    const ACETA_MAX_MG_INFANT = 160;
+    const acetaMg = Math.min(acetaMgCalculated, ACETA_MAX_MG_INFANT);
+    const acetaMl = (acetaMg / 160) * 5;
+    const acetaCapped = acetaMg < acetaMgCalculated;
+
+    html += `
+      <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
+      Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
+      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_INFANT} mg.${
+        acetaCapped
+          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
+          : ''
+      }</p>
+    `;
+  } else if (age === '6+') {
+    const ACETA_MAX_MG_CHILD = 1000;
+    const IBU_MAX_MG_CHILD = 800;
+
+    const acetaMgCalculated = 15 * weightKg;
+    const acetaMg = Math.min(acetaMgCalculated, ACETA_MAX_MG_CHILD);
+    const acetaMl = (acetaMg / 160) * 5;
+    const acetaCapped = acetaMg < acetaMgCalculated;
+
+    const ibuMgCalculated = 10 * weightKg;
+    const ibuMg = Math.min(ibuMgCalculated, IBU_MAX_MG_CHILD);
+    const ibuCapped = ibuMg < ibuMgCalculated;
+    const ibuMl50 = (ibuMg / 50) * 1.25;
+    const ibuMl100 = (ibuMg / 100) * 5;
+
+    html += `
+      <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
+      Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
+      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_CHILD} mg.${
+        acetaCapped
+          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
+          : ''
+      }</p>
+      <p><strong>Ibuprofen (Infant's 50 mg / 1.25 mL)</strong><br>
+      Give ${ibuMl50.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
+      <p><strong>Ibuprofen (Children's 100 mg / 5 mL)</strong><br>
+      Give ${ibuMl100.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
+      <p class="dose-note">Maximum single dose for this age group is ${IBU_MAX_MG_CHILD} mg every 6 hours.${
+        ibuCapped
+          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
+          : ''
+      }</p>
+    `;
+  }
+
+  elements.results.innerHTML = html;
 }
+
+function initCarousels() {
+  const carousels = document.querySelectorAll('[data-carousel]');
+
+  carousels.forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
+    if (slides.length === 0) return;
+
+    let index = 0;
+
+    const prevButton = carousel.querySelector('[data-carousel-prev]');
+    const nextButton = carousel.querySelector('[data-carousel-next]');
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+
+    const dots = slides.map((_, slideIndex) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'carousel-dot';
+      dot.setAttribute('aria-label', `Show slide ${slideIndex + 1}`);
+      dot.addEventListener('click', () => goToSlide(slideIndex));
+      dotsContainer?.appendChild(dot);
+      return dot;
+    });
+
+    function goToSlide(newIndex) {
+      slides[index].classList.remove('is-active');
+      dots[index]?.classList.remove('is-active');
+      index = (newIndex + slides.length) % slides.length;
+      slides[index].classList.add('is-active');
+      dots[index]?.classList.add('is-active');
+    }
+
+    prevButton?.addEventListener('click', () => goToSlide(index - 1));
+    nextButton?.addEventListener('click', () => goToSlide(index + 1));
+
+    goToSlide(0);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initCarousels();
+  updateForm();
+});
