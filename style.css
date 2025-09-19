@@ -462,8 +462,14 @@ button:focus-visible {
 }
 
 .dose-note-emphasis {
-  color: #f4f4f4;
-  font-weight: 700;
+  color: #ffb347;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.medication-heading {
+  font-size: 1.1rem;
+  text-decoration: underline;
 }
 
 
