@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
-  <rect width="320" height="200" rx="24" fill="#0d47a1" />
-  <rect x="24" y="24" width="272" height="152" rx="20" fill="#1565c0" opacity="0.85" />
-  <text x="160" y="72" fill="#ffffff" font-family="'Segoe UI', Arial, sans-serif" font-size="32" font-weight="700" text-anchor="middle">Children's Advil</text>
-  <text x="160" y="110" fill="#bbdefb" font-family="'Segoe UI', Arial, sans-serif" font-size="18" font-weight="600" text-anchor="middle">Ibuprofen Oral Suspension</text>
-  <text x="160" y="146" fill="#ffffff" font-family="'Segoe UI', Arial, sans-serif" font-size="22" font-weight="600" text-anchor="middle">100 mg per 5 mL</text>
-</svg>
