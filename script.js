@@ -182,7 +182,103 @@ function initCarousels() {
   });
 }
 
+function initTranslations() {
+  const trigger = document.querySelector('[data-open-translations]');
+  const overlay = document.getElementById('translation-overlay');
+  if (!trigger || !overlay) {
+    return;
+  }
+
+  const closeButton = overlay.querySelector('[data-close-translations]');
+  const status = overlay.querySelector('[data-selection-status]');
+  const languageButtons = overlay.querySelectorAll('[data-translate]');
+  let lastFocusedElement = null;
+
+  function setExpanded(isExpanded) {
+    trigger.setAttribute('aria-expanded', String(isExpanded));
+    overlay.setAttribute('aria-hidden', String(!isExpanded));
+  }
+
+  function openOverlay() {
+    if (!overlay.hidden) {
+      return;
+    }
+    lastFocusedElement = document.activeElement;
+    overlay.hidden = false;
+    requestAnimationFrame(() => {
+      overlay.classList.add('is-visible');
+    });
+    document.body.style.overflow = 'hidden';
+    setExpanded(true);
+    const firstButton = overlay.querySelector('[data-translate]');
+    if (firstButton) {
+      firstButton.focus();
+    }
+  }
+
+  function closeOverlay() {
+    if (overlay.hidden) {
+      return;
+    }
+    overlay.classList.remove('is-visible');
+    setExpanded(false);
+    document.body.style.overflow = '';
+    if (status) {
+      status.textContent = '';
+    }
+    setTimeout(() => {
+      overlay.hidden = true;
+      if (lastFocusedElement) {
+        lastFocusedElement.focus();
+      }
+    }, 250);
+  }
+
+  trigger.addEventListener('click', () => {
+    if (overlay.hidden) {
+      openOverlay();
+    } else {
+      closeOverlay();
+    }
+  });
+
+  if (closeButton) {
+    closeButton.addEventListener('click', () => closeOverlay());
+  }
+
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) {
+      closeOverlay();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !overlay.hidden) {
+      closeOverlay();
+    }
+  });
+
+  const translationBase = 'https://translate.google.com/translate';
+
+  languageButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const languageCode = button.getAttribute('data-translate');
+      const languageName = button.getAttribute('data-lang-name');
+      if (!languageCode) {
+        return;
+      }
+
+      const url = `${translationBase}?sl=en&tl=${encodeURIComponent(languageCode)}&u=${encodeURIComponent(window.location.href)}`;
+      window.open(url, '_blank', 'noopener');
+      if (status && languageName) {
+        status.textContent = `${languageName} translation opening in a new tab.`;
+      }
+    });
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   initCarousels();
   updateForm();
+  initTranslations();
 });
