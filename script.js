@@ -141,7 +141,7 @@ function initCarousels() {
     const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
     if (slides.length === 0) return;
 
-    let index = 0;
+    let index = -1;
 
     const prevButton = carousel.querySelector('[data-carousel-prev]');
     const nextButton = carousel.querySelector('[data-carousel-next]');
@@ -160,10 +160,13 @@ function initCarousels() {
     });
 
     function goToSlide(newIndex) {
-      slides[index].classList.remove('is-active');
-      if (dots[index]) {
-        dots[index].classList.remove('is-active');
+      if (index >= 0) {
+        slides[index].classList.remove('is-active');
+        if (dots[index]) {
+          dots[index].classList.remove('is-active');
+        }
       }
+
       index = (newIndex + slides.length) % slides.length;
       slides[index].classList.add('is-active');
       if (dots[index]) {
@@ -198,6 +201,8 @@ function initTranslations() {
     trigger.setAttribute('aria-expanded', String(isExpanded));
     overlay.setAttribute('aria-hidden', String(!isExpanded));
   }
+
+  setExpanded(false);
 
   function openOverlay() {
     if (!overlay.hidden) {
@@ -242,6 +247,15 @@ function initTranslations() {
     }
   });
 
+  trigger.addEventListener('keydown', (event) => {
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      if (overlay.hidden) {
+        openOverlay();
+      }
+    }
+  });
+
   if (closeButton) {
     closeButton.addEventListener('click', () => closeOverlay());
   }
@@ -275,15 +289,11 @@ function initTranslations() {
           : `${baseUrl}&tl=${encodeURIComponent(languageCode)}`;
 
       window.open(url, '_blank', 'noopener');
-      if (status && languageName) {
+      if (status) {
         status.textContent =
           languageCode === 'other'
             ? 'Google Translate is opening so you can choose another language.'
-            : `${languageName} translation opening in a new tab.`;
-      const url = `${translationBase}?sl=en&tl=${encodeURIComponent(languageCode)}&u=${encodeURIComponent(window.location.href)}`;
-      window.open(url, '_blank', 'noopener');
-      if (status && languageName) {
-        status.textContent = `${languageName} translation opening in a new tab.`;
+            : `${languageName || 'Selected'} translation opening in a new tab.`;
       }
     });
   });
