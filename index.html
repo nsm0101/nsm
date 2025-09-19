@@ -9,13 +9,21 @@
 <body>
   <nav class="tabs">
     <a href="index.html" class="active">Calculator</a>
+
     <a href="medication-guides.html">Medication Guides</a>
+=======
+    <a href="acetaminophen.html">Acetaminophen Guide</a>
+    <a href="ibuprofen.html">Ibuprofen Guide</a>
+
   </nav>
 
   <main class="page">
     <div id="message" role="alert" aria-live="polite" hidden></div>
 
     <section id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
+=======
+    <section id="calculator" class="panel" aria-labelledby="calculator-heading">
+
       <h1 id="calculator-heading">Pain/Fever Medication Dose Calculator</h1>
       <div class="field">
         <label for="age">Patient Age</label>
@@ -41,7 +49,48 @@
       <button type="button" onclick="calculateDose()">Calculate</button>
     </section>
 
+
     <section id="results" class="panel panel-results" aria-live="polite"></section>
+=======
+    <section id="results" class="panel" aria-live="polite"></section>
+
+    <section class="panel carousel-section" data-carousel>
+      <h2>Acetaminophen Product Labels</h2>
+      <div class="carousel-track">
+        <figure class="carousel-slide">
+          <img src="images/acetaminophen-tylenol.svg" alt="Tylenol infant acetaminophen 160 mg per 5 mL oral suspension label" />
+          <figcaption>Tylenol<sup>&reg;</sup> Infant Oral Suspension (160 mg per 5 mL)</figcaption>
+        </figure>
+        <figure class="carousel-slide">
+          <img src="images/acetaminophen-generic.svg" alt="Generic infants acetaminophen 160 mg per 5 mL oral suspension label" />
+          <figcaption>Store Brand Infant Acetaminophen (160 mg per 5 mL)</figcaption>
+        </figure>
+      </div>
+      <div class="carousel-controls">
+        <button type="button" data-carousel-prev aria-label="Show previous acetaminophen product">&#8592;</button>
+        <div class="carousel-dots" aria-hidden="true"></div>
+        <button type="button" data-carousel-next aria-label="Show next acetaminophen product">&#8594;</button>
+      </div>
+    </section>
+
+    <section class="panel carousel-section" data-carousel>
+      <h2>Ibuprofen Product Labels</h2>
+      <div class="carousel-track">
+        <figure class="carousel-slide">
+          <img src="images/ibuprofen-infant.svg" alt="Infant's Motrin ibuprofen 50 mg per 1.25 mL label" />
+          <figcaption>Infant's Motrin<sup>&reg;</sup> Concentrated Drops (50 mg per 1.25 mL)</figcaption>
+        </figure>
+        <figure class="carousel-slide">
+          <img src="images/ibuprofen-children.svg" alt="Children's Advil ibuprofen 100 mg per 5 mL label" />
+          <figcaption>Children's Advil<sup>&reg;</sup> Suspension (100 mg per 5 mL)</figcaption>
+        </figure>
+      </div>
+      <div class="carousel-controls">
+        <button type="button" data-carousel-prev aria-label="Show previous ibuprofen product">&#8592;</button>
+        <div class="carousel-dots" aria-hidden="true"></div>
+        <button type="button" data-carousel-next aria-label="Show next ibuprofen product">&#8594;</button>
+      </div>
+    </section>
   </main>
 
   <footer>
