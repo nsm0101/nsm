@@ -215,6 +215,40 @@ function initTranslations() {
   const status = overlay.querySelector('[data-selection-status]');
   const languageButtons = overlay.querySelectorAll('[data-translate]');
   let lastFocusedElement = null;
+  const focusableElements = [
+    ...(closeButton ? [closeButton] : []),
+    ...Array.from(languageButtons),
+  ];
+  const backgroundElements = Array.from(
+    document.querySelectorAll('main, nav, footer')
+  );
+
+  function setBackgroundInert(isInert) {
+    backgroundElements.forEach((element) => {
+      if (!element) {
+        return;
+      }
+      if (isInert) {
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('inert', '');
+        if ('inert' in element) {
+          element.inert = true;
+        }
+      } else {
+        element.removeAttribute('aria-hidden');
+        element.removeAttribute('inert');
+        if ('inert' in element) {
+          element.inert = false;
+        }
+      }
+    });
+  }
+
+  function focusFirstElement() {
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+  }
 
   function setExpanded(isExpanded) {
     trigger.setAttribute('aria-expanded', String(isExpanded));
@@ -228,16 +262,14 @@ function initTranslations() {
       return;
     }
     lastFocusedElement = document.activeElement;
+    setBackgroundInert(true);
     overlay.hidden = false;
     requestAnimationFrame(() => {
       overlay.classList.add('is-visible');
     });
     document.body.style.overflow = 'hidden';
     setExpanded(true);
-    const firstButton = overlay.querySelector('[data-translate]');
-    if (firstButton) {
-      firstButton.focus();
-    }
+    focusFirstElement();
   }
 
   function closeOverlay() {
@@ -247,6 +279,7 @@ function initTranslations() {
     overlay.classList.remove('is-visible');
     setExpanded(false);
     document.body.style.overflow = '';
+    setBackgroundInert(false);
     if (status) {
       status.textContent = '';
     }
@@ -288,6 +321,36 @@ function initTranslations() {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !overlay.hidden) {
       closeOverlay();
+    }
+  });
+
+  overlay.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab' || focusableElements.length === 0) {
+      return;
+    }
+
+    const currentIndex = focusableElements.indexOf(document.activeElement);
+    if (currentIndex === -1) {
+      event.preventDefault();
+      focusFirstElement();
+      return;
+    }
+
+    let nextIndex = currentIndex + (event.shiftKey ? -1 : 1);
+
+    if (nextIndex < 0) {
+      nextIndex = focusableElements.length - 1;
+    } else if (nextIndex >= focusableElements.length) {
+      nextIndex = 0;
+    }
+
+    event.preventDefault();
+    focusableElements[nextIndex].focus();
+  });
+
+  document.addEventListener('focusin', (event) => {
+    if (!overlay.hidden && !overlay.contains(event.target)) {
+      focusFirstElement();
     }
   });
 
