@@ -1,14 +1,14 @@
 /* Global layout */
 :root {
-  --overlay: rgba(10, 18, 34, 0.82);
-  --surface: rgba(14, 24, 44, 0.88);
-  --surface-soft: rgba(18, 32, 56, 0.72);
-  --card-border: rgba(255, 255, 255, 0.14);
-  --glow: rgba(84, 190, 255, 0.25);
-  --primary: #4cb8ff;
-  --primary-strong: #2c8df2;
-  --text-light: #f7f9fd;
-  --text-muted: rgba(222, 234, 255, 0.75);
+  --overlay: rgba(10, 10, 10, 0.9);
+  --surface: rgba(14, 14, 14, 0.92);
+  --surface-soft: rgba(24, 24, 24, 0.78);
+  --card-border: rgba(192, 192, 192, 0.16);
+  --glow: rgba(160, 160, 160, 0.2);
+  --primary: #d9d9d9;
+  --primary-strong: #b5b5b5;
+  --text-light: #f4f4f4;
+  --text-muted: rgba(200, 200, 200, 0.75);
 }
 
 * {
@@ -20,12 +20,8 @@ body {
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: var(--text-light);
-  background-color: #050a14;
-  background-image: url('bg.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-  background-attachment: fixed;
+  background-color: #050505;
+  background-image: linear-gradient(160deg, rgba(0, 0, 0, 0.85), rgba(24, 24, 24, 0.95));
   display: flex;
   flex-direction: column;
   line-height: 1.6;
@@ -57,15 +53,15 @@ body {
 .tabs a:focus,
 .tabs button:hover,
 .tabs button:focus {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(192, 192, 192, 0.35);
 }
 
 .tabs a.active {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(176, 176, 176, 0.95));
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #101820;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(145deg, rgba(232, 232, 232, 0.92), rgba(156, 156, 156, 0.96));
+  border-color: rgba(214, 214, 214, 0.6);
+  color: #111;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .tabs button {
@@ -105,12 +101,12 @@ body {
 .panel-calculator {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(165deg, rgba(10, 20, 36, 0.96), rgba(20, 38, 66, 0.78));
+  border: 1px solid rgba(192, 192, 192, 0.14);
+  background: linear-gradient(165deg, rgba(5, 5, 5, 0.96), rgba(26, 26, 26, 0.82));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -20px 36px rgba(0, 0, 0, 0.65),
-    0 40px 80px rgba(0, 0, 0, 0.7);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -18px 32px rgba(0, 0, 0, 0.7),
+    0 40px 80px rgba(0, 0, 0, 0.72);
 }
 
 .panel-calculator::after {
@@ -118,7 +114,7 @@ body {
   position: absolute;
   inset: 12px;
   border-radius: inherit;
-  background: radial-gradient(circle at top left, rgba(92, 191, 255, 0.18), transparent 55%);
+  background: radial-gradient(circle at top left, rgba(192, 192, 192, 0.18), transparent 55%);
   pointer-events: none;
 }
 
@@ -128,11 +124,11 @@ body {
 }
 
 .panel-results {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: linear-gradient(145deg, rgba(12, 22, 40, 0.92), rgba(9, 17, 30, 0.86));
+  border: 1px solid rgba(192, 192, 192, 0.16);
+  background: linear-gradient(145deg, rgba(12, 12, 12, 0.92), rgba(6, 6, 6, 0.86));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 24px 48px rgba(0, 0, 0, 0.58);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 48px rgba(0, 0, 0, 0.6);
 }
 
 .panel-guides {
@@ -156,11 +152,25 @@ body {
   gap: 24px;
 }
 
-#calculator h1 {
-  margin-top: 0;
-  font-size: clamp(1.6rem, 2vw + 1.1rem, 2.35rem);
+.calculator-header {
+  display: grid;
+  gap: 8px;
   text-align: center;
-  letter-spacing: 0.01em;
+}
+
+.calculator-header h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 2vw + 1.2rem, 2.6rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.calculator-subtitle {
+  margin: 0;
+  font-size: clamp(1rem, 1.1vw + 0.8rem, 1.2rem);
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .field {
@@ -177,8 +187,8 @@ body {
 }
 
 .field:focus-within {
-  border-color: rgba(76, 184, 255, 0.45);
-  box-shadow: 0 22px 40px rgba(76, 184, 255, 0.15);
+  border-color: rgba(192, 192, 192, 0.45);
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.4);
 }
 
 label {
@@ -205,7 +215,7 @@ input {
 select:focus,
 input:focus {
   outline: none;
-  border-color: rgba(76, 184, 255, 0.75);
+  border-color: rgba(214, 214, 214, 0.75);
   background: rgba(255, 255, 255, 0.18);
   box-shadow: 0 0 0 4px var(--glow);
 }
@@ -236,7 +246,7 @@ button:active {
 }
 
 button:focus-visible {
-  outline: 2px solid rgba(76, 184, 255, 0.7);
+  outline: 2px solid rgba(214, 214, 214, 0.7);
   outline-offset: 2px;
   filter: brightness(1.1);
 }
@@ -253,30 +263,30 @@ button:focus-visible {
 
 #calculator button {
   width: 100%;
-  background: linear-gradient(125deg, var(--primary), var(--primary-strong));
+  background: linear-gradient(125deg, #f5f5f5, #bfbfbf);
   border: none;
-  color: #041322;
+  color: #111;
   font-weight: 700;
   letter-spacing: 0.02em;
   box-shadow:
-    0 20px 44px rgba(45, 129, 220, 0.32),
-    0 4px 14px rgba(0, 0, 0, 0.45);
+    0 20px 44px rgba(0, 0, 0, 0.4),
+    0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 #calculator button:hover {
-  background: linear-gradient(125deg, var(--primary-strong), #66d4ff);
+  background: linear-gradient(125deg, #ffffff, #c8c8c8);
   box-shadow:
-    0 26px 50px rgba(45, 129, 220, 0.38),
-    0 6px 18px rgba(0, 0, 0, 0.45);
+    0 26px 50px rgba(0, 0, 0, 0.45),
+    0 6px 18px rgba(0, 0, 0, 0.5);
   transform: translateY(-2px);
 }
 
 #calculator button:active {
-  background: linear-gradient(125deg, var(--primary), var(--primary-strong));
+  background: linear-gradient(125deg, #e3e3e3, #bfbfbf);
   transform: translateY(0);
   box-shadow:
-    0 18px 36px rgba(45, 129, 220, 0.32),
-    0 3px 12px rgba(0, 0, 0, 0.45);
+    0 18px 36px rgba(0, 0, 0, 0.4),
+    0 3px 12px rgba(0, 0, 0, 0.5);
 }
 
 .translation-overlay[hidden] {
@@ -286,7 +296,7 @@ button:focus-visible {
 .translation-overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, rgba(0, 32, 64, 0.92), rgba(0, 0, 0, 0.85));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.92), rgba(10, 10, 10, 0.88));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -305,21 +315,21 @@ button:focus-visible {
 .translation-modal {
   position: relative;
   width: min(960px, 100%);
-  background: rgba(7, 29, 54, 0.92);
+  background: rgba(12, 12, 12, 0.92);
   border-radius: 24px;
   padding: clamp(24px, 3vw, 48px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65);
   display: flex;
   flex-direction: column;
   gap: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(192, 192, 192, 0.16);
 }
 
 .translation-close {
   position: absolute;
   top: 18px;
   right: 18px;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.45);
   border: none;
   color: var(--text-light);
   font-size: 1.75rem;
@@ -334,7 +344,7 @@ button:focus-visible {
 
 .translation-close:hover,
 .translation-close:focus {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .translation-hero {
@@ -350,21 +360,28 @@ button:focus-visible {
 
 .translation-hero p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(220, 220, 220, 0.8);
   font-size: 1.05rem;
 }
 
 .translation-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 
+.translation-options > li {
+  display: flex;
+}
+
 .translation-option {
   border-radius: 18px;
   padding: 18px 14px;
-  border: 1px solid rgba(173, 216, 230, 0.35);
-  background: linear-gradient(160deg, rgba(0, 123, 255, 0.32), rgba(6, 6, 6, 0.85));
+  border: 1px solid rgba(192, 192, 192, 0.24);
+  background: linear-gradient(160deg, rgba(120, 120, 120, 0.4), rgba(6, 6, 6, 0.92));
   color: var(--text-light);
   font-size: 1.05rem;
   letter-spacing: 0.02em;
@@ -380,16 +397,16 @@ button:focus-visible {
 .translation-option:hover,
 .translation-option:focus {
   transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-  background: linear-gradient(160deg, rgba(0, 123, 255, 0.58), rgba(12, 12, 12, 0.88));
-  border-color: rgba(173, 216, 230, 0.6);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(160deg, rgba(180, 180, 180, 0.55), rgba(14, 14, 14, 0.9));
+  border-color: rgba(220, 220, 220, 0.45);
 }
 
 .translation-status {
   margin: 0;
   text-align: center;
   font-size: 1rem;
-  color: rgba(173, 216, 230, 0.85);
+  color: rgba(200, 200, 200, 0.85);
   min-height: 1.5em;
 }
 
@@ -643,14 +660,14 @@ button:focus-visible {
   width: auto;
   padding: 10px 18px;
   font-size: 1.1rem;
-  background: rgba(76, 184, 255, 0.18);
-  border: 1px solid rgba(76, 184, 255, 0.45);
+  background: rgba(160, 160, 160, 0.18);
+  border: 1px solid rgba(200, 200, 200, 0.4);
   color: var(--text-light);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
 }
 
 .carousel-controls button:hover {
-  background: rgba(76, 184, 255, 0.3);
+  background: rgba(200, 200, 200, 0.32);
 }
 
 .carousel-section.carousel-compact .carousel-controls {
@@ -680,7 +697,7 @@ button:focus-visible {
 
 .carousel-dot.is-active {
   background-color: var(--primary);
-  border-color: rgba(76, 184, 255, 0.6);
+  border-color: rgba(214, 214, 214, 0.6);
   transform: scale(1.1);
 }
 

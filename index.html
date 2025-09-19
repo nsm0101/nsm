@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pain &amp; Fever Medication Dose Calculator</title>
+  <title>ChillPill | Pediatric Antipyretic Dose Calculator</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -18,9 +18,12 @@
   <main class="page">
     <div id="message" role="alert" aria-live="polite" hidden></div>
 
-    <section id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
+    <form id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
 
-      <h1 id="calculator-heading">Pain/Fever Medication Dose Calculator</h1>
+      <header class="calculator-header">
+        <h1 id="calculator-heading">ChillPill</h1>
+        <p class="calculator-subtitle">Pediatric Antipyretic Dose Calculator</p>
+      </header>
       <div class="field">
         <label for="age">Patient Age</label>
         <select id="age" onchange="updateForm()">
@@ -34,7 +37,14 @@
       <div class="field">
         <label for="weight">Patient Weight</label>
         <div class="weight-input">
-          <input type="number" id="weight" placeholder="Enter weight" min="0" step="0.1" />
+          <input
+            type="number"
+            id="weight"
+            placeholder="Enter weight"
+            min="0"
+            step="0.1"
+            inputmode="decimal"
+          />
           <select id="weight-unit">
             <option value="lbs">lbs</option>
             <option value="kg">kg</option>
@@ -42,8 +52,8 @@
         </div>
       </div>
 
-      <button type="button" onclick="calculateDose()">Calculate</button>
-    </section>
+      <button type="submit">Calculate</button>
+    </form>
 
 
     <section id="results" class="panel panel-results" aria-live="polite"></section>
@@ -65,9 +75,11 @@
           cargar el contenido completo en ese idioma.
         </p>
       </div>
-      <div class="translation-options" role="list">
-        <button type="button" class="translation-option" data-translate="es" data-lang-name="Español">Español</button>
-      </div>
+      <ul class="translation-options">
+        <li>
+          <button type="button" class="translation-option" data-translate="es" data-lang-name="Español">Español</button>
+        </li>
+      </ul>
       <p class="translation-status" data-selection-status aria-live="polite"></p>
     </div>
   </div>
