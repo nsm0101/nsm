@@ -94,16 +94,15 @@ function calculateDose() {
       }</p>
     `;
   } else if (age === '6+') {
-    const ACETA_MAX_MG_CHILD = 1000;
-    const IBU_MAX_MG_CHILD = 400;
+    const MAX_SINGLE_DOSE_MG = 800;
 
     const acetaMgCalculated = 15 * weightKg;
-    const acetaMg = Math.min(acetaMgCalculated, ACETA_MAX_MG_CHILD);
+    const acetaMg = Math.min(acetaMgCalculated, MAX_SINGLE_DOSE_MG);
     const acetaMl = (acetaMg / 160) * 5;
     const acetaCapped = acetaMg < acetaMgCalculated;
 
     const ibuMgCalculated = 10 * weightKg;
-    const ibuMg = Math.min(ibuMgCalculated, IBU_MAX_MG_CHILD);
+    const ibuMg = Math.min(ibuMgCalculated, MAX_SINGLE_DOSE_MG);
     const ibuCapped = ibuMg < ibuMgCalculated;
     const ibuMl50 = (ibuMg / 50) * 1.25;
     const ibuMl100 = (ibuMg / 100) * 5;
@@ -111,7 +110,7 @@ function calculateDose() {
     html += `
       <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
       Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_CHILD} mg.${
+      <p class="dose-note">Maximum single dose for this age group is ${MAX_SINGLE_DOSE_MG} mg every 6 hours.${
         acetaCapped
           ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
           : ''
@@ -120,11 +119,12 @@ function calculateDose() {
       Give ${ibuMl50.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
       <p><strong>Ibuprofen (Children's 100 mg / 5 mL)</strong><br>
       Give ${ibuMl100.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${IBU_MAX_MG_CHILD} mg.${
+      <p class="dose-note">Maximum single dose for this age group is ${MAX_SINGLE_DOSE_MG} mg every 6 hours.${
         ibuCapped
           ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
           : ''
       }</p>
+      <p class="dose-note dose-note-emphasis">Never exceed ${MAX_SINGLE_DOSE_MG} mg in a single dose of either medication and allow at least 6 hours between doses.</p>
     `;
   }
 
@@ -268,6 +268,18 @@ function initTranslations() {
         return;
       }
 
+      const baseUrl = `${translationBase}?sl=en&u=${encodeURIComponent(window.location.href)}`;
+      const url =
+        languageCode === 'other'
+          ? baseUrl
+          : `${baseUrl}&tl=${encodeURIComponent(languageCode)}`;
+
+      window.open(url, '_blank', 'noopener');
+      if (status && languageName) {
+        status.textContent =
+          languageCode === 'other'
+            ? 'Google Translate is opening so you can choose another language.'
+            : `${languageName} translation opening in a new tab.`;
       const url = `${translationBase}?sl=en&tl=${encodeURIComponent(languageCode)}&u=${encodeURIComponent(window.location.href)}`;
       window.open(url, '_blank', 'noopener');
       if (status && languageName) {
