@@ -1,140 +1,245 @@
-/* Background styling */
+/* Global layout */
+:root {
+  --overlay: rgba(0, 0, 0, 0.75);
+  --accent: #007bff;
+  --accent-hover: #0056b3;
+  --text-light: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-    background-image: url('https://nsm0101.github.io/nsm/images/bg2.jpg');
-    background-size: cover;
-    background-repeat: repeat;
-    background-position: top-left;
-    font-family: Arial, sans-serif;
-    color: #fff;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: var(--text-light);
+  background-image: url('https://nsm0101.github.io/nsm/images/bg2.jpg');
+  background-size: cover;
+  background-repeat: repeat;
+  background-position: top left;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Styling for message and results */
-#message, #results {
-    background-color: rgba(0, 0, 0, 0.7); 
-
-/* Transparent black background */
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 600px;
-    margin: 20px auto;
-    color: #fff;
+/* Navigation tabs */
+.tabs {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--overlay);
+  flex-wrap: wrap;
 }
 
-/* Center form */
-#form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+.tabs a {
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Select styling */
-select {
-    margin: 10px 0;
-    padding: 10px;
-    width: 30%;
-    border: none;
-    border-radius: 10px;
+.tabs a:hover,
+.tabs a:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Input styling */
+.tabs a.active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Page layout */
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 120px;
+  gap: 20px;
+}
+
+.panel {
+  width: min(640px, 100%);
+  background-color: var(--overlay);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+#message {
+  width: min(640px, 100%);
+  background-color: rgba(220, 53, 69, 0.9);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  font-weight: bold;
+  text-align: center;
+}
+
+#calculator h1 {
+  margin-top: 0;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.25rem);
+  text-align: center;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+label {
+  font-weight: bold;
+}
+
+select,
 input {
-    margin: 10px 0;
-    padding: 11px;
-    width: 35%;
-    border: none;
-    border-radius: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #000;
+  font-size: 1rem;
 }
 
-/* Button styling */
+select:focus,
+input:focus,
+button:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.weight-input {
+  display: flex;
+  gap: 12px;
+}
+
+.weight-input select {
+  max-width: 120px;
+}
+
 button {
-    padding: 10px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
-    width: 50%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: var(--text-light);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
 }
 
 button:hover {
-    background-color: #0056b3;
+  background-color: var(--accent-hover);
 }
 
-
-/* Dropdown Menu */
-.dropdown {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+#results {
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.menu-btn {
-    background-color: #fff;
-    color: #000;
-    width:40px;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
+#results p {
+  margin: 0;
+  line-height: 1.5;
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 40px;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.7);;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    overflow: hidden;
-    z-index: 1000;
+.dose-note {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.dropdown-content a {
-    color: #fff;
-    padding: 10px;
-    display: block;
-    text-decoration: none;
+.carousel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.dropdown-content a:hover {
-    background-color: #808080;
+.carousel-track {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.5);
 }
 
-.menu-btn:hover + .dropdown-content,
-.dropdown-content:hover {
-    display: block;
+.carousel-slide {
+  display: none;
+  padding: 24px;
+  text-align: center;
 }
 
-/* Warning text */
-warning {
-    font-size: 18px;
-    font-weight: bold;
-    color: red;
-    text-align: center;
-    margin: 10px;
+.carousel-slide.is-active {
+  display: block;
 }
 
-/* Footer */
+.carousel-slide img {
+  max-width: min(280px, 100%);
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.carousel-slide figcaption {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.carousel-controls button {
+  width: auto;
+  padding-inline: 16px;
+  font-size: 1.25rem;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+}
+
+.carousel-dot.is-active {
+  background-color: var(--accent);
+}
+
 footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-    background-color: none;
-    text-align: left;
-    font-size: 14px;
+  padding: 16px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .weight-input {
+    flex-direction: column;
+  }
+
+  .tabs {
+    justify-content: center;
+  }
 }
