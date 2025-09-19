@@ -280,6 +280,10 @@ function initTranslations() {
           languageCode === 'other'
             ? 'Google Translate is opening so you can choose another language.'
             : `${languageName} translation opening in a new tab.`;
+      const url = `${translationBase}?sl=en&tl=${encodeURIComponent(languageCode)}&u=${encodeURIComponent(window.location.href)}`;
+      window.open(url, '_blank', 'noopener');
+      if (status && languageName) {
+        status.textContent = `${languageName} translation opening in a new tab.`;
       }
     });
   });
