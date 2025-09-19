@@ -18,7 +18,7 @@
   <main class="page">
     <div id="message" role="alert" aria-live="polite" hidden></div>
 
-    <section id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
+    <form id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
 
       <header class="calculator-header">
         <h1 id="calculator-heading">ChillPill</h1>
@@ -37,7 +37,14 @@
       <div class="field">
         <label for="weight">Patient Weight</label>
         <div class="weight-input">
-          <input type="number" id="weight" placeholder="Enter weight" min="0" step="0.1" />
+          <input
+            type="number"
+            id="weight"
+            placeholder="Enter weight"
+            min="0"
+            step="0.1"
+            inputmode="decimal"
+          />
           <select id="weight-unit">
             <option value="lbs">lbs</option>
             <option value="kg">kg</option>
@@ -45,8 +52,8 @@
         </div>
       </div>
 
-      <button type="button" onclick="calculateDose()">Calculate</button>
-    </section>
+      <button type="submit">Calculate</button>
+    </form>
 
 
     <section id="results" class="panel panel-results" aria-live="polite"></section>

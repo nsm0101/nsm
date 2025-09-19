@@ -132,6 +132,18 @@ function calculateDose() {
   elements.results.innerHTML = html;
 }
 
+function initCalculator() {
+  const form = document.getElementById('calculator');
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    calculateDose();
+  });
+}
+
 // Initialize state on first load
 updateForm();
 
@@ -378,6 +390,7 @@ function initTranslations() {
 
 window.addEventListener('DOMContentLoaded', () => {
   initCarousels();
+  initCalculator();
   updateForm();
   initTranslations();
 });
