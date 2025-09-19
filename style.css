@@ -338,6 +338,59 @@ button:hover {
   gap: 6px;
 }
 
+.guide-subgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.guide-subcard {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.guide-subcard figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.guide-subcard img {
+  max-width: 140px;
+  width: 100%;
+  height: auto;
+}
+
+.guide-subcard figcaption {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.guide-subcard p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 .guide-return {
   text-align: center;
   margin-top: 32px;
@@ -352,11 +405,20 @@ button:hover {
   gap: 16px;
 }
 
+.carousel-section.carousel-compact {
+  width: 100%;
+  gap: 12px;
+}
+
 .carousel-track {
   position: relative;
   overflow: hidden;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.5);
+}
+
+.carousel-section.carousel-compact .carousel-track {
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .carousel-slide {
@@ -378,10 +440,23 @@ button:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
+.carousel-section.carousel-compact .carousel-slide {
+  padding: 20px 16px;
+}
+
+.carousel-section.carousel-compact .carousel-slide img {
+  max-width: min(180px, 100%);
+  margin-inline: auto;
+}
+
 .carousel-slide figcaption {
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.4;
+}
+
+.carousel-section.carousel-compact .carousel-slide figcaption {
+  font-size: 0.9rem;
 }
 
 .carousel-controls {
@@ -395,6 +470,15 @@ button:hover {
   width: auto;
   padding-inline: 16px;
   font-size: 1.25rem;
+}
+
+.carousel-section.carousel-compact .carousel-controls {
+  gap: 10px;
+}
+
+.carousel-section.carousel-compact .carousel-controls button {
+  padding: 8px 14px;
+  font-size: 1.1rem;
 }
 
 .carousel-dots {
