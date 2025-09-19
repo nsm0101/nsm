@@ -11,6 +11,9 @@
     <a href="index.html">Calculator</a>
     <a href="acetaminophen.html" class="active">Acetaminophen Guide</a>
     <a href="ibuprofen.html">Ibuprofen Guide</a>
+    <button type="button" class="tab-button" data-open-translations aria-haspopup="dialog" aria-expanded="false">
+      Translate
+    </button>
   </nav>
 
   <main class="page">
@@ -63,5 +66,32 @@
     <p><strong>Disclaimer:</strong> Educational use only &mdash; confirm dosing with a licensed healthcare professional before giving medication.</p>
     <p>Updated 1.13.2025 &bull; Created by Nickolas Mancini, MD, MBA</p>
   </footer>
+
+  <div class="translation-overlay" id="translation-overlay" hidden aria-hidden="true">
+    <div class="translation-modal" role="dialog" aria-modal="true" aria-labelledby="translation-heading">
+      <button type="button" class="translation-close" data-close-translations aria-label="Close translation options">&times;</button>
+      <div class="translation-hero">
+        <h2 id="translation-heading">Explore Global Language Support</h2>
+        <p>
+          Choose a language below to view this guide through Google Translate. A new tab will open with the translated
+          version of the current page.
+        </p>
+      </div>
+      <div class="translation-options" role="list">
+        <button type="button" class="translation-option" data-translate="es" data-lang-name="Spanish">Spanish</button>
+        <button type="button" class="translation-option" data-translate="pt" data-lang-name="Portuguese">Portuguese</button>
+        <button type="button" class="translation-option" data-translate="fr" data-lang-name="French">French</button>
+        <button type="button" class="translation-option" data-translate="de" data-lang-name="German">German</button>
+        <button type="button" class="translation-option" data-translate="it" data-lang-name="Italian">Italian</button>
+        <button type="button" class="translation-option" data-translate="zh-CN" data-lang-name="Chinese">Chinese</button>
+        <button type="button" class="translation-option" data-translate="ru" data-lang-name="Russian">Russian</button>
+        <button type="button" class="translation-option" data-translate="ar" data-lang-name="Arabic">Arabic</button>
+        <button type="button" class="translation-option" data-translate="rw" data-lang-name="Rwandan">Rwandan</button>
+      </div>
+      <p class="translation-status" data-selection-status aria-live="polite"></p>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
 </body>
 </html>

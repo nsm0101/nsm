@@ -32,7 +32,8 @@ body {
   flex-wrap: wrap;
 }
 
-.tabs a {
+.tabs a,
+.tabs button {
   color: var(--text-light);
   text-decoration: none;
   padding: 10px 18px;
@@ -40,10 +41,14 @@ body {
   background-color: transparent;
   border: 1px solid transparent;
   transition: background-color 0.2s ease, border-color 0.2s ease;
+  font: inherit;
+  cursor: pointer;
 }
 
 .tabs a:hover,
-.tabs a:focus {
+.tabs a:focus,
+.tabs button:hover,
+.tabs button:focus {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
@@ -51,6 +56,17 @@ body {
 .tabs a.active {
   background-color: var(--accent);
   border-color: var(--accent);
+}
+
+.tabs button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 10px 18px;
+  border-radius: 999px;
 }
 
 /* Page layout */
@@ -154,6 +170,115 @@ button {
 
 button:hover {
   background-color: var(--accent-hover);
+}
+
+.translation-overlay[hidden] {
+  display: none;
+}
+
+.translation-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 32, 64, 0.92), rgba(0, 0, 0, 0.85));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 16px;
+  z-index: 1000;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.25s ease, transform 0.3s ease;
+}
+
+.translation-overlay.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.translation-modal {
+  position: relative;
+  width: min(960px, 100%);
+  background: rgba(7, 29, 54, 0.92);
+  border-radius: 24px;
+  padding: clamp(24px, 3vw, 48px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.translation-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+  color: var(--text-light);
+  font-size: 1.75rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.translation-close:hover,
+.translation-close:focus {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.translation-hero {
+  text-align: center;
+  display: grid;
+  gap: 16px;
+}
+
+.translation-hero h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 1.5vw + 1.6rem, 2.4rem);
+}
+
+.translation-hero p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.05rem;
+}
+
+.translation-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.translation-option {
+  border-radius: 18px;
+  padding: 18px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(160deg, rgba(0, 123, 255, 0.25), rgba(0, 0, 0, 0.5));
+  color: var(--text-light);
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+}
+
+.translation-option:hover,
+.translation-option:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(160deg, rgba(0, 123, 255, 0.55), rgba(0, 0, 0, 0.6));
+}
+
+.translation-status {
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(173, 216, 230, 0.85);
+  min-height: 1.5em;
 }
 
 #results {
