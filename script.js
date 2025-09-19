@@ -85,7 +85,7 @@ function calculateDose() {
     const acetaCapped = acetaMg < acetaMgCalculated;
 
     html += `
-      <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
+      <p><strong class="medication-heading">Acetaminophen (160 mg / 5 mL)</strong><br>
       Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
       <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_INFANT} mg.${
         acetaCapped
@@ -94,37 +94,38 @@ function calculateDose() {
       }</p>
     `;
   } else if (age === '6+') {
-    const MAX_SINGLE_DOSE_MG = 800;
+    const ACETA_MAX_SINGLE_DOSE_MG = 1000;
+    const IBU_MAX_SINGLE_DOSE_MG = 800;
 
     const acetaMgCalculated = 15 * weightKg;
-    const acetaMg = Math.min(acetaMgCalculated, MAX_SINGLE_DOSE_MG);
+    const acetaMg = Math.min(acetaMgCalculated, ACETA_MAX_SINGLE_DOSE_MG);
     const acetaMl = (acetaMg / 160) * 5;
     const acetaCapped = acetaMg < acetaMgCalculated;
 
     const ibuMgCalculated = 10 * weightKg;
-    const ibuMg = Math.min(ibuMgCalculated, MAX_SINGLE_DOSE_MG);
+    const ibuMg = Math.min(ibuMgCalculated, IBU_MAX_SINGLE_DOSE_MG);
     const ibuCapped = ibuMg < ibuMgCalculated;
     const ibuMl50 = (ibuMg / 50) * 1.25;
     const ibuMl100 = (ibuMg / 100) * 5;
 
     html += `
-      <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
+      <p><strong class="medication-heading">Acetaminophen (160 mg / 5 mL)</strong><br>
       Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${MAX_SINGLE_DOSE_MG} mg every 6 hours.${
+      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen every 6 hours.${
         acetaCapped
           ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
           : ''
       }</p>
-      <p><strong>Ibuprofen (Infant's 50 mg / 1.25 mL)</strong><br>
+      <p><strong class="medication-heading">Ibuprofen (Infant's 50 mg / 1.25 mL)</strong><br>
       Give ${ibuMl50.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p><strong>Ibuprofen (Children's 100 mg / 5 mL)</strong><br>
+      <p><strong class="medication-heading">Ibuprofen (Children's 100 mg / 5 mL)</strong><br>
       Give ${ibuMl100.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${MAX_SINGLE_DOSE_MG} mg every 6 hours.${
+      <p class="dose-note">Maximum single dose for this age group is ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen every 6 hours.${
         ibuCapped
           ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
           : ''
       }</p>
-      <p class="dose-note dose-note-emphasis">Never exceed ${MAX_SINGLE_DOSE_MG} mg in a single dose of either medication and allow at least 6 hours between doses.</p>
+      <p class="dose-note dose-note-emphasis">Never exceed ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen or ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen in a single dose, and allow at least 6 hours between doses.</p>
     `;
   }
 
@@ -141,6 +142,11 @@ function initCarousels() {
     const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
     if (slides.length === 0) return;
 
+    slides.forEach((slide) => {
+      slide.classList.remove('is-active');
+      slide.setAttribute('aria-hidden', 'true');
+    });
+
     let index = -1;
 
     const prevButton = carousel.querySelector('[data-carousel-prev]');
@@ -152,6 +158,7 @@ function initCarousels() {
       dot.type = 'button';
       dot.className = 'carousel-dot';
       dot.setAttribute('aria-label', `Show slide ${slideIndex + 1}`);
+      dot.setAttribute('aria-pressed', 'false');
       dot.addEventListener('click', () => goToSlide(slideIndex));
       if (dotsContainer) {
         dotsContainer.appendChild(dot);
@@ -162,15 +169,27 @@ function initCarousels() {
     function goToSlide(newIndex) {
       if (index >= 0) {
         slides[index].classList.remove('is-active');
+        slides[index].setAttribute('aria-hidden', 'true');
         if (dots[index]) {
           dots[index].classList.remove('is-active');
+          dots[index].setAttribute('aria-pressed', 'false');
         }
       }
 
       index = (newIndex + slides.length) % slides.length;
       slides[index].classList.add('is-active');
+      slides[index].setAttribute('aria-hidden', 'false');
       if (dots[index]) {
         dots[index].classList.add('is-active');
+        dots[index].setAttribute('aria-pressed', 'true');
+      }
+
+      const controlsDisabled = slides.length <= 1;
+      if (prevButton) {
+        prevButton.disabled = controlsDisabled;
+      }
+      if (nextButton) {
+        nextButton.disabled = controlsDisabled;
       }
     }
 
@@ -196,6 +215,40 @@ function initTranslations() {
   const status = overlay.querySelector('[data-selection-status]');
   const languageButtons = overlay.querySelectorAll('[data-translate]');
   let lastFocusedElement = null;
+  const focusableElements = [
+    ...(closeButton ? [closeButton] : []),
+    ...Array.from(languageButtons),
+  ];
+  const backgroundElements = Array.from(
+    document.querySelectorAll('main, nav, footer')
+  );
+
+  function setBackgroundInert(isInert) {
+    backgroundElements.forEach((element) => {
+      if (!element) {
+        return;
+      }
+      if (isInert) {
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('inert', '');
+        if ('inert' in element) {
+          element.inert = true;
+        }
+      } else {
+        element.removeAttribute('aria-hidden');
+        element.removeAttribute('inert');
+        if ('inert' in element) {
+          element.inert = false;
+        }
+      }
+    });
+  }
+
+  function focusFirstElement() {
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+  }
 
   function setExpanded(isExpanded) {
     trigger.setAttribute('aria-expanded', String(isExpanded));
@@ -209,16 +262,14 @@ function initTranslations() {
       return;
     }
     lastFocusedElement = document.activeElement;
+    setBackgroundInert(true);
     overlay.hidden = false;
     requestAnimationFrame(() => {
       overlay.classList.add('is-visible');
     });
     document.body.style.overflow = 'hidden';
     setExpanded(true);
-    const firstButton = overlay.querySelector('[data-translate]');
-    if (firstButton) {
-      firstButton.focus();
-    }
+    focusFirstElement();
   }
 
   function closeOverlay() {
@@ -228,6 +279,7 @@ function initTranslations() {
     overlay.classList.remove('is-visible');
     setExpanded(false);
     document.body.style.overflow = '';
+    setBackgroundInert(false);
     if (status) {
       status.textContent = '';
     }
@@ -272,6 +324,36 @@ function initTranslations() {
     }
   });
 
+  overlay.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab' || focusableElements.length === 0) {
+      return;
+    }
+
+    const currentIndex = focusableElements.indexOf(document.activeElement);
+    if (currentIndex === -1) {
+      event.preventDefault();
+      focusFirstElement();
+      return;
+    }
+
+    let nextIndex = currentIndex + (event.shiftKey ? -1 : 1);
+
+    if (nextIndex < 0) {
+      nextIndex = focusableElements.length - 1;
+    } else if (nextIndex >= focusableElements.length) {
+      nextIndex = 0;
+    }
+
+    event.preventDefault();
+    focusableElements[nextIndex].focus();
+  });
+
+  document.addEventListener('focusin', (event) => {
+    if (!overlay.hidden && !overlay.contains(event.target)) {
+      focusFirstElement();
+    }
+  });
+
   const translationBase = 'https://translate.google.com/translate';
 
   languageButtons.forEach((button) => {
@@ -282,18 +364,13 @@ function initTranslations() {
         return;
       }
 
-      const baseUrl = `${translationBase}?sl=en&u=${encodeURIComponent(window.location.href)}`;
-      const url =
-        languageCode === 'other'
-          ? baseUrl
-          : `${baseUrl}&tl=${encodeURIComponent(languageCode)}`;
+      const url = `${translationBase}?sl=en&tl=${encodeURIComponent(languageCode)}&u=${encodeURIComponent(
+        window.location.href
+      )}`;
 
       window.open(url, '_blank', 'noopener');
       if (status) {
-        status.textContent =
-          languageCode === 'other'
-            ? 'Google Translate is opening so you can choose another language.'
-            : `${languageName || 'Selected'} translation opening in a new tab.`;
+        status.textContent = `${languageName || 'Español'} translation opening in a new tab.`;
       }
     });
   });
