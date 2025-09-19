@@ -1,8 +1,9 @@
 /* Global layout */
 :root {
   --overlay: rgba(0, 0, 0, 0.75);
-  --accent: #007bff;
-  --accent-hover: #0056b3;
+  --accent: #d3d3d3;
+  --accent-hover: #f2f2f2;
+  --accent-shadow: rgba(0, 0, 0, 0.45);
   --text-light: #ffffff;
 }
 
@@ -32,7 +33,8 @@ body {
   flex-wrap: wrap;
 }
 
-.tabs a {
+.tabs a,
+.tabs button {
   color: var(--text-light);
   text-decoration: none;
   padding: 10px 18px;
@@ -40,17 +42,36 @@ body {
   background-color: transparent;
   border: 1px solid transparent;
   transition: background-color 0.2s ease, border-color 0.2s ease;
+  font: inherit;
+  cursor: pointer;
 }
 
 .tabs a:hover,
-.tabs a:focus {
+.tabs a:focus,
+.tabs button:hover,
+.tabs button:focus {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
 .tabs a.active {
-  background-color: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(176, 176, 176, 0.95));
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #101820;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.tabs button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  background-color: transparent;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 10px 18px;
+  border-radius: 999px;
+  box-shadow: none;
 }
 
 /* Page layout */
@@ -73,8 +94,28 @@ body {
 }
 
 .panel-calculator {
-  border: 2px solid rgba(0, 123, 255, 0.6);
-  background: linear-gradient(135deg, rgba(0, 123, 255, 0.25), rgba(0, 0, 0, 0.78));
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(192, 192, 192, 0.6);
+  background: linear-gradient(165deg, rgba(6, 6, 6, 0.98), rgba(32, 32, 32, 0.82));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -14px 28px rgba(0, 0, 0, 0.78),
+    0 24px 48px rgba(0, 0, 0, 0.7);
+}
+
+.panel-calculator::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: inherit;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+#calculator > * {
+  position: relative;
+  z-index: 1;
 }
 
 .panel-results {
@@ -127,8 +168,9 @@ input {
 select:focus,
 input:focus,
 button:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid rgba(255, 255, 255, 0.7);
   outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(211, 211, 211, 0.25);
 }
 
 .weight-input {
@@ -142,18 +184,180 @@ button:focus {
 
 button {
   padding: 12px 24px;
-  border: none;
   border-radius: 999px;
-  background-color: var(--accent);
-  color: var(--text-light);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.92), rgba(172, 172, 172, 0.95));
+  color: #161616;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.25s ease;
   width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.7),
+    0 12px 24px rgba(0, 0, 0, 0.45);
 }
 
 button:hover {
-  background-color: var(--accent-hover);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.98), rgba(188, 188, 188, 0.95));
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.75),
+    0 16px 28px rgba(0, 0, 0, 0.45);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.35),
+    0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+#calculator button {
+  background: linear-gradient(135deg, rgba(245, 245, 245, 0.96), rgba(155, 155, 155, 0.9));
+  border: 1px solid rgba(220, 220, 220, 0.75);
+  color: #060606;
+  font-weight: 600;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.7),
+    0 18px 34px rgba(0, 0, 0, 0.6);
+}
+
+#calculator button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(175, 175, 175, 0.92));
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.75),
+    0 22px 38px rgba(0, 0, 0, 0.65);
+}
+
+#calculator button:active {
+  background: linear-gradient(135deg, rgba(215, 215, 215, 0.95), rgba(140, 140, 140, 0.9));
+  box-shadow:
+    inset 0 3px 5px rgba(0, 0, 0, 0.35),
+    0 14px 24px rgba(0, 0, 0, 0.55);
+}
+
+#calculator input,
+#calculator select {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(208, 208, 208, 0.9));
+  border: 1px solid rgba(192, 192, 192, 0.6);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  color: #0a0a0a;
+}
+
+#calculator select {
+  background-position: right 12px center;
+}
+
+.translation-overlay[hidden] {
+  display: none;
+}
+
+.translation-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 32, 64, 0.92), rgba(0, 0, 0, 0.85));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 16px;
+  z-index: 1000;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.25s ease, transform 0.3s ease;
+}
+
+.translation-overlay.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.translation-modal {
+  position: relative;
+  width: min(960px, 100%);
+  background: rgba(7, 29, 54, 0.92);
+  border-radius: 24px;
+  padding: clamp(24px, 3vw, 48px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.translation-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+  color: var(--text-light);
+  font-size: 1.75rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: none;
+}
+
+.translation-close:hover,
+.translation-close:focus {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.translation-hero {
+  text-align: center;
+  display: grid;
+  gap: 16px;
+}
+
+.translation-hero h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 1.5vw + 1.6rem, 2.4rem);
+}
+
+.translation-hero p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.05rem;
+}
+
+.translation-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.translation-option {
+  border-radius: 18px;
+  padding: 18px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.18), rgba(120, 120, 120, 0.35));
+  color: #f6f6f6;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38);
+}
+
+.translation-option:hover,
+.translation-option:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.32), rgba(105, 105, 105, 0.4));
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.translation-status {
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(224, 224, 224, 0.85);
+  min-height: 1.5em;
 }
 
 #results {
@@ -171,6 +375,11 @@ button:hover {
 .dose-note {
   font-size: 0.95rem;
   color: rgba(173, 216, 230, 0.85);
+}
+
+.dose-note-emphasis {
+  color: #f4f4f4;
+  font-weight: 700;
 }
 
 .panel-guides h1 {
@@ -270,6 +479,9 @@ button:hover {
   width: auto;
   padding-inline: 16px;
   font-size: 1.25rem;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-light);
 }
 
 .carousel-dots {
@@ -288,7 +500,7 @@ button:hover {
 }
 
 .carousel-dot.is-active {
-  background-color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.85);
 }
 
 footer {
