@@ -1,44 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Calc v1</title>
-  <link rel="stylesheet" href="./style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pain &amp; Fever Medication Dose Calculator</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <nav class="tabs">
+    <a href="index.html" class="active">Calculator</a>
+    <a href="acetaminophen.html">Acetaminophen Guide</a>
+    <a href="ibuprofen.html">Ibuprofen Guide</a>
+  </nav>
 
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<title>Pain/Fever Medication Dose Calculator v1.1</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to CSS -->
-</head>
-<body>
-    <div id="message" style="display: none;"></div>
-    <div id="form">
-        <h1>Pain/Fever Medication Dose Calculator v1.1</h1>
-        <label for="age">Patient Age:</label>
+  <main class="page">
+    <div id="message" role="alert" aria-live="polite" hidden></div>
+
+    <section id="calculator" class="panel" aria-labelledby="calculator-heading">
+      <h1 id="calculator-heading">Pain/Fever Medication Dose Calculator</h1>
+      <div class="field">
+        <label for="age">Patient Age</label>
         <select id="age" onchange="updateForm()">
-            <option value="">Select Age</option>
-            <option value="0-2">0-2 months</option>
-            <option value="2-6">2-6 months</option>
-            <option value="6+">6+ months</option>
+          <option value="">Select Age</option>
+          <option value="0-2">0-2 months</option>
+          <option value="2-6">2-6 months</option>
+          <option value="6+">6+ months</option>
         </select>
-      <br>
-      <label for="weight">Patient Weight:</label>
-        <input type="number" id="weight" placeholder="Enter weight">
-        <select id="weight-unit">
+      </div>
+
+      <div class="field">
+        <label for="weight">Patient Weight</label>
+        <div class="weight-input">
+          <input type="number" id="weight" placeholder="Enter weight" min="0" step="0.1" />
+          <select id="weight-unit">
             <option value="lbs">lbs</option>
             <option value="kg">kg</option>
-        </select>
-        <button onclick="calculateDose()">Calculate</button>
-    </div>
-    <div id="results"></div>
+          </select>
+        </div>
+      </div>
 
-    <script src="script.js"></script> <!-- Link to JavaScript -->
-</body>
-<body><p>Updated 1.13.2025</p>
-  <p>Created by Nickolas Mancini, MD, MBA</p></body>
-<!-- partial -->
-  <script  src="./script.js"></script>
+      <button type="button" onclick="calculateDose()">Calculate</button>
+    </section>
 
+    <section id="results" class="panel" aria-live="polite"></section>
+
+    <section class="panel carousel-section" data-carousel>
+      <h2>Acetaminophen Product Labels</h2>
+      <div class="carousel-track">
+        <figure class="carousel-slide">
+          <img src="images/acetaminophen-tylenol.svg" alt="Tylenol infant acetaminophen 160 mg per 5 mL oral suspension label" />
+          <figcaption>Tylenol<sup>&reg;</sup> Infant Oral Suspension (160 mg per 5 mL)</figcaption>
+        </figure>
+        <figure class="carousel-slide">
+          <img src="images/acetaminophen-generic.svg" alt="Generic infants acetaminophen 160 mg per 5 mL oral suspension label" />
+          <figcaption>Store Brand Infant Acetaminophen (160 mg per 5 mL)</figcaption>
+        </figure>
+      </div>
+      <div class="carousel-controls">
+        <button type="button" data-carousel-prev aria-label="Show previous acetaminophen product">&#8592;</button>
+        <div class="carousel-dots" aria-hidden="true"></div>
+        <button type="button" data-carousel-next aria-label="Show next acetaminophen product">&#8594;</button>
+      </div>
+    </section>
+
+    <section class="panel carousel-section" data-carousel>
+      <h2>Ibuprofen Product Labels</h2>
+      <div class="carousel-track">
+        <figure class="carousel-slide">
+          <img src="images/ibuprofen-infant.svg" alt="Infant's Motrin ibuprofen 50 mg per 1.25 mL label" />
+          <figcaption>Infant's Motrin<sup>&reg;</sup> Concentrated Drops (50 mg per 1.25 mL)</figcaption>
+        </figure>
+        <figure class="carousel-slide">
+          <img src="images/ibuprofen-children.svg" alt="Children's Advil ibuprofen 100 mg per 5 mL label" />
+          <figcaption>Children's Advil<sup>&reg;</sup> Suspension (100 mg per 5 mL)</figcaption>
+        </figure>
+      </div>
+      <div class="carousel-controls">
+        <button type="button" data-carousel-prev aria-label="Show previous ibuprofen product">&#8592;</button>
+        <div class="carousel-dots" aria-hidden="true"></div>
+        <button type="button" data-carousel-next aria-label="Show next ibuprofen product">&#8594;</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.</p>
+    <p>Updated 1.13.2025 &bull; Created by Nickolas Mancini, MD, MBA</p>
+  </footer>
+
+  <script src="./script.js"></script>
 </body>
 </html>
