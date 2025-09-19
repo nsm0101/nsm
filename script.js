@@ -153,20 +153,30 @@ function initCarousels() {
       dot.className = 'carousel-dot';
       dot.setAttribute('aria-label', `Show slide ${slideIndex + 1}`);
       dot.addEventListener('click', () => goToSlide(slideIndex));
-      dotsContainer?.appendChild(dot);
+      if (dotsContainer) {
+        dotsContainer.appendChild(dot);
+      }
       return dot;
     });
 
     function goToSlide(newIndex) {
       slides[index].classList.remove('is-active');
-      dots[index]?.classList.remove('is-active');
+      if (dots[index]) {
+        dots[index].classList.remove('is-active');
+      }
       index = (newIndex + slides.length) % slides.length;
       slides[index].classList.add('is-active');
-      dots[index]?.classList.add('is-active');
+      if (dots[index]) {
+        dots[index].classList.add('is-active');
+      }
     }
 
-    prevButton?.addEventListener('click', () => goToSlide(index - 1));
-    nextButton?.addEventListener('click', () => goToSlide(index + 1));
+    if (prevButton) {
+      prevButton.addEventListener('click', () => goToSlide(index - 1));
+    }
+    if (nextButton) {
+      nextButton.addEventListener('click', () => goToSlide(index + 1));
+    }
 
     goToSlide(0);
   });
