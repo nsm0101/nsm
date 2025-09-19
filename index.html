@@ -9,14 +9,21 @@
 <body>
   <nav class="tabs">
     <a href="index.html" class="active">Calculator</a>
+
+    <a href="medication-guides.html">Medication Guides</a>
+=======
     <a href="acetaminophen.html">Acetaminophen Guide</a>
     <a href="ibuprofen.html">Ibuprofen Guide</a>
+
   </nav>
 
   <main class="page">
     <div id="message" role="alert" aria-live="polite" hidden></div>
 
+    <section id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
+=======
     <section id="calculator" class="panel" aria-labelledby="calculator-heading">
+
       <h1 id="calculator-heading">Pain/Fever Medication Dose Calculator</h1>
       <div class="field">
         <label for="age">Patient Age</label>
@@ -42,6 +49,9 @@
       <button type="button" onclick="calculateDose()">Calculate</button>
     </section>
 
+
+    <section id="results" class="panel panel-results" aria-live="polite"></section>
+=======
     <section id="results" class="panel" aria-live="polite"></section>
 
     <section class="panel carousel-section" data-carousel>
