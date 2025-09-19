@@ -363,68 +363,16 @@ button:focus-visible {
 .translation-option {
   border-radius: 18px;
   padding: 18px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.18), rgba(120, 120, 120, 0.35));
-  color: #f6f6f6;
-  font-size: 1.05rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38);
-}
-
-.translation-option:hover,
-.translation-option:focus {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.32), rgba(105, 105, 105, 0.4));
-  border-color: rgba(255, 255, 255, 0.45);
-}
-
-.translation-status {
-  margin: 0;
-  text-align: center;
-  font-size: 1rem;
-  color: rgba(224, 224, 224, 0.85);
-  min-height: 1.5em;
-}
-
-.translation-hero {
-  text-align: center;
-  display: grid;
-  gap: 16px;
-}
-
-.translation-hero h2 {
-  margin: 0;
-  font-size: clamp(1.8rem, 1.5vw + 1.6rem, 2.4rem);
-}
-
-.translation-hero p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.05rem;
-}
-
-.translation-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-.translation-option {
-  border-radius: 18px;
-  padding: 18px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(160deg, rgba(0, 123, 255, 0.25), rgba(0, 0, 0, 0.5));
+  border: 1px solid rgba(173, 216, 230, 0.35);
+  background: linear-gradient(160deg, rgba(0, 123, 255, 0.32), rgba(6, 6, 6, 0.85));
   color: var(--text-light);
   font-size: 1.05rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   font-weight: bold;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
   width: 100%;
 }
@@ -432,8 +380,9 @@ button:focus-visible {
 .translation-option:hover,
 .translation-option:focus {
   transform: translateY(-4px);
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.35);
-  background: linear-gradient(160deg, rgba(0, 123, 255, 0.55), rgba(0, 0, 0, 0.6));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  background: linear-gradient(160deg, rgba(0, 123, 255, 0.58), rgba(12, 12, 12, 0.88));
+  border-color: rgba(173, 216, 230, 0.6);
 }
 
 .translation-status {
