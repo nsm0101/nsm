@@ -92,6 +92,7 @@ function calculateDose() {
           ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
           : ''
       }</p>
+      <p class="dose-note dose-note-emphasis">Ibuprofen is not recommended for infants under six months. Consult your pediatrician before using ibuprofen for this age group.</p>
     `;
   } else if (age === '6+') {
     const ACETA_MAX_SINGLE_DOSE_MG = 1000;
