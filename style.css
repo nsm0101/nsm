@@ -371,9 +371,16 @@ button:focus-visible {
 }
 
 .translation-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
+}
+
+.translation-options > li {
+  display: flex;
 }
 
 .translation-option {
