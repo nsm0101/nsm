@@ -138,7 +138,7 @@ body {
 }
 
 .panel-guides {
-  width: min(980px, 100%);
+  width: min(1100px, 100%);
 }
 
 #message {
@@ -453,8 +453,8 @@ button:focus-visible {
 
 .guide-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
   margin-top: 32px;
   align-items: stretch;
 }
@@ -543,20 +543,20 @@ button:focus-visible {
 .carousel-track {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  background: rgba(6, 12, 24, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(6, 12, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .carousel-slide {
   display: none;
-  padding: 28px 24px;
+  padding: 36px 28px;
   text-align: center;
-  min-height: 320px;
+  min-height: 360px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .carousel-slide.is-active {
@@ -564,13 +564,14 @@ button:focus-visible {
 }
 
 .carousel-slide img {
-  width: min(260px, 70%);
+  width: min(340px, 85%);
+  max-height: 420px;
   aspect-ratio: 3 / 4;
   object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 12px;
+  border-radius: 14px;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 16px;
 }
 
 .carousel-slide figcaption {
@@ -639,5 +640,20 @@ footer {
 
   .tabs {
     justify-content: center;
+  }
+
+  .guide-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .carousel-slide {
+    padding: 28px 20px;
+    min-height: 320px;
+  }
+
+  .carousel-slide img {
+    width: min(280px, 90%);
+    max-height: 340px;
   }
 }
