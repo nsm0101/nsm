@@ -21,7 +21,13 @@ body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: var(--text-light);
   background-color: #050505;
-  background-image: linear-gradient(160deg, rgba(0, 0, 0, 0.85), rgba(24, 24, 24, 0.95));
+  background-image:
+    linear-gradient(160deg, rgba(0, 0, 0, 0.85), rgba(24, 24, 24, 0.95)),
+    url('./images/bg2.jpg');
+  background-size: auto, cover;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   line-height: 1.6;
@@ -447,16 +453,10 @@ button:focus-visible {
 
 .guide-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 28px;
   margin-top: 32px;
-}
-
-@media (min-width: 960px) {
-  .guide-grid {
-    grid-template-columns: minmax(260px, 1fr) minmax(420px, 2fr);
-    align-items: stretch;
-  }
+  align-items: stretch;
 }
 
 .guide-card {
@@ -515,25 +515,6 @@ button:focus-visible {
   color: var(--text-muted);
 }
 
-.guide-subgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.guide-subcard {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--card-border);
-  border-radius: 16px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 14px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38);
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -543,32 +524,6 @@ button:focus-visible {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
-}
-
-.guide-subcard figure {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-}
-
-.guide-subcard img {
-  max-width: 150px;
-  width: 100%;
-  height: auto;
-}
-
-.guide-subcard figcaption {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.guide-subcard p {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-muted);
 }
 
 .guide-return {
@@ -585,21 +540,12 @@ button:focus-visible {
   gap: 16px;
 }
 
-.carousel-section.carousel-compact {
-  width: 100%;
-  gap: 12px;
-}
-
 .carousel-track {
   position: relative;
   overflow: hidden;
   border-radius: 16px;
   background: rgba(6, 12, 24, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.carousel-section.carousel-compact .carousel-track {
-  background: rgba(6, 12, 24, 0.65);
 }
 
 .carousel-slide {
@@ -627,25 +573,11 @@ button:focus-visible {
   padding: 12px;
 }
 
-.carousel-section.carousel-compact .carousel-slide {
-  min-height: 260px;
-  padding: 24px 16px;
-}
-
-.carousel-section.carousel-compact .carousel-slide img {
-  width: min(180px, 65%);
-  aspect-ratio: 2 / 3;
-}
-
 .carousel-slide figcaption {
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.45;
   color: var(--text-muted);
-}
-
-.carousel-section.carousel-compact .carousel-slide figcaption {
-  font-size: 0.9rem;
 }
 
 .carousel-controls {
@@ -670,14 +602,6 @@ button:focus-visible {
   background: rgba(200, 200, 200, 0.32);
 }
 
-.carousel-section.carousel-compact .carousel-controls {
-  gap: 12px;
-}
-
-.carousel-section.carousel-compact .carousel-controls button {
-  padding: 8px 14px;
-  font-size: 1rem;
-}
 
 .carousel-dots {
   display: flex;
@@ -706,12 +630,6 @@ footer {
   text-align: center;
   background-color: rgba(0, 0, 0, 0.6);
   font-size: 0.9rem;
-}
-
-@media (min-width: 768px) {
-  .guide-subgrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 600px) {
