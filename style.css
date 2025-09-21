@@ -657,3 +657,24 @@ footer {
     max-height: 340px;
   }
 }
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --overlay: rgba(255, 255, 255, 0.9);
+    --surface: rgba(255, 255, 255, 0.92);
+    --surface-soft: rgba(245, 245, 245, 0.78);
+    --card-border: rgba(0, 0, 0, 0.1);
+    --glow: rgba(0, 0, 0, 0.05);
+    --primary: #008080;
+    --primary-strong: #006666;
+    --text-light: #050505;
+    --text-muted: rgba(80, 80, 80, 0.75);
+  }
+
+  body {
+    background-color: #f5fafa;
+    background-image: linear-gradient(160deg, rgba(255,255,255,0.85), rgba(240,240,240,0.95)), url('./images/bg.jpg');
+    color: var(--text-light);
+  }
+}
