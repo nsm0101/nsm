@@ -3,6 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <meta
+    name="description"
+    content="CloseDose helps caregivers calculate safe pediatric acetaminophen and ibuprofen doses with easy medication guides."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="CloseDose | Pediatric Antipyretic Dose Calculator" />
+  <meta
+    property="og:description"
+    content="Plan safe acetaminophen and ibuprofen dosing with CloseDose's pediatric calculator and medication guidance."
+  />
+  <meta property="og:image" content="images/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CloseDose | Pediatric Antipyretic Dose Calculator" />
+  <meta
+    name="twitter:description"
+    content="Plan safe acetaminophen and ibuprofen dosing with CloseDose's pediatric calculator and medication guidance."
+  />
+  <meta name="twitter:image" content="images/og.png" />
   <title>CloseDose | Pediatric Antipyretic Dose Calculator</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
@@ -14,6 +33,17 @@
       Spanish
     </button>
   </nav>
+
+  <header class="brand-header">
+    <picture class="brand-logo">
+      <source srcset="images/logo/CloseDose Logo_2048-transparent.png" media="(prefers-color-scheme: dark)" />
+      <img src="images/logo/CloseDose Logo_Black_2048_Transparent.png" alt="CloseDose logo" />
+    </picture>
+    <h1 class="brand-title">
+      <span class="brand-title-dark">Close</span>
+      <span class="brand-title-teal">Dose</span>
+    </h1>
+  </header>
 
   <main class="page">
     <div id="message" role="alert" aria-live="polite" hidden></div>
