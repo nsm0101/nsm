@@ -3,8 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <meta
+    name="description"
+    content="Browse CloseDose medication guides for pediatric acetaminophen and ibuprofen products, concentrations, and safety tips."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="CloseDose | Medication Guides" />
+  <meta
+    property="og:description"
+    content="Explore pediatric acetaminophen and ibuprofen product concentrations with CloseDose medication guides."
+  />
+  <meta property="og:image" content="images/og.png" />
+  <meta property="og:url" content="https://closedose.com/medication-guides" />
+  <meta property="og:site_name" content="CloseDose" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CloseDose | Medication Guides" />
+  <meta
+    name="twitter:description"
+    content="Explore pediatric acetaminophen and ibuprofen product concentrations calculations by weight with CloseDose Calculator."
+  />
+  <meta name="twitter:image" content="images/og.png" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://closedose.com/medication-guides" />
+  <link rel="alternate" href="https://closedose.com/medication-guides" hreflang="en" />
   <title>Medication Guides</title>
   <link rel="stylesheet" href="./style.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "CloseDose Medication Guides",
+      "description": "CloseDose medication guides explain pediatric acetaminophen and ibuprofen products, concentrations, and dosing intervals for families.",
+      "url": "https://closedose.com/medication-guides",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "CloseDose",
+        "url": "https://closedose.com/"
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Acetaminophen Medication Guide",
+            "url": "https://closedose.com/medication-guides#acetaminophen"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Ibuprofen Medication Guide",
+            "url": "https://closedose.com/medication-guides#ibuprofen"
+          }
+        ]
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "CloseDose",
+          "item": "https://closedose.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Medication Guides",
+          "item": "https://closedose.com/medication-guides"
+        }
+      ]
+    }
+  </script>
 </head>
 <body>
   <nav class="tabs">
@@ -15,34 +90,56 @@
     </button>
   </nav>
 
+  <header class="brand-header">
+    <picture class="brand-logo">
+      <source srcset="images/logo/CloseDose Logo_2048-transparent.png" media="(prefers-color-scheme: dark)" />
+      <img src="images/logo/CloseDose Logo_Black_2048_Transparent.png" alt="CloseDose logo" />
+    </picture>
+    <h1 class="brand-title">
+      <span class="brand-title-dark">Close</span>
+      <span class="brand-title-teal">Dose</span>
+    </h1>
+  </header>
+
   <main class="page">
     <section class="panel panel-guides">
       <h1>Fever/Pain Medication Guides</h1>
       <p>
-        Use these quick references to understand common pain/fever medication options for infants and children.
+        Use these quick references to view common pain/fever medication brand options for infants and children.
         Always double-check the medication concentration and confirm dosing with your pediatrician or pharmacist.
       </p>
       <div class="guide-grid">
-        <article class="guide-card guide-card-acetaminophen">
+        <article class="guide-card guide-card-acetaminophen" id="acetaminophen">
           <h2>Acetaminophen</h2>
           <section class="carousel-section" data-carousel>
-            <h3>Children's Acetaminophen (160 mg / 5 mL)</h3>
+            <h3>
+              Children's Oral Suspension
+            <span class="medication-concentration">[100 mg / 5 mL]</span>
+            </h3>
             <div class="carousel-track">
               <figure class="carousel-slide">
                 <img src="images/Acetaminophen/Tylenol acetaminophen iso.png" alt="Tylenol" />
-                <figcaption>Tylenol<sup>&reg;</sup> Children's Oral Suspension (160 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Tylenol<sup>&reg;</sup> Children's Oral Suspension
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Acetaminophen/amazon acetaminophen iso.png" alt="Amazon" />
-                <figcaption>Amazon Basics Children's Acetaminophen (160 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Amazon Basics<sup>&reg;</sup> Children's Acetaminophen
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Acetaminophen/Target acetaminophen iso.png" alt="Target" />
-                <figcaption>up &amp; up<sup>&reg;</sup> Children's Acetaminophen (160 mg per 5 mL)</figcaption>
+                <figcaption>
+                  up &amp; up<sup>&reg;</sup> Children's Acetaminophen
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Acetaminophen/Equate acetaminophen iso.png" alt="Walmart" />
-                <figcaption>Equate<sup>&reg;</sup> Children's Acetaminophen (160 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Equate<sup>&reg;</sup> Children's Acetaminophen
+                </figcaption>
               </figure>
             </div>
             <div class="carousel-controls">
@@ -64,30 +161,43 @@
             </ul>
           </div>
         </article>
-        <article class="guide-card guide-card-ibuprofen">
+        <article class="guide-card guide-card-ibuprofen" id="ibuprofen">
           <h2>Children's Ibuprofen</h2>
           <section class="carousel-section" data-carousel>
-            <h3>Children's Ibuprofen (100 mg / 5 mL)</h3>
+            <h3>
+              Children's Oral Suspension
+              <span class="medication-concentration">[100 mg / 5 mL]</span>
+            </h3>
             <div class="carousel-track">
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Children/Motrin Children ibuprofen iso.png" alt="Motrin" />
-                <figcaption>Motrin<sup>&reg;</sup> Children's Suspension (100 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Motrin<sup>&reg;</sup> Children's Suspension
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Children/Advil Children Ibuprofen iso.png" alt="Advil" />
-                <figcaption>Advil<sup>&reg;</sup> Children's Suspension (100 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Advil<sup>&reg;</sup> Children's Suspension
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Children/Amazon Children ibuprofen iso.png" alt="Amazon" />
-                <figcaption>Amazon Basics Children's Ibuprofen (100 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Amazon Basics<sup>&reg;</sup> Children's Ibuprofen
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Children/Target Children ibuprofen iso.png" alt="Target" />
-                <figcaption>up &amp; up<sup>&reg;</sup> Children's Ibuprofen (100 mg per 5 mL)</figcaption>
+                <figcaption>
+                  up &amp; up<sup>&reg;</sup> Children's Ibuprofen
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Children/Equate Children ibuprofen iso.png" alt="Equate" />
-                <figcaption>Equate<sup>&reg;</sup> Children's Ibuprofen (100 mg per 5 mL)</figcaption>
+                <figcaption>
+                  Equate<sup>&reg;</sup> Children's Ibuprofen
+                </figcaption>
               </figure>
             </div>
             <div class="carousel-controls">
@@ -101,27 +211,40 @@
         <article class="guide-card guide-card-ibuprofen">
           <h2>Infant Ibuprofen</h2>
           <section class="carousel-section" data-carousel>
-            <h3>Infant Drops (50 mg / 1.25 mL)</h3>
+            <h3>
+              Concentrated Infant Drops
+              <span class="medication-concentration">[50 mg / 1.25 mL]</span>
+            </h3>
             <div class="carousel-track">
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Infants/Motrin Infant ibuprofen iso.png" alt="Motrin" />
-                <figcaption>Infant's Motrin<sup>&reg;</sup> Concentrated Drops (50 mg per 1.25 mL)</figcaption>
+                <figcaption>
+                  Infant's Motrin<sup>&reg;</sup> Concentrated Drops
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Infants/Advil Infant Ibuprofen iso.png" alt="Infants' Advil concentrated ibuprofen drops 50 mg per 1.25 mL label" />
-                <figcaption>Infants' Advil<sup>&reg;</sup> Concentrated Drops (50 mg per 1.25 mL)</figcaption>
+                <figcaption>
+                  Infants' Advil<sup>&reg;</sup> Concentrated Drops
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
                 <img src="images/Ibuprofen/Infants/Amazon Infant ibuprofen iso.png" alt="Amazon" />
-                <figcaption>Amazon Basics Infant Ibuprofen (50 mg per 1.25 mL)</figcaption>
+                <figcaption>
+                  Amazon Basics<sup>&reg;</sup> Infant Ibuprofen
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
-                <img src="images/Ibuprofen/Infants/Target Infant Ibuprofen iso.png" alt="Target" />
-                <figcaption>up &amp; up<sup>&reg;</sup> Infant Ibuprofen (50 mg per 1.25 mL)</figcaption>
+                <img src="images/Ibuprofen/Infants/Target Infant ibuprofen iso.png" alt="Target" />
+                <figcaption>
+                  up &amp; up<sup>&reg;</sup> Infant Ibuprofen
+                </figcaption>
               </figure>
               <figure class="carousel-slide">
-                <img src="images/Ibuprofen/Infants/Equate Infant Ibuprofen iso.png" alt="Equate" />
-                <figcaption>Equate<sup>&reg;</sup> Infant Ibuprofen (50 mg per 1.25 mL)</figcaption>
+                <img src="images/Ibuprofen/Infants/Equate Infant ibuprofen iso.png" alt="Equate" />
+                <figcaption>
+                  Equate<sup>&reg;</sup> Infant Ibuprofen
+                </figcaption>
               </figure>
             </div>
             <div class="carousel-controls">
