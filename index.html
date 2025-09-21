@@ -1,172 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="dark light" />
-  <meta
-    name="description"
-    content="CloseDose helps caregivers calculate safe pediatric acetaminophen and ibuprofen doses with easy medication guides."
-  />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CloseDose – Pediatric Mediction Dosing Calculator</title>
+
+  <!-- Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CloseDose – Pediatric Antipyretic Dosing" />
+  <meta property="og:description" content="Quick pediatric dose helper. Choose age & units, enter weight, then calculate." />
+  <meta property="og:image" content="assets/img/og-2400.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="CloseDose | Pediatric Antipyretic Dose Calculator" />
-  <meta
-    property="og:description"
-    content="Plan safe acetaminophen and ibuprofen dosing with CloseDose's pediatric calculator and medication guidance."
-  />
-  <meta property="og:image" content="images/og.png" />
-  <meta property="og:url" content="https://closedose.com/" />
-  <meta property="og:site_name" content="CloseDose" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="CloseDose | Pediatric Antipyretic Dose Calculator" />
-  <meta
-    name="twitter:description"
-    content="Plan safe acetaminophen and ibuprofen dosing with CloseDose's pediatric calculator and medication guidance."
-  />
-  <meta name="twitter:image" content="images/og.png" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://closedose.com/" />
-  <link rel="alternate" href="https://closedose.com/" hreflang="en" />
-  <title>CloseDose | Pediatric Antipyretic Dose Calculator</title>
-  <link rel="stylesheet" href="./style.css" />
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "CloseDose",
-      "url": "https://closedose.com/",
-      "description": "CloseDose provides a pediatric antipyretic dose calculator and medication safety education for caregivers.",
-      "publisher": {
-        "@type": "Organization",
-        "name": "CloseDose",
-        "url": "https://closedose.com/",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://closedose.com/images/logo/CloseDose%20Logo_Black_2048_Transparent.png"
-        }
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CloseDose – Pediatric Antipyretic Dosing">
+  <meta name="twitter:description" content="Quick pediatric dose helper. Choose age & units, enter weight, then calculate.">
+  <meta name="twitter:image" content="assets/img/og-2400.png">
+
+  <!-- Icons / theme -->
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/img/favicon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/logo-teal.png" media="(prefers-color-scheme: light)">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/logo-dark.png" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#24a687" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f2c2a" media="(prefers-color-scheme: dark)">
+
+  <style>
+    :root{
+      --teal-400:#24a687;
+      --teal-600:#123a37;
+      --ink-900:#0f2c2a;
+      --bg:#f5f9f9;
+      --white:#fff;
+      --radius-pill:40px;
+      --radius-lg:24px;
+      --shadow-pill:0 4px 0 var(--ink-900);
+      --shadow-pressed:inset 0 6px 10px rgba(0,0,0,.25);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#07201d;
+        --ink-900:#e6f3f1;
+        --shadow-pill:0 4px 0 rgba(0,0,0,.85);
+        --shadow-pressed:inset 0 6px 10px rgba(0,0,0,.6);
       }
     }
-  </script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "CloseDose",
-      "url": "https://closedose.com/",
-      "sameAs": [
-        "https://www.linkedin.com/company/closedose",
-        "https://www.instagram.com/closedose"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer support",
-        "email": "hello@closedose.com"
-      }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Nunito",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink-900);
+      background-color:var(--bg);
+      background-image:url("assets/img/light-bg.png");
+      background-repeat:repeat;
+      background-size:360px auto;
+      display:flex;flex-direction:column;
     }
-  </script>
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px;padding:10px 16px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img.logo{width:56px;height:56px;object-fit:contain}
+    .brand img.wordmark{height:34px;object-fit:contain}
+
+    .card{
+      background:rgba(255,255,255,.8);
+      backdrop-filter:saturate(1.1) blur(2px);
+      border:3px solid var(--ink-900);
+      border-radius:var(--radius-lg);
+      box-shadow:0 2px 0 rgba(0,0,0,.15);
+      padding:clamp(18px,3vw,26px);
+    }
+    .hero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px;margin-bottom:10px}
+    .hero-logo{width:clamp(72px,10vw,110px);height:auto}
+    .hero-wordmark{height:clamp(36px,6vw,64px)}
+    .tab-stack{display:flex;gap:6px;margin:4px 0 18px}
+    .tab-stack span{display:inline-block;height:12px;background:var(--teal-400);border:3px solid var(--ink-900);border-radius:16px;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+    .tab-stack span:nth-child(1){width:44%}.tab-stack span:nth-child(2){width:38%}.tab-stack span:nth-child(3){width:32%}
+
+    /* Pills / buttons */
+    .pill{appearance:none;border:4px solid var(--ink-900);background:var(--teal-400);color:var(--white);
+      font-weight:900;letter-spacing:.06em;border-radius:var(--radius-pill);padding:18px 28px;box-shadow:var(--shadow-pill);
+      cursor:pointer;transform:translateY(0);transition:background .12s ease, transform .05s ease, box-shadow .12s ease, filter .12s ease}
+    .pill:focus-visible{outline:4px dashed var(--ink-900);outline-offset:2px}
+    .pill[aria-pressed="true"]{background:var(--teal-600);transform:translateY(2px);box-shadow:var(--shadow-pressed);filter:saturate(1.05)}
+
+    .age-group .pill{width:clamp(160px,30vw,250px)}
+    .unit-toggle .pill{width:clamp(110px,22vw,150px)}
+
+    .row{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:720px){.row{grid-template-columns:1fr 1fr}}
+
+    /* Weight input (dotted rectangle) */
+    .weight{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end}
+    #weight{appearance:textfield;-moz-appearance:textfield;background:transparent;border:4px dotted var(--ink-900);
+      border-radius:22px;padding:16px 18px;font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:.08em;color:var(--ink-900);
+      max-width:clamp(260px,50vw,350px);justify-self:start}
+    #weight::placeholder{color:rgba(15,44,42,.55);text-transform:uppercase}
+    #weight:focus{outline:none}
+
+    /* Calculate button */
+    .cta{margin-top:22px;display:flex;justify-content:center}
+    .cta button{appearance:none;border:4px solid var(--ink-900);background:var(--teal-400);color:var(--white);
+      font-weight:900;letter-spacing:.18em;text-transform:uppercase;padding:16px 32px;border-radius:999px;font-size:20px;
+      box-shadow:var(--shadow-pill);cursor:pointer;transition:transform .05s ease, box-shadow .12s ease, background .12s ease;width:clamp(300px,60vw,500px)}
+    .cta button:active,.cta button[aria-pressed="true"]{transform:translateY(2px);box-shadow:var(--shadow-pressed);background:var(--teal-600)}
+
+    /* Menu button */
+    .menu-btn{-webkit-tap-highlight-color:transparent;appearance:none;background:#fff;color:var(--ink-900);
+      border:4px solid var(--ink-900);border-radius:var(--radius-pill);font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+      font-size:16px;padding:10px 18px;box-shadow:var(--shadow-pill);display:inline-flex;align-items:center;gap:10px;cursor:pointer;
+      transition:transform .05s ease,box-shadow .12s ease,background .12s ease,color .12s ease}
+    .menu-btn .label{transition:opacity .18s ease,transform .18s ease}
+    .menu-btn .hamburger{width:22px;height:14px;position:relative;display:inline-block;opacity:0;transform:translateX(-6px);
+      transition:opacity .18s ease,transform .18s ease}
+    .menu-btn .hamburger i{position:absolute;left:0;right:0;height:2px;background:var(--ink-900);border-radius:2px}
+    .menu-btn .hamburger i:nth-child(1){top:0}.menu-btn .hamburger i:nth-child(2){top:6px}.menu-btn .hamburger i:nth-child(3){top:12px}
+    .menu-btn:hover{background:#fafafa}
+    .menu-btn:active{transform:translateY(2px);box-shadow:var(--shadow-pressed)}
+    .menu-btn[aria-expanded="true"] .label{opacity:0;transform:translateX(6px)}
+    .menu-btn[aria-expanded="true"] .hamburger{opacity:1;transform:translateX(0)}
+    @media(max-width:980px){.menu-btn{padding:10px 12px}.menu-btn .label{display:none}}
+    @media(max-width:640px){.menu-btn{width:48px;height:48px;padding:0;border-radius:9999px;justify-content:center}.menu-btn .hamburger{width:22px;height:16px}}
+
+    /* Overlay menu */
+    .menu-overlay{position:fixed;inset:0;z-index:50;background:rgba(245,249,249,.96);backdrop-filter:blur(3px) saturate(1.02);
+      display:grid;place-items:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .18s ease}
+    .menu-overlay.open{opacity:1;pointer-events:auto}
+    .menu-panel{width:min(640px,92vw);background:#fff;border:3px solid var(--ink-900);border-radius:var(--radius-lg);
+      box-shadow:0 6px 0 var(--ink-900);padding:26px;transform:translateY(6px);transition:transform .18s ease}
+    .menu-overlay.open .menu-panel{transform:translateY(0)}
+    .menu-links{display:grid;gap:12px;margin:8px 0 16px}
+    .menu-links a{text-decoration:none;color:var(--ink-900);font-weight:900;letter-spacing:.06em;text-align:center;
+      font-size:clamp(20px,3.6vw,30px);padding:8px 4px}
+    .close-menu{display:block;margin:6px auto 0;font-size:16px;padding:10px 18px;text-transform:uppercase}
+
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    footer.disclaimer{margin-top:26px;background:#0f0f0f;color:#fff;font-size:12px;line-height:1.4;padding:10px 16px;text-align:center}
+    @media (prefers-color-scheme: dark){
+      .card{background:rgba(8,32,29,.65);border-color:rgba(230,243,241,.18)}
+      .weight input::placeholder{color:rgba(230,243,241,.65)}
+      footer.disclaimer{background:#031513;color:#cfe8e4}
+    }
+  </style>
 </head>
 <body>
-  <nav class="tabs">
-    <a href="index.html" class="active">CloseDose</a>
-    <a href="medication-guides.html">Medication Guides</a>
-    <button type="button" class="tab-button" data-open-translations aria-haspopup="dialog" aria-expanded="false" aria-label="Open Spanish translation">
-      Spanish
-    </button>
-  </nav>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img class="logo" src="assets/img/logo-hex2tone.png" alt="CloseDose logo">
+        <img class="wordmark" src="assets/img/name.png" alt="CLOSEDOSE">
+      </div>
+      <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menuOverlay" aria-label="Open menu">
+        <span class="label">Menu</span><span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+    </header>
 
-  <header class="brand-header">
-    <picture class="brand-logo">
-      <source srcset="images/logo/CloseDose Logo_2048-transparent.png" media="(prefers-color-scheme: dark)" />
-      <img src="images/logo/CloseDose Logo_Black_2048_Transparent.png" alt="CloseDose logo" />
-    </picture>
-    <h1 class="brand-title">
-      <span class="brand-title-dark">Close</span>
-      <span class="brand-title-teal">Dose</span>
-    </h1>
-  </header>
+    <main class="card" role="main">
+      <div class="hero">
+        <img class="hero-logo" src="assets/img/logo-hex2tone.png" alt="CloseDose logo">
+        <img class="hero-wordmark" src="assets/img/name.png" alt="CLOSEDOSE">
+      </div>
+      <div class="tab-stack" aria-hidden="true"><span></span><span></span><span></span></div>
 
-  <main class="page">
-    <div id="message" role="alert" aria-live="polite" hidden></div>
+      <div class="row">
+        <!-- Age group -->
+        <section class="age-group">
+          <h2 class="section-title">Patient Age</h2>
+          <div class="pill-group" role="group" aria-label="Age groups" id="ageGroup">
+            <button class="pill" type="button" aria-pressed="false" data-age="0-2">0–2 months</button>
+            <button class="pill" type="button" aria-pressed="false" data-age="2-6">2–6 months</button>
+            <button class="pill" type="button" aria-pressed="false" data-age="6+">6+ months</button>
+          </div>
+          <div id="message" role="alert" aria-live="polite" hidden></div>
+        </section>
 
-    <section class="panel panel-intro">
-      <h2>Peace of Mind for Pediatric Fever and Pain Care</h2>
-      <p>
-        CloseDose.com empowers parents, guardians, and clinicians to quickly calculate safe pediatric acetaminophen and
-        ibuprofen doses with evidence-based guardrails. Our mission is to reduce medication errors while providing clear
-        caregiver education, dosing intervals, and weight-based recommendations for infants and children.
-      </p>
-      <p>
-        Bookmark CloseDose to keep pediatric antipyretic dosing guidance at your fingertips, and share the site with
-        families searching for trustworthy fever and pain relief support.
-      </p>
-    </section>
-
-    <form id="calculator" class="panel panel-calculator" aria-labelledby="calculator-heading">
-
-      <header class="calculator-header">
-        <h1 id="calculator-heading">CloseDose</h1>
-        <p class="calculator-subtitle">Pediatric Antipyretic Dose Calculator</p>
-      </header>
-      <div class="field">
-        <label for="age">Patient Age</label>
-        <select id="age" onchange="updateForm()">
-          <option value="">Select Age</option>
-          <option value="0-2">0-2 months</option>
-          <option value="2-6">2-6 months</option>
-          <option value="6+">6+ months</option>
-        </select>
+        <!-- Weight + units -->
+        <section>
+          <h2 class="section-title">Patient Weight</h2>
+          <div class="weight">
+            <label for="weight" class="sr-only">Enter weight</label>
+            <input id="weight" type="number" inputmode="decimal" placeholder="Enter weight" disabled />
+            <div class="unit-toggle" role="group" aria-label="Units" id="unitGroup">
+              <button class="pill" type="button" aria-pressed="false" data-unit="kg" disabled>kg</button>
+              <button class="pill" type="button" aria-pressed="false" data-unit="lbs" disabled>lbs</button>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <div class="field">
-        <label for="weight">Patient Weight</label>
-        <div class="weight-input">
-          <input
-            type="number"
-            id="weight"
-            placeholder="Enter weight"
-            min="0"
-            step="0.1"
-            inputmode="decimal"
-          />
-          <select id="weight-unit">
-            <option value="lbs">lbs</option>
-            <option value="kg">kg</option>
-          </select>
-        </div>
+      <div class="cta"><button id="calculate" type="button" aria-pressed="false" disabled>Calculate</button></div>
+      <div id="results" class="panel panel-results" aria-live="polite" style="margin-top:1rem;"></div>
+      <div id="liveRegion" class="sr-only" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <!-- Full-screen menu overlay -->
+  <div class="menu-overlay" id="menuOverlay" hidden>
+    <div class="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menuHeading">
+      <h2 id="menuHeading" class="sr-only">Site menu</h2>
+      <div class="menu-links">
+        <a href="index.html">Calculator</a>
+        <a href="medication-guides.html">Medication Guides</a>
+        <a href="#" aria-disabled="true">Translate</a>
+        <a href="#" aria-disabled="true">Donate!</a>
       </div>
-
-      <button type="submit">Calculate</button>
-    </form>
-
-
-    <section id="results" class="panel panel-results" aria-live="polite"></section>
-
-  </main>
-
-  <footer>
-    <p><strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.</p>
-    <p>Updated 9.19.2025 &bull; Nickolas Mancini, MD, MBA</p>
-  </footer>
-
-  <div class="translation-overlay" id="translation-overlay" hidden aria-hidden="true">
-    <div class="translation-modal" role="dialog" aria-modal="true" aria-labelledby="translation-heading">
-      <button type="button" class="translation-close" data-close-translations aria-label="Close translation options">&times;</button>
-      <div class="translation-hero">
-        <h2 id="translation-heading">Ver esta página en Español</h2>
-        <p>
-          Abra una versión traducida de esta página en una nueva pestaña mediante Google Translate. Seleccione Español para
-          cargar el contenido completo en ese idioma.
-        </p>
-      </div>
-      <ul class="translation-options">
-        <li>
-          <button type="button" class="translation-option" data-translate="es" data-lang-name="Español">Español</button>
-        </li>
-      </ul>
-      <p class="translation-status" data-selection-status aria-live="polite"></p>
+      <button class="pill close-menu" type="button">Close</button>
     </div>
   </div>
 
-  <script src="./script.js"></script>
+  <footer class="disclaimer">
+    <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
+    <br />
+    <br />
+  
+    Updated 9.21.2025 • Nickolas Mancini, MD, MBA
+  </footer>
+
+  <script>
+    // --- Exclusive toggle helpers ---
+    function initExclusiveGroup(containerId, pressedAttr, onChange){
+      const group = document.getElementById(containerId);
+      group.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button.pill');
+        if(!btn) return;
+        [...group.querySelectorAll('button.pill')].forEach(b=> b.setAttribute('aria-pressed', String(b===btn)));
+        if(onChange) onChange(btn);
+      });
+    }
+
+    // --- Menu overlay ---
+    (function(){
+      const menuBtn = document.querySelector('.menu-btn');
+      const overlay = document.getElementById('menuOverlay');
+      function openMenu(){ overlay.hidden=false; overlay.classList.add('open'); menuBtn.setAttribute('aria-expanded','true'); menuBtn.setAttribute('aria-label','Close menu'); overlay.querySelector('.close-menu').focus(); }
+      function closeMenu(){ overlay.classList.remove('open'); overlay.hidden=true; menuBtn.setAttribute('aria-expanded','false'); menuBtn.setAttribute('aria-label','Open menu'); menuBtn.focus(); }
+      menuBtn.addEventListener('click', openMenu);
+      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeMenu(); });
+      overlay.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+
+      // Focus trap
+      const FOCUSABLE = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      overlay.addEventListener('keydown', (e)=>{
+        if(e.key!=='Tab' || !overlay.classList.contains('open')) return;
+        const nodes = Array.from(overlay.querySelectorAll(FOCUSABLE));
+        if(!nodes.length) return;
+        const first = nodes[0], last = nodes[nodes.length-1];
+        if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+      });
+      overlay.querySelector('.close-menu').addEventListener('click', closeMenu);
+    })();
+
+    // --- Calculator state & logic ---
+    const msgEl = document.getElementById('message');
+    const live = document.getElementById('liveRegion');
+    const weightEl = document.getElementById('weight');
+    const calcBtn = document.getElementById('calculate');
+    const results = document.getElementById('results');
+
+    let age = ''; let unit = '';
+
+    function enableCalculator(enable){
+      weightEl.disabled = !enable;
+      document.querySelectorAll('#unitGroup .pill').forEach(b=> b.disabled = !enable);
+      calcBtn.disabled = !enable;
+    }
+
+    initExclusiveGroup('ageGroup','age', (btn)=>{
+      age = btn.dataset.age || '';
+      msgEl.hidden = true; msgEl.textContent='';
+      if(age==='0-2'){
+        enableCalculator(false);
+        msgEl.hidden = false;
+        msgEl.textContent = 'If a child less than 60 days old has a fever it is a medical emergency. Please contact your pediatrician or seek care with a healthcare provider immediately.';
+      }else{
+        enableCalculator(true);
+      }
+    });
+
+    initExclusiveGroup('unitGroup','unit', (btn)=>{ unit = btn.dataset.unit || ''; });
+
+    function announce(msg){ live.textContent = msg; results.innerHTML = msg; }
+
+    calcBtn.addEventListener('click', ()=>{
+      const raw = (weightEl.value||'').trim();
+      if(!age){ return announce('Please select an age group.'); }
+      const val = parseFloat(raw);
+      if(!raw || Number.isNaN(val) || val<=0){ return announce('Please enter a valid weight.'); }
+
+      const u = unit || 'lbs';
+      const kg  = u==='lbs' ? val/2.20462 : val;
+      const lbs = u==='lbs' ? val         : val*2.20462;
+
+      let html = `Patient weight: ${kg.toFixed(1)} kg (${lbs.toFixed(1)} lbs)<br/>`;
+
+      if(age==='2-6'){
+        const ACETA_MAX_INF=160;
+        const acetaMgCalc = 12.5*kg;
+        const acetaMg = Math.min(acetaMgCalc, ACETA_MAX_INF);
+        const acetaMl = (acetaMg/160)*5;
+        const capped = acetaMg<acetaMgCalc;
+        html += `<strong>Acetaminophen (160 mg/5 mL)</strong><br/>
+                 Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.<br/>
+                 Maximum single dose for this age group is ${ACETA_MAX_INF} mg${capped?'; weight-based dose was limited to this maximum':''}.<br/>
+                 Ibuprofen is not recommended under six months; consult your pediatrician.`;
+      }else{
+        const ACETA_MAX=1000, IBU_MAX=800;
+        const acetaMgCalc=15*kg, acetaMg=Math.min(acetaMgCalc,ACETA_MAX), acetaMl=(acetaMg/160)*5, acetaCap=acetaMg<acetaMgCalc;
+        const ibuMgCalc=10*kg,  ibuMg=Math.min(ibuMgCalc,IBU_MAX), ibuCap=ibuMg<ibuMgCalc;
+        const ibuMl50=(ibuMg/50)*1.25, ibuMl100=(ibuMg/100)*5;
+        html += `<strong>Acetaminophen (160 mg/5 mL)</strong><br/>
+                 Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.<br/>
+                 Maximum single dose is ${ACETA_MAX} mg${acetaCap?'; weight-based dose was limited to this maximum':''}.<br/>
+                 <strong>Ibuprofen (Infant 50 mg/1.25 mL)</strong><br/>
+                 Give ${ibuMl50.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.<br/>
+                 <strong>Ibuprofen (Children 100 mg/5 mL)</strong><br/>
+                 Give ${ibuMl100.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.<br/>
+                 Maximum single dose is ${IBU_MAX} mg${ibuCap?'; weight-based dose was limited to this maximum':''}.<br/>
+                 Never exceed ${ACETA_MAX} mg acetaminophen or ${IBU_MAX} mg ibuprofen per single dose.`;
+      }
+      results.innerHTML = html;
+    });
+
+    // Weight range announcements
+    weightEl.addEventListener('change', ()=>{
+      const u = unit || 'lbs';
+      const v = parseFloat(weightEl.value);
+      const minmax = u==='kg' ? [0.5,200] : [1,440];
+      if(Number.isNaN(v)) return;
+      if(v<minmax[0] || v>minmax[1]){
+        announce(`Weight out of range. Enter between ${minmax[0]} and ${minmax[1]} ${u}.`);
+      }else{
+        live.textContent='';
+      }
+    });
+  </script>
 </body>
 </html>
