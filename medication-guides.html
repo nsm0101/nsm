@@ -15,6 +15,8 @@
     content="Explore pediatric acetaminophen and ibuprofen product concentrations with CloseDose medication guides."
   />
   <meta property="og:image" content="images/og.png" />
+  <meta property="og:url" content="https://closedose.com/medication-guides" />
+  <meta property="og:site_name" content="CloseDose" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="CloseDose | Medication Guides" />
   <meta
@@ -22,8 +24,62 @@
     content="Explore pediatric acetaminophen and ibuprofen product concentrations with CloseDose medication guides."
   />
   <meta name="twitter:image" content="images/og.png" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://closedose.com/medication-guides" />
+  <link rel="alternate" href="https://closedose.com/medication-guides" hreflang="en" />
   <title>Medication Guides</title>
   <link rel="stylesheet" href="./style.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "CloseDose Medication Guides",
+      "description": "CloseDose medication guides explain pediatric acetaminophen and ibuprofen products, concentrations, and dosing intervals for families.",
+      "url": "https://closedose.com/medication-guides",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "CloseDose",
+        "url": "https://closedose.com/"
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Acetaminophen Medication Guide",
+            "url": "https://closedose.com/medication-guides#acetaminophen"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Ibuprofen Medication Guide",
+            "url": "https://closedose.com/medication-guides#ibuprofen"
+          }
+        ]
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "CloseDose",
+          "item": "https://closedose.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Medication Guides",
+          "item": "https://closedose.com/medication-guides"
+        }
+      ]
+    }
+  </script>
 </head>
 <body>
   <nav class="tabs">
@@ -52,8 +108,12 @@
         Use these quick references to understand common pain/fever medication options for infants and children.
         Always double-check the medication concentration and confirm dosing with your pediatrician or pharmacist.
       </p>
+      <p>
+        CloseDose.com collects trusted pediatric dosing visuals to help searchers identify the correct formulation and
+        avoid accidental double dosing when caring for babies, toddlers, and school-aged children.
+      </p>
       <div class="guide-grid">
-        <article class="guide-card guide-card-acetaminophen">
+        <article class="guide-card guide-card-acetaminophen" id="acetaminophen">
           <h2>Acetaminophen</h2>
           <section class="carousel-section" data-carousel>
             <h3>
@@ -109,7 +169,7 @@
             </ul>
           </div>
         </article>
-        <article class="guide-card guide-card-ibuprofen">
+        <article class="guide-card guide-card-ibuprofen" id="ibuprofen">
           <h2>Children's Ibuprofen</h2>
           <section class="carousel-section" data-carousel>
             <h3>
