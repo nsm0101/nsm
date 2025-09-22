@@ -111,9 +111,9 @@
       z-index: 100;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: clamp(14px, 3vw, 20px);
-      padding: clamp(18px, 4vw, 28px) clamp(18px, 5vw, 52px);
+      padding: clamp(12px, 2.8vw, 24px) clamp(18px, 5vw, 40px);
       margin-bottom: clamp(12px, 2vw, 20px);
       background: rgba(245, 249, 249, 0.94);
       backdrop-filter: blur(8px);
@@ -122,27 +122,33 @@
     .brand {
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       flex: 1;
-      flex-wrap: wrap;
-      gap: clamp(14px, 3vw, 22px);
+      flex-wrap: nowrap;
+      gap: clamp(12px, 2.6vw, 22px);
+      min-width: 0;
     }
 
     .brand img {
       display: block;
       height: auto;
+      min-height: 58px;
     }
 
     .brand .logo {
-      width: clamp(120px, 14vw, 180px);
+      width: clamp(128px, 22vw, 204px);
+      max-width: 100%;
     }
 
     .brand .wordmark {
-  flex: 1 1 clamp(280px, 40vw, 520px);
-  width: min(100%, clamp(280px, 40vw, 520px));
-  min-height: 69px;
-  height: auto;
-  object-fit: contain;
-  overflow: visible;
+      flex: 1 1 auto;
+      width: auto;
+      max-width: clamp(200px, 45vw, 340px);
+      min-width: 180px;
+      min-height: 58px;
+      height: auto;
+      object-fit: contain;
+      overflow: visible;
     }
 
     .menu-btn {
@@ -162,6 +168,9 @@
       cursor: pointer;
       box-shadow: var(--shadow-btn);
       transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      position: relative;
+      z-index: 1200;
+      margin-left: auto;
     }
 
     .menu-btn .hamburger {
@@ -195,15 +204,30 @@
       box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 960px) {
       header {
-        align-items: flex-start;
-        gap: 16px;
+        padding-inline: clamp(16px, 5vw, 32px);
       }
       .menu-btn {
-        padding: 10px;
-        width: 52px;
-        height: 52px;
+        position: fixed;
+        bottom: clamp(20px, 6vw, 40px);
+        right: clamp(20px, 6vw, 40px);
+        box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header {
+        align-items: center;
+        gap: 12px;
+        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px);
+        background: transparent !important;
+      }
+      .menu-btn {
+        padding: 12px;
+        width: 64px;
+        height: 64px;
         justify-content: center;
         border-radius: 50%;
         font-size: 0;
@@ -212,11 +236,15 @@
         display: none;
       }
       .brand {
-        flex-direction: column;
-        align-items: flex-start;
+        gap: clamp(10px, 4vw, 16px);
+      }
+      .brand .logo {
+        width: clamp(120px, 38vw, 168px);
       }
       .brand .wordmark {
-        width: 100%;
+        min-width: 160px;
+        max-width: clamp(170px, 48vw, 230px);
+        min-height: 54px;
       }
     }
 
@@ -458,9 +486,13 @@
       color: #32514e;
     }
 
-    footer strong {
-      font-weight: 800;
-      letter-spacing: 0.06em;
+    footer small {
+      display: block;
+      max-width: 960px;
+      margin: 0 auto;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: #1b3e3b;
     }
 
     /* Overlay menu */
@@ -759,8 +791,10 @@
   </div>
 
   <footer>
-    <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
-    <br />Updated 9.21.2025 • Nickolas Mancini, MD, MBA
+    <small>
+      Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
+      <br />Updated 9.22.2025 • Nickolas Mancini, MD, MBA
+    </small>
   </footer>
 
   <div class="translation-overlay" id="translationOverlay" hidden aria-hidden="true">
