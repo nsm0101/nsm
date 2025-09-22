@@ -75,9 +75,8 @@
       height: auto;
       padding: 10px 16px;
       border-radius: 999px;
-      background: var(--white);
+      background: none;
       border: 3px solid var(--ink-900);
-      box-shadow: var(--shadow-card);
     }
 
     .wrap {
@@ -90,23 +89,20 @@
     header {
       position: sticky;
       top: clamp(12px, 4vw, 24px);
-      z-index: 100;
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: clamp(14px, 3vw, 20px);
-      padding: clamp(18px, 4vw, 28px) clamp(18px, 5vw, 52px);
       margin-bottom: clamp(12px, 2vw, 20px);
-      background: rgba(245, 249, 249, 0.94);
-      backdrop-filter: blur(8px);
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      flex: 1;
-      flex-wrap: wrap;
-      gap: clamp(14px, 3vw, 22px);
+  display: flex;
+  align-items: center;
+  flex: 1;
+  flex-wrap: nowrap;
+  gap: clamp(14px, 3vw, 22px);
     }
 
     .brand img {
@@ -121,7 +117,7 @@
     .brand .wordmark {
       flex: 1 1 clamp(280px, 40vw, 520px);
       width: min(100%, clamp(280px, 40vw, 520px));
-      height: auto;
+      height: min(69px);
     }
 
     .menu-btn {
@@ -179,6 +175,7 @@
       header {
         align-items: flex-start;
         gap: 16px;
+        background: transparent !important;
       }
       .menu-btn {
         padding: 10px;
@@ -192,11 +189,16 @@
         display: none;
       }
       .brand {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        background: transparent !important;
       }
       .brand .wordmark {
-        width: 100%;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        min-height: 69px
       }
     }
 
