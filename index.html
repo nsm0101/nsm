@@ -108,17 +108,25 @@
     .brand img {
       display: block;
       height: auto;
+      min-height: 69px;
     }
-
     .brand .logo {
-      width: clamp(120px, 14vw, 180px);
+      width: clamp(220px, 18vw, 240px);
     }
 
     .brand .wordmark {
-      flex: 1 1 clamp(280px, 40vw, 520px);
-      width: min(100%, clamp(280px, 40vw, 520px));
-      height: min(69px);
+      flex: 1 1 clamp(220px, 30vw, 320px);
+      width: auto;
+      max-width: 100%;
+      min-width: 0;
+      min-height: 69px;
+      height: auto;
+      object-fit: contain;
+      aspect-ratio: 520/69;
+      /* Prevent stretching past natural aspect ratio */
+      display: block;
     }
+
 
     .menu-btn {
       appearance: none;

@@ -78,21 +78,18 @@ body {
   padding: 18px 28px;
   width: min(780px, calc(100% - 32px));
   border-radius: 28px;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.18), rgba(12, 26, 42, 0.78));
   border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(18px);
   flex-wrap: wrap;
   text-align: center;
 }
 
 .brand-logo {
   display: block;
-  width: clamp(72px, 10vw, 108px);
+  width: clamp(72px, 25vw, 108px);
 }
 
 .brand-logo img {
-  width: 100%;
+  width: 120%;
   height: auto;
   display: block;
 }
@@ -177,7 +174,8 @@ body {
   padding: 32px 16px 120px;
   gap: 20px;
   width: min(1200px, 100%);
-  margin: 0 auto;
+  margin-top: -5%;
+  scroll-margin-top: 200px;
 }
 
 .panel {
