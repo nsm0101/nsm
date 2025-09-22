@@ -87,20 +87,20 @@
     }
 
     header {
-      position: sticky;
-      top: clamp(12px, 4vw, 24px);
+      position: relative;
+      top: 0;
       z-index: 1000;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: flex-start;
-      gap: clamp(14px, 3vw, 20px);
-      padding: clamp(12px, 2.8vw, 24px) clamp(18px, 5vw, 40px);
-      margin-bottom: clamp(12px, 2vw, 20px);
+      gap: clamp(14px, 3vw, 24px);
+      padding: clamp(14px, 3vw, 26px) clamp(18px, 5vw, 48px) clamp(6px, 2vw, 14px);
+      margin-bottom: 0;
     }
 
     .brand {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: flex-start;
       flex: 1;
       flex-wrap: nowrap;
@@ -117,17 +117,18 @@
     .brand .logo {
       width: clamp(128px, 22vw, 204px);
       max-width: 100%;
+      flex-shrink: 0;
     }
 
     .brand .wordmark {
       flex: 1 1 auto;
-      width: auto;
-      max-width: clamp(180px, 42vw, 320px);
+      width: 100%;
+      max-width: none;
       min-width: 160px;
       min-height: 58px;
       height: auto;
       object-fit: contain;
-      aspect-ratio: 520/69;
+      aspect-ratio: 520 / 69;
       display: block;
     }
 
@@ -200,10 +201,10 @@
 
     @media (max-width: 640px) {
       header {
-        align-items: center;
-        gap: 12px;
+        align-items: flex-start;
+        gap: 10px;
         background: transparent !important;
-        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px);
+        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px) clamp(4px, 2vw, 12px);
       }
       .menu-btn {
         padding: 12px;
@@ -217,14 +218,16 @@
         display: none;
       }
       .brand {
-        gap: clamp(10px, 4vw, 16px);
+        flex-direction: column;
+        gap: clamp(8px, 4vw, 16px);
       }
       .brand .logo {
-        width: clamp(120px, 38vw, 168px);
+        width: clamp(120px, 42vw, 180px);
       }
       .brand .wordmark {
-        min-width: 150px;
-        max-width: clamp(160px, 48vw, 220px);
+        width: 100%;
+        min-width: 0;
+        max-width: none;
         min-height: 54px;
       }
     }
@@ -261,7 +264,9 @@
         width: clamp(70vw, 85vw, 95vw);
       }
       .card.disclaimer-pill {
-        width: clamp(58vw, 72vw, 88vw);
+        width: min(92vw, 560px);
+        margin-left: auto;
+        margin-right: auto;
       }
       .menu-btn {
         margin-left: 0;
@@ -289,9 +294,11 @@
       padding: clamp(20px, 4vw, 28px);
       background: rgba(255, 255, 255, 0.96);
       display: grid;
-      gap: 10px;
-      justify-items: center;
-      text-align: center;
+      gap: 14px;
+      justify-items: stretch;
+      text-align: left;
+      width: min(860px, 100%);
+      margin: clamp(32px, 8vw, 64px) auto 0;
       transition: border-radius 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
     }
 
@@ -301,12 +308,14 @@
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      color: var(--teal-600);
     }
 
     .disclaimer-pill p {
       margin: 0;
       font-size: 0.98rem;
-      line-height: 1.5;
+      line-height: 1.55;
+      color: var(--teal-600);
     }
 
     .disclaimer-pill .disclaimer-updated {
@@ -322,10 +331,24 @@
       background: linear-gradient(140deg, rgba(15, 44, 42, 0.92), rgba(18, 70, 67, 0.96));
       color: var(--white);
       box-shadow: 0 10px 0 rgba(15, 44, 42, 0.42);
+      gap: 16px;
     }
 
     .disclaimer-pill.is-expanded .disclaimer-updated {
       color: rgba(255, 255, 255, 0.86);
+    }
+
+    .disclaimer-pill.is-expanded p {
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .disclaimer-pill.is-expanded h2 {
+      color: #ffffff;
+    }
+
+    .disclaimer-pill .disclaimer-seek-care {
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .hero-card h1 {
@@ -340,6 +363,15 @@
       margin: 0;
       font-size: 1.05rem;
       line-height: 1.6;
+    }
+
+    .hero-card .mission-text {
+      font-weight: 800;
+      color: var(--teal-600);
+    }
+
+    .hero-card .mission-support {
+      color: var(--teal-600);
     }
 
     .cta-row {
@@ -499,6 +531,7 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-align: center;
+      color: var(--teal-600);
     }
 
     .unit-row {
@@ -590,44 +623,158 @@
       box-shadow: 0 4px 0 rgba(15, 44, 42, 0.7);
     }
 
-    #message {
+    .alert {
       margin: 0;
-      background: #fff;
       border-radius: 18px;
       border: 3px solid var(--ink-900);
       padding: 18px 20px;
       font-weight: 600;
-      line-height: 1.5;
+      line-height: 1.6;
       text-align: left;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--teal-600);
+      box-shadow: var(--shadow-card);
+    }
+
+    .alert[hidden] {
+      display: none;
+    }
+
+    .alert:not([hidden]) {
+      display: block;
+    }
+
+    .alert--critical {
+      background: rgba(220, 38, 38, 0.16);
+      border-color: rgba(220, 38, 38, 0.45);
+      color: #8b1111;
+      box-shadow: 0 8px 0 rgba(139, 17, 17, 0.25);
     }
 
     #results {
       text-align: left;
       display: grid;
+      gap: 18px;
+    }
+
+    #results .result-weight {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #6f807c;
+      background: rgba(18, 58, 55, 0.06);
+      border-radius: 18px;
+      border: 2px solid rgba(18, 58, 55, 0.18);
+      padding: 16px 18px;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+    }
+
+    #results .result-weight strong {
+      color: var(--ink-900);
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 1.05rem;
+    }
+
+    #results .result-weight span {
+      display: inline-block;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(18, 58, 55, 0.8);
+    }
+
+    #results .result-group {
+      display: grid;
       gap: 16px;
     }
 
-    #results p {
-      margin: 0;
-      line-height: 1.45;
+    .result-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: var(--card-border);
+      border-radius: 22px;
+      box-shadow: var(--shadow-card);
+      padding: 20px 22px;
+      display: grid;
+      gap: 10px;
     }
 
-    #results .medication-heading {
+    .result-card h3 {
+      margin: 0;
       font-size: 1.05rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      color: var(--teal-600);
     }
 
-    #results .dose-note {
+    .result-card p {
+      margin: 0;
+      color: var(--ink-900);
+      line-height: 1.5;
+    }
+
+    .result-card p strong {
+      color: var(--teal-600);
+    }
+
+    .result-card .dose-note {
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--ink-700);
     }
 
-    #results .dose-note-emphasis {
+    .warning-card {
+      border-radius: 20px;
+      padding: 16px 20px;
+      font-weight: 700;
+      border: 3px solid transparent;
+      box-shadow: 0 6px 0 rgba(15, 44, 42, 0.28);
+      background: rgba(31, 143, 123, 0.12);
+      color: var(--teal-600);
+      line-height: 1.5;
+    }
+
+    .warning-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+    }
+
+    .warning-card--orange {
+      background: rgba(255, 149, 0, 0.18);
+      border-color: rgba(255, 149, 0, 0.45);
+      color: #b35a00;
+    }
+
+    .warning-card--red-strong {
+      background: rgba(220, 38, 38, 0.2);
+      border-color: rgba(220, 38, 38, 0.55);
+      color: #8b1111;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .warning-card--red-strong strong {
+      margin-bottom: 8px;
+    }
+
+    .warning-card--red-soft {
+      background: rgba(220, 38, 38, 0.12);
+      border-color: rgba(220, 38, 38, 0.28);
+      color: #a12a2a;
+      font-style: italic;
+      font-weight: 600;
+      box-shadow: 0 4px 0 rgba(161, 42, 42, 0.2);
+    }
+
+    .warning-card--teal {
+      background: rgba(31, 143, 123, 0.16);
+      border-color: rgba(18, 58, 55, 0.45);
+      color: var(--teal-600);
     }
 
     footer {
@@ -635,7 +782,7 @@
       font-size: 0.9rem;
       line-height: 1.5;
       text-align: center;
-      color: #32514e;
+      color: var(--teal-600);
     }
 
     footer small {
@@ -644,7 +791,7 @@
       margin: 0 auto;
       font-size: 0.78rem;
       letter-spacing: 0.02em;
-      color: #1b3e3b;
+      color: var(--teal-500);
     }
 
     /* Overlay menu */
@@ -757,6 +904,12 @@
             CloseDose helps caregivers calculate safe acetaminophen and ibuprofen doses for infants and children. Select an age range,
             enter weight, and receive easy-to-follow guidance—backed by pediatric expertise.
           </p>
+          <p class="mission-text">
+            Our goal is to provide simple, accurate, individualized, pediatric, weight-based dosing calculators for common over-the-counter medications.
+          </p>
+          <p class="mission-support">
+            CloseDose is the solution to inaccurate dosing due to unclear medication guidance. Too busy trying to keep a sibling under control at your child's doctor's appointment and forget the ibuprofen dose recommended when you get home? Confused by range-based dosing tables provided on medication boxes or tired of searching for outdated handouts on old discharge paperwork? All you need to enter is the patient's age and weight and you can determine their personalized dosing options in seconds.
+          </p>
           <div class="cta-row">
             <a class="pill-link" href="#calculator">Open Calculator</a>
             <a class="pill-link" href="medication-guides.html">Medication Guides</a>
@@ -775,15 +928,6 @@
               <p>Review practical reminders on alternating medications, logging doses, and red flags.</p>
             </article>
           </div>
-        </section>
-
-        <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading">
-          <h2 id="disclaimer-heading">Important Disclaimer</h2>
-          <p>
-            This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
-            Always confirm dosing before administering medication.
-          </p>
-          <p class="disclaimer-updated">Updated 9.22.2025 • Nickolas Mancini, MD, MBA</p>
         </section>
 
         <section class="card card--calculator" aria-labelledby="calculator-title">
@@ -808,7 +952,7 @@
                 <option value="2-6">2-6 Months</option>
                 <option value="6+">6+ Months</option>
               </select>
-              <p id="message" hidden></p>
+              <p id="message" class="alert" hidden></p>
             </div>
 
             <div class="form-group">
@@ -836,6 +980,21 @@
           </form>
         </section>
       </div>
+      <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading">
+        <h2 id="disclaimer-heading">Important Disclaimer</h2>
+        <p>
+          This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
+          Always confirm dosing before administering medication.
+        </p>
+        <p>
+          CloseDose was created with the intention of providing dosing information of common over-the-counter medications for generally healthy children.
+        </p>
+        <p>
+          If your child is 0-2 months of age, has any complex past medical history or past surgical history, any previous reactions to administered medications, history of allergic reaction, or has significant personal or family history of liver/kidney disease please consult with your medical care team prior to use of CloseDose pediatric medication dosing calculator.
+        </p>
+        <p class="disclaimer-seek-care"><strong>When to seek care:</strong> ***</p>
+        <p class="disclaimer-updated">Updated 9.22.2025 • Nickolas Mancini, MD, MBA</p>
+      </section>
     </main>
 
     <footer>
