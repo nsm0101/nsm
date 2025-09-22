@@ -53,6 +53,10 @@
       border: 0;
     }
 
+    select[hidden] {
+      display: none !important;
+    }
+
     .skip-link {
       position: absolute;
       left: -9999px;
@@ -84,17 +88,25 @@
     }
 
     header {
+      position: sticky;
+      top: clamp(12px, 4vw, 24px);
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 28px clamp(18px, 5vw, 52px) 20px;
+      gap: clamp(14px, 3vw, 20px);
+      padding: clamp(18px, 4vw, 28px) clamp(18px, 5vw, 52px);
+      margin-bottom: clamp(12px, 2vw, 20px);
+      background: rgba(245, 249, 249, 0.94);
+      backdrop-filter: blur(8px);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: clamp(12px, 2vw, 18px);
+      flex: 1;
+      flex-wrap: wrap;
+      gap: clamp(14px, 3vw, 22px);
     }
 
     .brand img {
@@ -103,12 +115,13 @@
     }
 
     .brand .logo {
-      width: clamp(58px, 8vw, 78px);
+      width: clamp(120px, 14vw, 180px);
     }
 
     .brand .wordmark {
-      height: clamp(32px, 4.5vw, 56px);
-      width: auto;
+      flex: 1 1 clamp(280px, 40vw, 520px);
+      width: min(100%, clamp(280px, 40vw, 520px));
+      height: auto;
     }
 
     .menu-btn {
@@ -165,6 +178,7 @@
     @media (max-width: 640px) {
       header {
         align-items: flex-start;
+        gap: 16px;
       }
       .menu-btn {
         padding: 10px;
@@ -176,6 +190,13 @@
       }
       .menu-btn .label {
         display: none;
+      }
+      .brand {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .brand .wordmark {
+        width: 100%;
       }
     }
 
@@ -676,7 +697,7 @@
                 </div>
                 <p class="hello-box">Welcome! Choose an age group to begin.</p>
               </div>
-              <select id="age" name="age" aria-hidden="true" tabindex="-1">
+              <select id="age" name="age" aria-hidden="true" tabindex="-1" hidden>
                 <option value="">Select age</option>
                 <option value="0-2">0-2 Months</option>
                 <option value="2-6">2-6 Months</option>
@@ -697,7 +718,7 @@
                   <button type="button" class="unit-option" data-unit="kg" aria-pressed="false">kg</button>
                 </div>
               </div>
-              <select id="weight-unit" name="weight-unit" aria-hidden="true" tabindex="-1">
+              <select id="weight-unit" name="weight-unit" aria-hidden="true" tabindex="-1" hidden>
                 <option value="lbs" selected>lbs</option>
                 <option value="kg">kg</option>
               </select>
