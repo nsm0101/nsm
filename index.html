@@ -6,49 +6,39 @@
   <title>CloseDose – Pediatric Medication Dosing Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --teal-dark: #104f4a;
-      --teal: #28b19a;
-      --teal-light: #e3f4f1;
-      --ink: #0f2c2a;
+      --teal-400: #24a687;
+      --teal-500: #1f8f7b;
+      --teal-600: #123a37;
+      --ink-900: #0f2c2a;
+      --ink-700: #124643;
+      --bg: #f5f9f9;
       --white: #ffffff;
-      --shadow: 0 10px 0 #0f2c2a;
-      --radius-card: 36px;
-      --radius-inner: 22px;
-      --radius-pill: 999px;
-      --font-heading: "Outfit", "Nunito", sans-serif;
-      --font-body: "Nunito", sans-serif;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-border: 3px solid var(--ink-900);
+      --card-radius: 26px;
+      --inner-radius: 18px;
+      --shadow-card: 0 6px 0 rgba(15, 44, 42, 0.18);
+      --shadow-btn: 0 4px 0 rgba(15, 44, 42, 0.25);
     }
 
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      font-family: var(--font-body);
-      background: #f5faf8 url("bg.png") repeat;
-      background-size: 720px auto;
-      color: var(--ink);
+      font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg) url("images/light-bg.png") repeat;
+      background-size: 520px auto;
+      color: var(--ink-900);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-    }
-    .skip-link:focus {
-      left: 16px;
-      top: 16px;
-      background: var(--white);
-      border: 3px solid var(--ink);
-      padding: 8px 16px;
-      z-index: 200;
     }
 
     .visually-hidden {
@@ -63,105 +53,293 @@
       border: 0;
     }
 
-    header {
-      position: relative;
-      padding: 32px clamp(24px, 5vw, 64px) 0;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
     }
 
-    .menu-button {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      border: 3px solid var(--ink);
+    .skip-link:focus {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 200;
+      width: auto;
+      height: auto;
+      padding: 10px 16px;
+      border-radius: 999px;
       background: var(--white);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 6px 0 rgba(15, 44, 42, 0.85);
+      border: 3px solid var(--ink-900);
+      box-shadow: var(--shadow-card);
     }
 
-    .menu-icon {
-      width: 26px;
-      height: 18px;
-      display: grid;
-      gap: 4px;
+    .wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    .menu-icon span {
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 28px clamp(18px, 5vw, 52px) 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: clamp(12px, 2vw, 18px);
+    }
+
+    .brand img {
       display: block;
-      width: 100%;
+      height: auto;
+    }
+
+    .brand .logo {
+      width: clamp(58px, 8vw, 78px);
+    }
+
+    .brand .wordmark {
+      height: clamp(32px, 4.5vw, 56px);
+      width: auto;
+    }
+
+    .menu-btn {
+      appearance: none;
+      border: var(--card-border);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--ink-900);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .menu-btn .hamburger {
+      width: 24px;
+      height: 16px;
+      position: relative;
+    }
+
+    .menu-btn .hamburger span {
+      position: absolute;
+      left: 0;
+      right: 0;
       height: 3px;
       border-radius: 999px;
-      background: var(--ink);
+      background: var(--ink-900);
+      transition: background 0.12s ease;
+    }
+
+    .menu-btn .hamburger span:nth-child(1) { top: 0; }
+    .menu-btn .hamburger span:nth-child(2) { top: 6px; }
+    .menu-btn .hamburger span:nth-child(3) { top: 12px; }
+
+    .menu-btn:hover,
+    .menu-btn:focus-visible {
+      background: #f0faf6;
+      box-shadow: 0 5px 0 rgba(15, 44, 42, 0.35);
+      outline: none;
+    }
+
+    .menu-btn:active {
+      transform: translateY(2px);
+      box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
+    }
+
+    @media (max-width: 640px) {
+      header {
+        align-items: flex-start;
+      }
+      .menu-btn {
+        padding: 10px;
+        width: 52px;
+        height: 52px;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0;
+      }
+      .menu-btn .label {
+        display: none;
+      }
     }
 
     main {
       flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: clamp(32px, 6vw, 72px) clamp(16px, 5vw, 64px) 48px;
+      width: 100%;
+      padding: 0 clamp(18px, 5vw, 52px) clamp(48px, 8vw, 80px);
+      box-sizing: border-box;
     }
 
-    .calculator-shell {
-      width: min(540px, 100%);
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: var(--radius-card);
-      border: 4px solid var(--ink);
-      box-shadow: var(--shadow);
-      padding: clamp(28px, 6vw, 48px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: clamp(24px, 4vw, 36px);
-      text-align: center;
-    }
-
-    .brand {
+    .layout {
+      width: min(1100px, 100%);
+      margin: 0 auto;
       display: grid;
-      justify-items: center;
+      gap: clamp(24px, 4vw, 40px);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-card);
+      padding: clamp(24px, 4vw, 36px);
+    }
+
+    .hero-card {
+      display: grid;
+      gap: clamp(20px, 3vw, 30px);
+    }
+
+    .hero-card h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 2.85rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero-card p {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
     }
-    .brand img {
-      width: 110px;
-      max-width: 40vw;
+
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: var(--card-border);
+      background: var(--teal-400);
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      box-shadow: var(--shadow-btn);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
     }
-    .brand-name {
-      font-family: var(--font-heading);
-      font-size: clamp(2rem, 4.8vw, 3.25rem);
+
+    .pill-link:hover,
+    .pill-link:focus-visible {
+      outline: none;
+      background: var(--teal-500);
+      box-shadow: 0 5px 0 rgba(15, 44, 42, 0.3);
+    }
+
+    .pill-link:active {
+      transform: translateY(2px);
+      box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.3);
+    }
+
+    .feature-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .feature-card {
+      background: #e4f4f0;
+      border: 2px solid var(--ink-900);
+      border-radius: 20px;
+      box-shadow: 0 4px 0 rgba(15, 44, 42, 0.18);
+      padding: 16px 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .feature-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .feature-card p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .card--calculator {
+      display: grid;
+      gap: clamp(20px, 3vw, 30px);
+    }
+
+    .calculator-header {
+      text-align: center;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    .calculator-header img {
+      width: clamp(86px, 12vw, 120px);
+      height: auto;
+    }
+
+    .calculator-header .brand-name {
+      font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+      font-weight: 900;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      font-weight: 800;
-      color: var(--ink);
     }
 
     form {
-      width: 100%;
       display: grid;
-      gap: clamp(20px, 3vw, 32px);
+      gap: clamp(20px, 3vw, 28px);
     }
 
     .form-group {
-      background: var(--teal-light);
-      border: 3px solid var(--ink);
-      border-radius: var(--radius-inner);
+      background: #f0faf6;
+      border: 3px solid var(--ink-900);
+      border-radius: var(--inner-radius);
       padding: clamp(22px, 4vw, 30px);
       display: grid;
       gap: 18px;
     }
 
     .form-title {
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      font-weight: 800;
+      font-size: clamp(1.1rem, 2.8vw, 1.4rem);
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
     .segmented {
       display: grid;
-      gap: 14px;
+      gap: 16px;
     }
 
     .segmented-buttons {
@@ -171,22 +349,21 @@
     }
 
     .segmented button {
-      border: 3px solid var(--ink);
+      border: 3px solid var(--ink-900);
       border-radius: 18px;
       background: var(--white);
-      font-family: var(--font-heading);
-      font-weight: 700;
+      font-weight: 800;
       font-size: clamp(0.85rem, 2.6vw, 1.05rem);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       padding: 14px 12px;
       text-transform: uppercase;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
       box-shadow: 0 6px 0 rgba(15, 44, 42, 0.6);
-      color: var(--ink);
+      cursor: pointer;
     }
 
     .segmented button[aria-pressed="true"] {
-      background: var(--teal);
+      background: var(--teal-400);
       color: var(--white);
       transform: translateY(2px);
       box-shadow: 0 4px 0 rgba(15, 44, 42, 0.7);
@@ -201,13 +378,13 @@
 
     .hello-box {
       background: var(--white);
-      border: 3px solid var(--ink);
+      border: 3px solid var(--ink-900);
       border-radius: 18px;
       padding: 18px;
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
-      text-transform: uppercase;
       letter-spacing: 0.12em;
+      text-align: center;
     }
 
     .unit-row {
@@ -217,22 +394,21 @@
 
     .weight-input {
       display: flex;
-      align-items: center;
       justify-content: center;
     }
 
     .weight-input input[type="number"] {
       width: min(100%, 220px);
-      border: 3px solid var(--ink);
+      border: 3px solid var(--ink-900);
       border-radius: 18px;
       padding: 14px 18px;
       font-size: 1.1rem;
       font-weight: 700;
       text-align: center;
-      font-family: var(--font-heading);
+      font-family: "Nunito", sans-serif;
       box-shadow: 0 6px 0 rgba(15, 44, 42, 0.6);
       background: var(--white);
-      color: var(--ink);
+      color: var(--ink-900);
       -moz-appearance: textfield;
     }
 
@@ -249,21 +425,21 @@
     }
 
     .unit-toggle button {
-      border: 3px solid var(--ink);
+      border: 3px solid var(--ink-900);
       border-radius: 18px;
       background: var(--white);
-      font-family: var(--font-heading);
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1rem;
       padding: 12px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       box-shadow: 0 5px 0 rgba(15, 44, 42, 0.55);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      cursor: pointer;
     }
 
     .unit-toggle button[aria-pressed="true"] {
-      background: var(--teal);
+      background: var(--teal-400);
       color: var(--white);
       transform: translateY(2px);
       box-shadow: 0 3px 0 rgba(15, 44, 42, 0.7);
@@ -271,19 +447,22 @@
 
     .action button {
       width: 100%;
-      border: 3px solid var(--ink);
+      border: 3px solid var(--ink-900);
       border-radius: 18px;
-      background: var(--teal);
+      background: var(--teal-500);
       color: var(--white);
-      font-family: var(--font-heading);
-      font-weight: 800;
+      font-weight: 900;
       font-size: clamp(1.05rem, 3.4vw, 1.4rem);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       padding: 18px;
       box-shadow: 0 8px 0 rgba(15, 44, 42, 0.75);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
       cursor: pointer;
+    }
+
+    .action button:hover:not(:disabled) {
+      background: var(--teal-400);
     }
 
     .action button:disabled {
@@ -301,7 +480,7 @@
       margin: 0;
       background: #fff;
       border-radius: 18px;
-      border: 3px solid var(--ink);
+      border: 3px solid var(--ink-900);
       padding: 18px 20px;
       font-weight: 600;
       line-height: 1.5;
@@ -329,7 +508,7 @@
     #results .dose-note {
       font-size: 0.95rem;
       font-weight: 600;
-      color: #124643;
+      color: var(--ink-700);
     }
 
     #results .dose-note-emphasis {
@@ -338,11 +517,11 @@
     }
 
     footer {
-      text-align: center;
-      font-size: 0.85rem;
-      color: #32514e;
-      padding: 16px 24px 40px;
+      padding: 24px clamp(18px, 5vw, 52px) 48px;
+      font-size: 0.9rem;
       line-height: 1.5;
+      text-align: center;
+      color: #32514e;
     }
 
     footer small {
@@ -351,114 +530,268 @@
       margin: 0 auto;
     }
 
-    /* Mobile tweaks */
+    /* Overlay menu */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(245, 249, 249, 0.96);
+      backdrop-filter: blur(3px) saturate(1.02);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+
+    .menu-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-panel {
+      width: min(420px, 92vw);
+      background: #fff;
+      border: var(--card-border);
+      border-radius: 24px;
+      box-shadow: 0 6px 0 var(--ink-900);
+      padding: 30px 28px;
+      transform: translateY(8px);
+      transition: transform 0.18s ease;
+      display: grid;
+      gap: 18px;
+    }
+
+    .menu-overlay.open .menu-panel {
+      transform: translateY(0);
+    }
+
+    .menu-links {
+      display: grid;
+      gap: 16px;
+    }
+
+    .menu-links a {
+      text-decoration: none;
+      color: var(--ink-900);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-align: center;
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      padding: 10px 4px;
+      border-radius: 16px;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+
+    .menu-links a[aria-current="page"] {
+      background: #e4f4f0;
+      border: 2px solid var(--ink-900);
+    }
+
+    .close-menu {
+      justify-self: center;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: var(--card-border);
+      background: var(--teal-400);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .close-menu:focus-visible {
+      outline: 3px solid #222;
+      outline-offset: 3px;
+    }
+
     @media (max-width: 720px) {
-      header {
-        padding-top: 20px;
-      }
-      .menu-button {
-        width: 54px;
-        height: 54px;
-      }
-      .calculator-shell {
-        border-width: 3px;
-        border-radius: 28px;
-        padding: 28px 20px;
-        box-shadow: 0 7px 0 #0f2c2a;
-      }
-      .form-group {
-        border-radius: 20px;
-        padding: 22px 18px;
-      }
       .segmented-buttons {
         grid-template-columns: 1fr;
       }
-      .unit-toggle {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .calculator-shell {
-        gap: 20px;
-      }
-      .hello-box {
-        font-size: 0.95rem;
-      }
-      #message {
-        font-size: 0.95rem;
+      .layout {
+        gap: 28px;
       }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#calculator">Skip to calculator</a>
-  <header>
-    <button class="menu-button" type="button" aria-label="Open menu">
-      <span class="menu-icon" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    </button>
-  </header>
-  <main>
-    <section class="calculator-shell" aria-labelledby="calculator-title">
+  <div class="wrap">
+    <header>
       <div class="brand">
-        <img src="images/logo-hex2tone.png" alt="CloseDose logo" />
-        <div class="brand-name" id="calculator-title">CloseDose</div>
+        <img src="images/logo-hex2tone.png" class="logo" alt="CloseDose logo" />
+        <img src="images/name.png" class="wordmark" alt="CloseDose wordmark" />
       </div>
-      <form id="calculator" novalidate>
-        <div class="form-group" aria-live="polite">
-          <div class="form-title">Patient Age</div>
-          <div class="segmented">
-            <div class="segmented-buttons" role="group" aria-label="Select patient age">
-              <button type="button" class="age-option" data-age="0-2" aria-pressed="false">0-2 Months</button>
-              <button type="button" class="age-option" data-age="2-6" aria-pressed="false">2-6 Months</button>
-              <button type="button" class="age-option" data-age="6+" aria-pressed="false">6+ Months</button>
-            </div>
-            <p class="hello-box">HELLO.</p>
-          </div>
-          <select id="age" name="age" aria-hidden="true" tabindex="-1">
-            <option value="">Select age</option>
-            <option value="0-2">0-2 Months</option>
-            <option value="2-6">2-6 Months</option>
-            <option value="6+">6+ Months</option>
-          </select>
-          <p id="message" hidden></p>
-        </div>
+      <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="siteMenu" aria-label="Open menu">
+        <span class="label">Menu</span>
+        <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </header>
 
-        <div class="form-group">
-          <div class="form-title">Patient Weight</div>
-          <div class="unit-row">
-            <div class="weight-input">
-              <label for="weight" class="visually-hidden">Enter weight</label>
-              <input type="number" id="weight" name="weight" inputmode="decimal" placeholder="Enter weight" min="0" step="0.1" />
-            </div>
-            <div class="unit-toggle" role="group" aria-label="Select weight unit">
-              <button type="button" class="unit-option" data-unit="lbs" aria-pressed="true">lbs</button>
-              <button type="button" class="unit-option" data-unit="kg" aria-pressed="false">kg</button>
-            </div>
+    <main>
+      <div class="layout">
+        <section class="card hero-card">
+          <h1>Pediatric dosing made simple</h1>
+          <p>
+            CloseDose helps caregivers calculate safe acetaminophen and ibuprofen doses for infants and children. Select an age range,
+            enter weight, and receive easy-to-follow guidance—backed by pediatric expertise.
+          </p>
+          <div class="cta-row">
+            <a class="pill-link" href="#calculator">Open Calculator</a>
+            <a class="pill-link" href="medication-guides.html">Medication Guides</a>
           </div>
-          <select id="weight-unit" name="weight-unit" aria-hidden="true" tabindex="-1">
-            <option value="lbs" selected>lbs</option>
-            <option value="kg">kg</option>
-          </select>
-        </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <h2>Quick Age Cards</h2>
+              <p>Tap the age buttons to see tailored dosing instructions, warnings, and next steps.</p>
+            </article>
+            <article class="feature-card">
+              <h2>Weight-Based</h2>
+              <p>Enter pounds or kilograms—CloseDose converts automatically and applies safety caps.</p>
+            </article>
+            <article class="feature-card">
+              <h2>Caregiver Tips</h2>
+              <p>Review practical reminders on alternating medications, logging doses, and red flags.</p>
+            </article>
+          </div>
+        </section>
 
-        <div class="action">
-          <button type="submit">Calculate</button>
-        </div>
-        <div id="results" aria-live="polite"></div>
-      </form>
-    </section>
-  </main>
-  <footer>
-    <small>Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Consult with a licensed healthcare provider before administering medications. Sponsored in part by CloseDose, Madison, WI, USA.</small>
-  </footer>
+        <section class="card card--calculator" aria-labelledby="calculator-title">
+          <div class="calculator-header">
+            <img src="images/logo-hex2tone.png" alt="CloseDose badge" />
+            <div class="brand-name" id="calculator-title">Dose Calculator</div>
+          </div>
+          <form id="calculator" novalidate>
+            <div class="form-group" aria-live="polite">
+              <div class="form-title">Patient Age</div>
+              <div class="segmented">
+                <div class="segmented-buttons" role="group" aria-label="Select patient age">
+                  <button type="button" class="age-option" data-age="0-2" aria-pressed="false">0-2 Months</button>
+                  <button type="button" class="age-option" data-age="2-6" aria-pressed="false">2-6 Months</button>
+                  <button type="button" class="age-option" data-age="6+" aria-pressed="false">6+ Months</button>
+                </div>
+                <p class="hello-box">Welcome! Choose an age group to begin.</p>
+              </div>
+              <select id="age" name="age" aria-hidden="true" tabindex="-1">
+                <option value="">Select age</option>
+                <option value="0-2">0-2 Months</option>
+                <option value="2-6">2-6 Months</option>
+                <option value="6+">6+ Months</option>
+              </select>
+              <p id="message" hidden></p>
+            </div>
+
+            <div class="form-group">
+              <div class="form-title">Patient Weight</div>
+              <div class="unit-row">
+                <div class="weight-input">
+                  <label for="weight" class="visually-hidden">Enter weight</label>
+                  <input type="number" id="weight" name="weight" inputmode="decimal" placeholder="Enter weight" min="0" step="0.1" />
+                </div>
+                <div class="unit-toggle" role="group" aria-label="Select weight unit">
+                  <button type="button" class="unit-option" data-unit="lbs" aria-pressed="true">lbs</button>
+                  <button type="button" class="unit-option" data-unit="kg" aria-pressed="false">kg</button>
+                </div>
+              </div>
+              <select id="weight-unit" name="weight-unit" aria-hidden="true" tabindex="-1">
+                <option value="lbs" selected>lbs</option>
+                <option value="kg">kg</option>
+              </select>
+            </div>
+
+            <div class="action">
+              <button type="submit">Calculate</button>
+            </div>
+            <div id="results" aria-live="polite"></div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <small>Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Consult with a licensed healthcare provider before administering medications. Sponsored in part by CloseDose, Madison, WI, USA.</small>
+    </footer>
+  </div>
+
+  <div class="menu-overlay" id="siteMenu" hidden>
+    <div class="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menuHeading">
+      <h2 id="menuHeading" class="visually-hidden">Site menu</h2>
+      <nav class="menu-links">
+        <a href="index.html" aria-current="page">Calculator</a>
+        <a href="medication-guides.html">Medication Guides</a>
+      </nav>
+      <button class="close-menu" type="button">Close</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
   <script>
+    (function () {
+      const menuButton = document.querySelector('.menu-btn');
+      const overlay = document.getElementById('siteMenu');
+      const closeButton = overlay.querySelector('.close-menu');
+      const focusableSelector = 'a, button, [tabindex]:not([tabindex="-1"])';
+
+      function openMenu() {
+        overlay.hidden = false;
+        requestAnimationFrame(() => overlay.classList.add('open'));
+        menuButton.setAttribute('aria-expanded', 'true');
+        menuButton.setAttribute('aria-label', 'Close menu');
+        closeButton.focus();
+      }
+
+      function closeMenu() {
+        overlay.classList.remove('open');
+        overlay.hidden = true;
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Open menu');
+        menuButton.focus();
+      }
+
+      menuButton.addEventListener('click', () => {
+        if (overlay.classList.contains('open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      closeButton.addEventListener('click', closeMenu);
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeMenu();
+        }
+      });
+
+      overlay.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeMenu();
+          return;
+        }
+        if (event.key !== 'Tab' || !overlay.classList.contains('open')) {
+          return;
+        }
+        const focusable = Array.from(overlay.querySelectorAll(focusableSelector));
+        if (!focusable.length) {
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    })();
+
     document.addEventListener('DOMContentLoaded', () => {
       const ageSelect = document.getElementById('age');
       const ageButtons = document.querySelectorAll('.age-option');
