@@ -92,38 +92,42 @@
       z-index: 1000;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: clamp(14px, 3vw, 20px);
+      padding: clamp(12px, 2.8vw, 24px) clamp(18px, 5vw, 40px);
       margin-bottom: clamp(12px, 2vw, 20px);
     }
 
     .brand {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  flex-wrap: nowrap;
-  gap: clamp(14px, 3vw, 22px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 1;
+      flex-wrap: nowrap;
+      gap: clamp(12px, 2.6vw, 22px);
+      min-width: 0;
     }
 
     .brand img {
       display: block;
       height: auto;
-      min-height: 69px;
+      min-height: 58px;
     }
+
     .brand .logo {
-      width: clamp(220px, 18vw, 240px);
+      width: clamp(128px, 22vw, 204px);
+      max-width: 100%;
     }
 
     .brand .wordmark {
-      flex: 1 1 clamp(220px, 30vw, 320px);
+      flex: 1 1 auto;
       width: auto;
-      max-width: 100%;
-      min-width: 0;
-      min-height: 69px;
+      max-width: clamp(180px, 42vw, 320px);
+      min-width: 160px;
+      min-height: 58px;
       height: auto;
       object-fit: contain;
       aspect-ratio: 520/69;
-      /* Prevent stretching past natural aspect ratio */
       display: block;
     }
 
@@ -145,6 +149,9 @@
       cursor: pointer;
       box-shadow: var(--shadow-btn);
       transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      position: relative;
+      z-index: 1200;
+      margin-left: auto;
     }
 
     .menu-btn .hamburger {
@@ -179,16 +186,29 @@
       box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 960px) {
       header {
-        align-items: flex-start;
-        gap: 16px;
-        background: transparent !important;
+        padding-inline: clamp(16px, 5vw, 32px);
       }
       .menu-btn {
-        padding: 10px;
-        width: 52px;
-        height: 52px;
+        position: fixed;
+        bottom: clamp(20px, 6vw, 40px);
+        right: clamp(20px, 6vw, 40px);
+        box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
+      }
+    }
+
+    @media (max-width: 640px) {
+      header {
+        align-items: center;
+        gap: 12px;
+        background: transparent !important;
+        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px);
+      }
+      .menu-btn {
+        padding: 12px;
+        width: 64px;
+        height: 64px;
         justify-content: center;
         border-radius: 50%;
         font-size: 0;
@@ -197,16 +217,15 @@
         display: none;
       }
       .brand {
-        flex-direction: row !important;
-        align-items: center !important;
-        flex-wrap: nowrap !important;
-        background: transparent !important;
+        gap: clamp(10px, 4vw, 16px);
+      }
+      .brand .logo {
+        width: clamp(120px, 38vw, 168px);
       }
       .brand .wordmark {
-        width: auto;
-        min-width: 0;
-        max-width: none;
-        min-height: 69px
+        min-width: 150px;
+        max-width: clamp(160px, 48vw, 220px);
+        min-height: 54px;
       }
     }
 
@@ -224,11 +243,28 @@
       gap: clamp(24px, 4vw, 40px);
       grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
+      justify-items: stretch;
     }
 
     @media (max-width: 960px) {
       .layout {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(20px, 5vw, 32px);
+      }
+      .card {
+        width: clamp(60vw, 78vw, 95vw);
+        max-width: 95vw;
+      }
+      .hero-card {
+        width: clamp(70vw, 85vw, 95vw);
+      }
+      .card.disclaimer-pill {
+        width: clamp(58vw, 72vw, 88vw);
+      }
+      .menu-btn {
+        margin-left: 0;
       }
     }
 
@@ -238,11 +274,58 @@
       border-radius: var(--card-radius);
       box-shadow: var(--shadow-card);
       padding: clamp(24px, 4vw, 36px);
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
     }
 
     .hero-card {
       display: grid;
       gap: clamp(20px, 3vw, 30px);
+    }
+
+    .card.disclaimer-pill {
+      border-radius: 999px;
+      padding: clamp(20px, 4vw, 28px);
+      background: rgba(255, 255, 255, 0.96);
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      text-align: center;
+      transition: border-radius 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    }
+
+    .disclaimer-pill h2 {
+      margin: 0;
+      font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .disclaimer-pill p {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .disclaimer-pill .disclaimer-updated {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-700);
+    }
+
+    .disclaimer-pill.is-expanded {
+      border-radius: var(--card-radius);
+      background: linear-gradient(140deg, rgba(15, 44, 42, 0.92), rgba(18, 70, 67, 0.96));
+      color: var(--white);
+      box-shadow: 0 10px 0 rgba(15, 44, 42, 0.42);
+    }
+
+    .disclaimer-pill.is-expanded .disclaimer-updated {
+      color: rgba(255, 255, 255, 0.86);
     }
 
     .hero-card h1 {
@@ -559,6 +642,9 @@
       display: block;
       max-width: 960px;
       margin: 0 auto;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: #1b3e3b;
     }
 
     /* Overlay menu */
@@ -691,6 +777,15 @@
           </div>
         </section>
 
+        <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading">
+          <h2 id="disclaimer-heading">Important Disclaimer</h2>
+          <p>
+            This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
+            Always confirm dosing before administering medication.
+          </p>
+          <p class="disclaimer-updated">Updated 9.22.2025 • Nickolas Mancini, MD, MBA</p>
+        </section>
+
         <section class="card card--calculator" aria-labelledby="calculator-title">
           <div class="calculator-header">
             <img src="images/logo-hex2tone.png" alt="CloseDose badge" />
@@ -744,7 +839,10 @@
     </main>
 
     <footer>
-      <small>Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Consult with a licensed healthcare provider before administering medications. Sponsored in part by CloseDose, Madison, WI, USA. Updated 9/21/2025 • Nickolas Mancini, MD, MBA.</small>
+      <small>
+        Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Consult with a licensed healthcare provider before administering medications.
+        <br />Updated 9.22.2025 • Nickolas Mancini, MD, MBA
+      </small>
     </footer>
   </div>
 
@@ -906,6 +1004,21 @@
       if (unitSelect) {
         setUnit(unitSelect.value || 'lbs');
       }
+
+      const disclaimerPill = document.querySelector('.disclaimer-pill');
+      const rootElement = document.documentElement;
+
+      const updateDisclaimerState = () => {
+        if (!disclaimerPill) {
+          return;
+        }
+        const reachedBottom = window.innerHeight + window.scrollY >= rootElement.scrollHeight - 2;
+        disclaimerPill.classList.toggle('is-expanded', reachedBottom);
+      };
+
+      updateDisclaimerState();
+      window.addEventListener('scroll', updateDisclaimerState, { passive: true });
+      window.addEventListener('resize', updateDisclaimerState);
     });
   </script>
 </body>

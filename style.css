@@ -165,6 +165,19 @@ body {
   box-shadow: none;
 }
 
+.menu-btn {
+  position: relative;
+  z-index: 1200;
+}
+
+@media (max-width: 960px) {
+  .menu-btn {
+    position: fixed;
+    bottom: clamp(18px, 6vw, 36px);
+    right: clamp(18px, 6vw, 36px);
+  }
+}
+
 /* Page layout */
 .page {
   flex: 1;
@@ -725,6 +738,14 @@ footer {
   text-align: center;
   background-color: rgba(0, 0, 0, 0.6);
   font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+footer small {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: inherit;
 }
 
 @media (max-width: 600px) {
