@@ -33,14 +33,16 @@ function updateForm() {
   clearResults(elements);
   elements.message.hidden = true;
   elements.message.innerHTML = '';
+  elements.message.classList.remove('alert--critical');
   elements.calculateButton.disabled = false;
   elements.weightInput.disabled = false;
   elements.weightUnit.disabled = false;
 
   if (age === '0-2') {
     elements.message.hidden = false;
+    elements.message.classList.add('alert--critical');
     elements.message.innerHTML =
-      'If a child less than 60 days old has a fever it is a medical emergency. ' +
+      '<strong>Seek immediate medical care.</strong> If a child less than 60 days old has a fever it is a medical emergency. ' +
       'Please contact your pediatrician or seek care with a healthcare provider immediately.';
 
     elements.calculateButton.disabled = true;
@@ -62,20 +64,29 @@ function calculateDose() {
 
   clearResults(elements);
 
+  const renderWarning = (title, body, modifier = 'warning-card--teal') => {
+    const label = title ? `<strong>${title}</strong>` : '';
+    const separator = title ? ' ' : '';
+    return `<div class="warning-card ${modifier}">${label}${separator}${body}</div>`;
+  };
+
   if (!age) {
-    elements.results.innerHTML = '<p><strong>Please select an age group to continue.</strong></p>';
+    elements.results.innerHTML = renderWarning('Age required', 'Please select an age group to continue.');
     return;
   }
 
   if (isNaN(weightInput) || weightInput <= 0) {
-    elements.results.innerHTML = '<p><strong>Please enter a valid weight.</strong></p>';
+    elements.results.innerHTML = renderWarning('Weight required', 'Please enter a valid weight to calculate dosing.');
     return;
   }
 
   const weightKg = weightUnit === 'lbs' ? weightInput / 2.20462 : weightInput;
   const weightLbs = weightUnit === 'lbs' ? weightInput : weightInput * 2.20462;
+  const resultBlocks = [];
 
-  let html = `<p><strong>Patient weight:</strong> ${weightKg.toFixed(1)} kg (${weightLbs.toFixed(1)} lbs)</p>`;
+  resultBlocks.push(
+    `<p class="result-weight"><span>Patient weight</span><br><strong>${weightKg.toFixed(1)} kg (${weightLbs.toFixed(1)} lbs)</strong></p>`
+  );
 
   if (age === '2-6') {
     const acetaMgCalculated = 12.5 * weightKg;
@@ -84,16 +95,33 @@ function calculateDose() {
     const acetaMl = (acetaMg / 160) * 5;
     const acetaCapped = acetaMg < acetaMgCalculated;
 
-    html += `
-      <p><strong class="medication-heading">Acetaminophen (160 mg / 5 mL)</strong><br>
-      Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_INFANT} mg.${
-        acetaCapped
-          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
-          : ''
-      }</p>
-      <p class="dose-note dose-note-emphasis">Ibuprofen is not recommended for infants under six months. Consult your pediatrician before using ibuprofen for this age group.</p>
-    `;
+    const group = [];
+    group.push(`
+      <article class="result-card">
+        <h3>Acetaminophen (160 mg / 5 mL)</h3>
+        <p>Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
+        <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_INFANT} mg.</p>
+        ${
+          acetaCapped
+            ? renderWarning(
+                'Maximum dose reached',
+                'Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.',
+                'warning-card--orange'
+              )
+            : ''
+        }
+      </article>
+    `);
+
+    group.push(
+      renderWarning(
+        '',
+        '<em>Ibuprofen is not recommended for infants under six months. Consult your pediatrician before using ibuprofen for this age group.</em>',
+        'warning-card--red-soft'
+      )
+    );
+
+    resultBlocks.push(`<div class="result-group">${group.join('')}</div>`);
   } else if (age === '6+') {
     const ACETA_MAX_SINGLE_DOSE_MG = 1000;
     const IBU_MAX_SINGLE_DOSE_MG = 800;
@@ -109,28 +137,55 @@ function calculateDose() {
     const ibuMl50 = (ibuMg / 50) * 1.25;
     const ibuMl100 = (ibuMg / 100) * 5;
 
-    html += `
-      <p><strong class="medication-heading">Acetaminophen (160 mg / 5 mL)</strong><br>
-      Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen every 6 hours.${
-        acetaCapped
-          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
-          : ''
-      }</p>
-      <p><strong class="medication-heading">Ibuprofen (Infant's 50 mg / 1.25 mL)</strong><br>
-      Give ${ibuMl50.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p><strong class="medication-heading">Ibuprofen (Children's 100 mg / 5 mL)</strong><br>
-      Give ${ibuMl100.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen every 6 hours.${
-        ibuCapped
-          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
-          : ''
-      }</p>
-      <p class="dose-note dose-note-emphasis">Never exceed ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen or ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen in a single dose, and allow at least 6 hours between doses.</p>
-    `;
+    const group = [];
+
+    group.push(`
+      <article class="result-card">
+        <h3>Acetaminophen (160 mg / 5 mL)</h3>
+        <p>Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
+        <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen every 6 hours.</p>
+        ${
+          acetaCapped
+            ? renderWarning(
+                'Maximum dose reached',
+                'Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.',
+                'warning-card--orange'
+              )
+            : ''
+        }
+      </article>
+    `);
+
+    group.push(`
+      <article class="result-card">
+        <h3>Ibuprofen (oral)</h3>
+        <p><strong>Infant's 50 mg / 1.25 mL:</strong> Give ${ibuMl50.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
+        <p><strong>Children's 100 mg / 5 mL:</strong> Give ${ibuMl100.toFixed(1)} mL (${ibuMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
+        <p class="dose-note">Maximum single dose for this age group is ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen every 6 hours.</p>
+        ${
+          ibuCapped
+            ? renderWarning(
+                'Maximum dose reached',
+                'Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.',
+                'warning-card--orange'
+              )
+            : ''
+        }
+      </article>
+    `);
+
+    group.push(
+      renderWarning(
+        'Dose spacing reminder',
+        `Never exceed ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen or ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen in a single dose, and allow at least 6 hours between doses.`,
+        'warning-card--teal'
+      )
+    );
+
+    resultBlocks.push(`<div class="result-group">${group.join('')}</div>`);
   }
 
-  elements.results.innerHTML = html;
+  elements.results.innerHTML = resultBlocks.join('');
 }
 
 function initCalculator() {
@@ -165,6 +220,11 @@ function initCarousels() {
     const prevButton = carousel.querySelector('[data-carousel-prev]');
     const nextButton = carousel.querySelector('[data-carousel-next]');
     const dotsContainer = carousel.querySelector('.carousel-dots');
+
+    if (dotsContainer) {
+      dotsContainer.innerHTML = '';
+      dotsContainer.setAttribute('role', 'tablist');
+    }
 
     const dots = slides.map((_, slideIndex) => {
       const dot = document.createElement('button');
@@ -214,6 +274,7 @@ function initCarousels() {
     }
 
     goToSlide(0);
+    carousel.classList.add('carousel-ready');
   });
 }
 
