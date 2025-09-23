@@ -264,9 +264,13 @@
         width: clamp(70vw, 85vw, 95vw);
       }
       .card.disclaimer-pill {
-        width: min(92vw, 560px);
+        width: auto;
+        max-width: min(92vw, 560px);
         margin-left: auto;
         margin-right: auto;
+      }
+      .card.disclaimer-pill.is-expanded {
+        width: 100%;
       }
       .menu-btn {
         margin-left: 0;
@@ -291,24 +295,36 @@
 
     .card.disclaimer-pill {
       border-radius: 999px;
-      padding: clamp(20px, 4vw, 28px);
+      padding: clamp(14px, 3vw, 22px) clamp(32px, 6vw, 44px);
       background: rgba(255, 255, 255, 0.96);
-      display: grid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       gap: 14px;
-      justify-items: stretch;
-      text-align: left;
-      width: min(860px, 100%);
+      text-align: center;
+      width: fit-content;
+      max-width: 100%;
       margin: clamp(32px, 8vw, 64px) auto 0;
-      transition: border-radius 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+      transition: border-radius 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, padding 0.3s ease,
+        width 0.3s ease;
+      overflow: hidden;
     }
 
     .disclaimer-pill h2 {
       margin: 0;
-      font-size: clamp(1.05rem, 2.6vw, 1.35rem);
-      font-weight: 800;
-      letter-spacing: 0.08em;
+      font-size: clamp(1rem, 2.4vw, 1.25rem);
+      font-weight: 900;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--teal-600);
+      white-space: nowrap;
+    }
+
+    .disclaimer-pill .disclaimer-content {
+      display: grid;
+      gap: 14px;
+      text-align: left;
+      width: 100%;
     }
 
     .disclaimer-pill p {
@@ -331,7 +347,18 @@
       background: linear-gradient(140deg, rgba(15, 44, 42, 0.92), rgba(18, 70, 67, 0.96));
       color: var(--white);
       box-shadow: 0 10px 0 rgba(15, 44, 42, 0.42);
-      gap: 16px;
+      flex-direction: column;
+      align-items: stretch;
+      text-align: left;
+      width: min(860px, 100%);
+      padding: clamp(24px, 4vw, 36px);
+      gap: 18px;
+    }
+
+    .disclaimer-pill.is-expanded h2 {
+      color: #ffffff;
+      white-space: normal;
+      letter-spacing: 0.08em;
     }
 
     .disclaimer-pill.is-expanded .disclaimer-updated {
@@ -340,10 +367,6 @@
 
     .disclaimer-pill.is-expanded p {
       color: rgba(255, 255, 255, 0.92);
-    }
-
-    .disclaimer-pill.is-expanded h2 {
-      color: #ffffff;
     }
 
     .disclaimer-pill .disclaimer-seek-care {
@@ -980,29 +1003,24 @@
           </form>
         </section>
       </div>
-      <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading">
-        <h2 id="disclaimer-heading">Important Disclaimer</h2>
-        <p>
-          This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
-          Always confirm dosing before administering medication.
-        </p>
-        <p>
-          CloseDose was created with the intention of providing dosing information of common over-the-counter medications for generally healthy children.
-        </p>
-        <p>
-          If your child is 0-2 months of age, has any complex past medical history or past surgical history, any previous reactions to administered medications, history of allergic reaction, or has significant personal or family history of liver/kidney disease please consult with your medical care team prior to use of CloseDose pediatric medication dosing calculator.
-        </p>
-        <p class="disclaimer-seek-care"><strong>When to seek care:</strong> ***</p>
-        <p class="disclaimer-updated">Updated 9.22.2025 • Nickolas Mancini, MD, MBA</p>
+      <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading" aria-expanded="false">
+        <h2 id="disclaimer-heading">Site Disclaimer</h2>
+        <div class="disclaimer-content" hidden>
+          <p>
+            This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
+            Always confirm dosing before administering medication.
+          </p>
+          <p>
+            CloseDose was created with the intention of providing dosing information of common over-the-counter medications for generally healthy children.
+          </p>
+          <p>
+            If your child is 0-2 months of age, has any complex past medical history or past surgical history, any previous reactions to administered medications, history of allergic reaction, or has significant personal or family history of liver/kidney disease please consult with your medical care team prior to use of CloseDose pediatric medication dosing calculator.
+          </p>
+          <p class="disclaimer-seek-care"><strong>When to seek care:</strong> ***</p>
+          <p class="disclaimer-updated">Updated 9.22.2025 • Nickolas Mancini, MD, MBA</p>
+        </div>
       </section>
     </main>
-
-    <footer>
-      <small>
-        Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Consult with a licensed healthcare provider before administering medications.
-        <br />Updated 9.22.2025 • Nickolas Mancini, MD, MBA
-      </small>
-    </footer>
   </div>
 
   <div class="menu-overlay" id="siteMenu" hidden>
@@ -1165,19 +1183,52 @@
       }
 
       const disclaimerPill = document.querySelector('.disclaimer-pill');
-      const rootElement = document.documentElement;
+      const disclaimerContent = disclaimerPill ? disclaimerPill.querySelector('.disclaimer-content') : null;
+      let hasExpandedDisclaimer = false;
+
+      const setDisclaimerState = (expanded) => {
+        if (!disclaimerPill) {
+          return;
+        }
+        disclaimerPill.classList.toggle('is-expanded', expanded);
+        disclaimerPill.setAttribute('aria-expanded', String(expanded));
+        if (disclaimerContent) {
+          disclaimerContent.hidden = !expanded;
+        }
+      };
 
       const updateDisclaimerState = () => {
         if (!disclaimerPill) {
           return;
         }
-        const reachedBottom = window.innerHeight + window.scrollY >= rootElement.scrollHeight - 2;
-        disclaimerPill.classList.toggle('is-expanded', reachedBottom);
+
+        if (hasExpandedDisclaimer) {
+          setDisclaimerState(true);
+          return;
+        }
+
+        const rect = disclaimerPill.getBoundingClientRect();
+        const pillMidpoint = rect.top + rect.height / 2;
+        const viewportMidpoint = window.innerHeight / 2;
+        const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+
+        if (isVisible && pillMidpoint <= viewportMidpoint) {
+          hasExpandedDisclaimer = true;
+          setDisclaimerState(true);
+          window.removeEventListener('scroll', updateDisclaimerState);
+          window.removeEventListener('resize', updateDisclaimerState);
+        } else {
+          setDisclaimerState(false);
+        }
       };
 
+      setDisclaimerState(false);
       updateDisclaimerState();
-      window.addEventListener('scroll', updateDisclaimerState, { passive: true });
-      window.addEventListener('resize', updateDisclaimerState);
+
+      if (!hasExpandedDisclaimer) {
+        window.addEventListener('scroll', updateDisclaimerState, { passive: true });
+        window.addEventListener('resize', updateDisclaimerState);
+      }
     });
   </script>
 </body>
