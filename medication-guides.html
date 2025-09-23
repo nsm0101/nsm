@@ -106,43 +106,48 @@
     }
 
     header {
-      position: sticky;
-      top: clamp(12px, 4vw, 24px);
+      position: relative;
+      top: 0;
       z-index: 100;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: clamp(14px, 3vw, 20px);
-      padding: clamp(18px, 4vw, 28px) clamp(18px, 5vw, 52px);
-      margin-bottom: clamp(12px, 2vw, 20px);
-      background: rgba(245, 249, 249, 0.94);
-      backdrop-filter: blur(8px);
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: clamp(14px, 3vw, 24px);
+      padding: clamp(14px, 3vw, 26px) clamp(18px, 5vw, 48px) clamp(6px, 2vw, 14px);
+      margin-bottom: 0;
     }
 
     .brand {
       display: flex;
-      align-items: center;
+      align-items: stretch;
+      justify-content: flex-start;
       flex: 1;
-      flex-wrap: wrap;
-      gap: clamp(14px, 3vw, 22px);
+      flex-wrap: nowrap;
+      gap: clamp(12px, 2.6vw, 22px);
+      min-width: 0;
     }
 
     .brand img {
       display: block;
       height: auto;
+      min-height: 58px;
     }
 
     .brand .logo {
-      width: clamp(120px, 14vw, 180px);
+      width: clamp(128px, 22vw, 204px);
+      max-width: 100%;
+      flex-shrink: 0;
     }
 
     .brand .wordmark {
-  flex: 1 1 clamp(280px, 40vw, 520px);
-  width: min(100%, clamp(280px, 40vw, 520px));
-  min-height: 69px;
-  height: auto;
-  object-fit: contain;
-  overflow: visible;
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: none;
+      min-width: 180px;
+      min-height: 58px;
+      height: auto;
+      object-fit: contain;
+      overflow: visible;
     }
 
     .menu-btn {
@@ -162,6 +167,9 @@
       cursor: pointer;
       box-shadow: var(--shadow-btn);
       transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      position: relative;
+      z-index: 1200;
+      margin-left: auto;
     }
 
     .menu-btn .hamburger {
@@ -195,15 +203,30 @@
       box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
     }
 
+    @media (max-width: 960px) {
+      header {
+        padding-inline: clamp(16px, 5vw, 32px);
+      }
+      .menu-btn {
+        position: fixed;
+        bottom: clamp(20px, 6vw, 40px);
+        right: clamp(20px, 6vw, 40px);
+        box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
+        margin-left: 0;
+      }
+    }
+
     @media (max-width: 640px) {
       header {
         align-items: flex-start;
-        gap: 16px;
+        gap: 10px;
+        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px) clamp(4px, 2vw, 12px);
+        background: transparent !important;
       }
       .menu-btn {
-        padding: 10px;
-        width: 52px;
-        height: 52px;
+        padding: 12px;
+        width: 64px;
+        height: 64px;
         justify-content: center;
         border-radius: 50%;
         font-size: 0;
@@ -213,10 +236,16 @@
       }
       .brand {
         flex-direction: column;
-        align-items: flex-start;
+        gap: clamp(8px, 4vw, 16px);
+      }
+      .brand .logo {
+        width: clamp(120px, 42vw, 180px);
       }
       .brand .wordmark {
         width: 100%;
+        min-width: 0;
+        max-width: none;
+        min-height: 54px;
       }
     }
 
@@ -294,6 +323,7 @@
       margin: 0;
       font-size: 1.05rem;
       line-height: 1.6;
+      color: var(--teal-600);
     }
 
     .tab-stack {
@@ -367,35 +397,61 @@
     }
 
     .carousel-track {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 100%;
+      position: relative;
       overflow: hidden;
-      border-radius: 16px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      border: var(--card-border);
+      box-shadow: var(--shadow-card);
+      min-height: clamp(260px, 52vw, 520px);
+      display: grid;
     }
 
-    .carousel-slide {
-      display: grid;
-      gap: 8px;
+    [data-carousel] .carousel-slide {
+      display: none;
+      gap: 12px;
       justify-items: center;
-      padding: 14px;
+      padding: clamp(18px, 4vw, 28px);
+      text-align: center;
+    }
+
+    [data-carousel] .carousel-slide:first-child {
+      display: grid;
+    }
+
+    [data-carousel].carousel-ready .carousel-slide {
+      display: none;
+    }
+
+    [data-carousel].carousel-ready .carousel-slide.is-active {
+      display: grid;
     }
 
     .carousel-slide img {
+      width: 100%;
       max-width: 100%;
       height: auto;
+      max-height: clamp(220px, 60vw, 520px);
+      object-fit: contain;
+      border-radius: 20px;
+      border: 3px solid var(--ink-900);
+      background: var(--white);
+      box-shadow: 0 10px 0 rgba(15, 44, 42, 0.2);
     }
 
     .carousel-slide figcaption {
       font-weight: 700;
       text-align: center;
+      color: var(--teal-600);
     }
 
     .carousel-controls {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 16px;
     }
 
     .carousel-controls button {
@@ -405,28 +461,52 @@
       background: var(--teal-400);
       color: #fff;
       font-weight: 800;
-      padding: 6px 12px;
+      padding: 10px 18px;
       cursor: pointer;
       box-shadow: var(--shadow-pill);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .carousel-controls button:hover,
+    .carousel-controls button:focus-visible {
+      background: var(--teal-500);
+      box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
+      outline: none;
+    }
+
+    .carousel-controls button:disabled {
+      background: #aacdc6;
+      cursor: not-allowed;
+      box-shadow: 0 6px 0 rgba(15, 44, 42, 0.28);
     }
 
     .carousel-dots {
       display: flex;
-      gap: 6px;
+      gap: 8px;
+      align-items: center;
     }
 
-    .carousel-dots i {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
+    .carousel-dot {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: #a9cfc9;
-      opacity: 0.6;
+      border: 2px solid var(--teal-500);
+      background: rgba(36, 166, 135, 0.2);
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.18s ease;
     }
 
-    .carousel-dots i.active {
-      background: var(--teal-400);
-      opacity: 1;
+    .carousel-dot.is-active {
+      background: var(--teal-500);
+      transform: scale(1.15);
+    }
+
+    .carousel-dot:focus-visible {
+      outline: 3px solid var(--ink-900);
+      outline-offset: 2px;
     }
 
     .guide-card h2 {
@@ -455,12 +535,16 @@
       font-size: 0.9rem;
       line-height: 1.5;
       text-align: center;
-      color: #32514e;
+      color: var(--teal-600);
     }
 
-    footer strong {
-      font-weight: 800;
-      letter-spacing: 0.06em;
+    footer small {
+      display: block;
+      max-width: 960px;
+      margin: 0 auto;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: var(--teal-500);
     }
 
     /* Overlay menu */
@@ -653,9 +737,9 @@
                 </figure>
               </div>
               <div class="carousel-controls">
-                <button type="button" data-prev aria-label="Show previous acetaminophen product">←</button>
-                <div class="carousel-dots" aria-hidden="true"></div>
-                <button type="button" data-next aria-label="Show next acetaminophen product">→</button>
+                <button type="button" data-carousel-prev aria-label="Show previous acetaminophen product">←</button>
+                <div class="carousel-dots"></div>
+                <button type="button" data-carousel-next aria-label="Show next acetaminophen product">→</button>
               </div>
               <div class="acetaminophen-safety">
                 <h3>Safety Tips</h3>
@@ -695,9 +779,9 @@
                 </figure>
               </div>
               <div class="carousel-controls">
-                <button type="button" data-prev aria-label="Show previous children's ibuprofen product">←</button>
-                <div class="carousel-dots" aria-hidden="true"></div>
-                <button type="button" data-next aria-label="Show next children's ibuprofen product">→</button>
+                <button type="button" data-carousel-prev aria-label="Show previous children's ibuprofen product">←</button>
+                <div class="carousel-dots"></div>
+                <button type="button" data-carousel-next aria-label="Show next children's ibuprofen product">→</button>
               </div>
               <p>Standard children's suspension dosed using an oral syringe or medicine cup. Verify strength before dosing.</p>
             </article>
@@ -727,9 +811,9 @@
                 </figure>
               </div>
               <div class="carousel-controls">
-                <button type="button" data-prev aria-label="Show previous infant ibuprofen product">←</button>
-                <div class="carousel-dots" aria-hidden="true"></div>
-                <button type="button" data-next aria-label="Show next infant ibuprofen product">→</button>
+                <button type="button" data-carousel-prev aria-label="Show previous infant ibuprofen product">←</button>
+                <div class="carousel-dots"></div>
+                <button type="button" data-carousel-next aria-label="Show next infant ibuprofen product">→</button>
               </div>
               <h3>Safety Tips</h3>
               <ul>
@@ -759,8 +843,10 @@
   </div>
 
   <footer>
-    <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
-    <br />Updated 9.21.2025 • Nickolas Mancini, MD, MBA
+    <small>
+      Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
+      <br />Updated 9.22.2025 • Nickolas Mancini, MD, MBA
+    </small>
   </footer>
 
   <div class="translation-overlay" id="translationOverlay" hidden aria-hidden="true">
@@ -777,6 +863,7 @@
     </div>
   </div>
 
+  <script src="script.js"></script>
   <script>
     (function(){
       const menuBtn = document.querySelector('.menu-btn');
@@ -840,35 +927,6 @@
       });
     })();
 
-    document.querySelectorAll('[data-carousel]').forEach(section => {
-      const track = section.querySelector('.carousel-track');
-      const slides = Array.from(track.querySelectorAll('.carousel-slide'));
-      const dotsWrap = section.querySelector('.carousel-dots');
-      const prev = section.querySelector('[data-prev]');
-      const next = section.querySelector('[data-next]');
-      let i = 0;
-
-      function render(){
-        track.style.transform = `translateX(-${i * 100}%)`;
-        dotsWrap.innerHTML = slides.map((_, idx) => `<i class="${idx === i ? 'active' : ''}"></i>`).join('');
-      }
-
-      function clamp(n){
-        return (n + slides.length) % slides.length;
-      }
-
-      prev && prev.addEventListener('click', () => {
-        i = clamp(i - 1);
-        render();
-      });
-
-      next && next.addEventListener('click', () => {
-        i = clamp(i + 1);
-        render();
-      });
-
-      render();
-    });
   </script>
 </body>
 </html>

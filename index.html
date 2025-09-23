@@ -87,43 +87,48 @@
     }
 
     header {
-      position: sticky;
-      top: clamp(12px, 4vw, 24px);
+      position: relative;
+      top: 0;
       z-index: 1000;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: clamp(14px, 3vw, 20px);
-      margin-bottom: clamp(12px, 2vw, 20px);
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: clamp(14px, 3vw, 24px);
+      padding: clamp(14px, 3vw, 26px) clamp(18px, 5vw, 48px) clamp(6px, 2vw, 14px);
+      margin-bottom: 0;
     }
 
     .brand {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  flex-wrap: nowrap;
-  gap: clamp(14px, 3vw, 22px);
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-start;
+      flex: 1;
+      flex-wrap: nowrap;
+      gap: clamp(12px, 2.6vw, 22px);
+      min-width: 0;
     }
 
     .brand img {
       display: block;
       height: auto;
-      min-height: 69px;
+      min-height: 58px;
     }
+
     .brand .logo {
-      width: clamp(220px, 18vw, 240px);
+      width: clamp(128px, 22vw, 204px);
+      max-width: 100%;
+      flex-shrink: 0;
     }
 
     .brand .wordmark {
-      flex: 1 1 clamp(220px, 30vw, 320px);
-      width: auto;
-      max-width: 100%;
-      min-width: 0;
-      min-height: 69px;
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: none;
+      min-width: 160px;
+      min-height: 58px;
       height: auto;
       object-fit: contain;
-      aspect-ratio: 520/69;
-      /* Prevent stretching past natural aspect ratio */
+      aspect-ratio: 520 / 69;
       display: block;
     }
 
@@ -145,6 +150,9 @@
       cursor: pointer;
       box-shadow: var(--shadow-btn);
       transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      position: relative;
+      z-index: 1200;
+      margin-left: auto;
     }
 
     .menu-btn .hamburger {
@@ -179,16 +187,29 @@
       box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
     }
 
+    @media (max-width: 960px) {
+      header {
+        padding-inline: clamp(16px, 5vw, 32px);
+      }
+      .menu-btn {
+        position: fixed;
+        bottom: clamp(20px, 6vw, 40px);
+        right: clamp(20px, 6vw, 40px);
+        box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
+      }
+    }
+
     @media (max-width: 640px) {
       header {
         align-items: flex-start;
-        gap: 16px;
+        gap: 10px;
         background: transparent !important;
+        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px) clamp(4px, 2vw, 12px);
       }
       .menu-btn {
-        padding: 10px;
-        width: 52px;
-        height: 52px;
+        padding: 12px;
+        width: 64px;
+        height: 64px;
         justify-content: center;
         border-radius: 50%;
         font-size: 0;
@@ -197,16 +218,17 @@
         display: none;
       }
       .brand {
-        flex-direction: row !important;
-        align-items: center !important;
-        flex-wrap: nowrap !important;
-        background: transparent !important;
+        flex-direction: column;
+        gap: clamp(8px, 4vw, 16px);
+      }
+      .brand .logo {
+        width: clamp(120px, 42vw, 180px);
       }
       .brand .wordmark {
-        width: auto;
+        width: 100%;
         min-width: 0;
         max-width: none;
-        min-height: 69px
+        min-height: 54px;
       }
     }
 
@@ -224,11 +246,34 @@
       gap: clamp(24px, 4vw, 40px);
       grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
+      justify-items: stretch;
     }
 
     @media (max-width: 960px) {
       .layout {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(20px, 5vw, 32px);
+      }
+      .card {
+        width: clamp(60vw, 78vw, 95vw);
+        max-width: 95vw;
+      }
+      .hero-card {
+        width: clamp(70vw, 85vw, 95vw);
+      }
+      .card.disclaimer-pill {
+        width: auto;
+        max-width: min(92vw, 560px);
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .card.disclaimer-pill.is-expanded {
+        width: 100%;
+      }
+      .menu-btn {
+        margin-left: 0;
       }
     }
 
@@ -238,11 +283,95 @@
       border-radius: var(--card-radius);
       box-shadow: var(--shadow-card);
       padding: clamp(24px, 4vw, 36px);
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
     }
 
     .hero-card {
       display: grid;
       gap: clamp(20px, 3vw, 30px);
+    }
+
+    .card.disclaimer-pill {
+      border-radius: 999px;
+      padding: clamp(14px, 3vw, 22px) clamp(32px, 6vw, 44px);
+      background: rgba(255, 255, 255, 0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      text-align: center;
+      width: fit-content;
+      max-width: 100%;
+      margin: clamp(32px, 8vw, 64px) auto 0;
+      transition: border-radius 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, padding 0.3s ease,
+        width 0.3s ease;
+      overflow: hidden;
+    }
+
+    .disclaimer-pill h2 {
+      margin: 0;
+      font-size: clamp(1rem, 2.4vw, 1.25rem);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal-600);
+      white-space: nowrap;
+    }
+
+    .disclaimer-pill .disclaimer-content {
+      display: grid;
+      gap: 14px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .disclaimer-pill p {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: var(--teal-600);
+    }
+
+    .disclaimer-pill .disclaimer-updated {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-700);
+    }
+
+    .disclaimer-pill.is-expanded {
+      border-radius: var(--card-radius);
+      background: linear-gradient(140deg, rgba(15, 44, 42, 0.92), rgba(18, 70, 67, 0.96));
+      color: var(--white);
+      box-shadow: 0 10px 0 rgba(15, 44, 42, 0.42);
+      flex-direction: column;
+      align-items: stretch;
+      text-align: left;
+      width: min(860px, 100%);
+      padding: clamp(24px, 4vw, 36px);
+      gap: 18px;
+    }
+
+    .disclaimer-pill.is-expanded h2 {
+      color: #ffffff;
+      white-space: normal;
+      letter-spacing: 0.08em;
+    }
+
+    .disclaimer-pill.is-expanded .disclaimer-updated {
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .disclaimer-pill.is-expanded p {
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .disclaimer-pill .disclaimer-seek-care {
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .hero-card h1 {
@@ -257,6 +386,15 @@
       margin: 0;
       font-size: 1.05rem;
       line-height: 1.6;
+    }
+
+    .hero-card .mission-text {
+      font-weight: 800;
+      color: var(--teal-600);
+    }
+
+    .hero-card .mission-support {
+      color: var(--teal-600);
     }
 
     .cta-row {
@@ -416,6 +554,7 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-align: center;
+      color: var(--teal-600);
     }
 
     .unit-row {
@@ -507,44 +646,158 @@
       box-shadow: 0 4px 0 rgba(15, 44, 42, 0.7);
     }
 
-    #message {
+    .alert {
       margin: 0;
-      background: #fff;
       border-radius: 18px;
       border: 3px solid var(--ink-900);
       padding: 18px 20px;
       font-weight: 600;
-      line-height: 1.5;
+      line-height: 1.6;
       text-align: left;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--teal-600);
+      box-shadow: var(--shadow-card);
+    }
+
+    .alert[hidden] {
+      display: none;
+    }
+
+    .alert:not([hidden]) {
+      display: block;
+    }
+
+    .alert--critical {
+      background: rgba(220, 38, 38, 0.16);
+      border-color: rgba(220, 38, 38, 0.45);
+      color: #8b1111;
+      box-shadow: 0 8px 0 rgba(139, 17, 17, 0.25);
     }
 
     #results {
       text-align: left;
       display: grid;
+      gap: 18px;
+    }
+
+    #results .result-weight {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #6f807c;
+      background: rgba(18, 58, 55, 0.06);
+      border-radius: 18px;
+      border: 2px solid rgba(18, 58, 55, 0.18);
+      padding: 16px 18px;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+    }
+
+    #results .result-weight strong {
+      color: var(--ink-900);
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 1.05rem;
+    }
+
+    #results .result-weight span {
+      display: inline-block;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(18, 58, 55, 0.8);
+    }
+
+    #results .result-group {
+      display: grid;
       gap: 16px;
     }
 
-    #results p {
-      margin: 0;
-      line-height: 1.45;
+    .result-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: var(--card-border);
+      border-radius: 22px;
+      box-shadow: var(--shadow-card);
+      padding: 20px 22px;
+      display: grid;
+      gap: 10px;
     }
 
-    #results .medication-heading {
+    .result-card h3 {
+      margin: 0;
       font-size: 1.05rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      color: var(--teal-600);
     }
 
-    #results .dose-note {
+    .result-card p {
+      margin: 0;
+      color: var(--ink-900);
+      line-height: 1.5;
+    }
+
+    .result-card p strong {
+      color: var(--teal-600);
+    }
+
+    .result-card .dose-note {
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--ink-700);
     }
 
-    #results .dose-note-emphasis {
+    .warning-card {
+      border-radius: 20px;
+      padding: 16px 20px;
+      font-weight: 700;
+      border: 3px solid transparent;
+      box-shadow: 0 6px 0 rgba(15, 44, 42, 0.28);
+      background: rgba(31, 143, 123, 0.12);
+      color: var(--teal-600);
+      line-height: 1.5;
+    }
+
+    .warning-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+    }
+
+    .warning-card--orange {
+      background: rgba(255, 149, 0, 0.18);
+      border-color: rgba(255, 149, 0, 0.45);
+      color: #b35a00;
+    }
+
+    .warning-card--red-strong {
+      background: rgba(220, 38, 38, 0.2);
+      border-color: rgba(220, 38, 38, 0.55);
+      color: #8b1111;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .warning-card--red-strong strong {
+      margin-bottom: 8px;
+    }
+
+    .warning-card--red-soft {
+      background: rgba(220, 38, 38, 0.12);
+      border-color: rgba(220, 38, 38, 0.28);
+      color: #a12a2a;
+      font-style: italic;
+      font-weight: 600;
+      box-shadow: 0 4px 0 rgba(161, 42, 42, 0.2);
+    }
+
+    .warning-card--teal {
+      background: rgba(31, 143, 123, 0.16);
+      border-color: rgba(18, 58, 55, 0.45);
+      color: var(--teal-600);
     }
 
     footer {
@@ -552,13 +805,16 @@
       font-size: 0.9rem;
       line-height: 1.5;
       text-align: center;
-      color: #32514e;
+      color: var(--teal-600);
     }
 
     footer small {
       display: block;
       max-width: 960px;
       margin: 0 auto;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: var(--teal-500);
     }
 
     /* Overlay menu */
@@ -671,6 +927,12 @@
             CloseDose helps caregivers calculate safe acetaminophen and ibuprofen doses for infants and children. Select an age range,
             enter weight, and receive easy-to-follow guidance—backed by pediatric expertise.
           </p>
+          <p class="mission-text">
+            Our goal is to provide simple, accurate, individualized, pediatric, weight-based dosing calculators for common over-the-counter medications.
+          </p>
+          <p class="mission-support">
+            CloseDose is the solution to inaccurate dosing due to unclear medication guidance. Too busy trying to keep a sibling under control at your child's doctor's appointment and forget the ibuprofen dose recommended when you get home? Confused by range-based dosing tables provided on medication boxes or tired of searching for outdated handouts on old discharge paperwork? All you need to enter is the patient's age and weight and you can determine their personalized dosing options in seconds.
+          </p>
           <div class="cta-row">
             <a class="pill-link" href="#calculator">Open Calculator</a>
             <a class="pill-link" href="medication-guides.html">Medication Guides</a>
@@ -713,7 +975,7 @@
                 <option value="2-6">2-6 Months</option>
                 <option value="6+">6+ Months</option>
               </select>
-              <p id="message" hidden></p>
+              <p id="message" class="alert" hidden></p>
             </div>
 
             <div class="form-group">
@@ -741,11 +1003,24 @@
           </form>
         </section>
       </div>
+      <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading" aria-expanded="false">
+        <h2 id="disclaimer-heading">Disclaimer</h2>
+        <div class="disclaimer-content" hidden>
+          <p>
+            This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
+            Always confirm dosing before administering medication.
+          </p>
+          <p>
+            CloseDose was created with the intention of providing dosing information of common over-the-counter medications for generally healthy children.
+          </p>
+          <p>
+            If your child is 0-2 months of age, has any complex past medical history or past surgical history, any previous reactions to administered medications, history of allergic reaction, or has significant personal or family history of liver/kidney disease please consult with your medical care team prior to use of CloseDose pediatric medication dosing calculator.
+          </p>
+          <p class="disclaimer-seek-care"><strong>When to seek care:</strong> ***</p>
+          <p class="disclaimer-updated">Updated 9.22.2025 • Nickolas Mancini, MD, MBA</p>
+        </div>
+      </section>
     </main>
-
-    <footer>
-      <small>Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice. Consult with a licensed healthcare provider before administering medications. Sponsored in part by CloseDose, Madison, WI, USA. Updated 9/21/2025 • Nickolas Mancini, MD, MBA.</small>
-    </footer>
   </div>
 
   <div class="menu-overlay" id="siteMenu" hidden>
@@ -906,6 +1181,33 @@
       if (unitSelect) {
         setUnit(unitSelect.value || 'lbs');
       }
+
+      const disclaimerPill = document.querySelector('.disclaimer-pill');
+      const disclaimerContent = disclaimerPill ? disclaimerPill.querySelector('.disclaimer-content') : null;
+      const rootElement = document.documentElement;
+
+      const setDisclaimerState = (expanded) => {
+        if (!disclaimerPill) {
+          return;
+        }
+        disclaimerPill.classList.toggle('is-expanded', expanded);
+        disclaimerPill.setAttribute('aria-expanded', String(expanded));
+        if (disclaimerContent) {
+          disclaimerContent.hidden = !expanded;
+        }
+      };
+
+      const updateDisclaimerState = () => {
+        if (!disclaimerPill) {
+          return;
+        }
+        const reachedBottom = window.innerHeight + window.scrollY >= rootElement.scrollHeight - 2;
+        setDisclaimerState(reachedBottom);
+      };
+
+      updateDisclaimerState();
+      window.addEventListener('scroll', updateDisclaimerState, { passive: true });
+      window.addEventListener('resize', updateDisclaimerState);
     });
   </script>
 </body>
