@@ -1004,7 +1004,11 @@
         </section>
       </div>
       <section class="card disclaimer-pill" aria-labelledby="disclaimer-heading" aria-expanded="false">
+
         <h2 id="disclaimer-heading">Site Disclaimer</h2>
+
+        <h2 id="disclaimer-heading">Disclaimer</h2>
+
         <div class="disclaimer-content" hidden>
           <p>
             This calculator is for educational support only and does not replace guidance from your pediatrician or pharmacist.
@@ -1196,6 +1200,19 @@
           disclaimerContent.hidden = !expanded;
         }
       };
+      const rootElement = document.documentElement;
+
+
+      const setDisclaimerState = (expanded) => {
+        if (!disclaimerPill) {
+          return;
+        }
+        disclaimerPill.classList.toggle('is-expanded', expanded);
+        disclaimerPill.setAttribute('aria-expanded', String(expanded));
+        if (disclaimerContent) {
+          disclaimerContent.hidden = !expanded;
+        }
+      };
 
       const updateDisclaimerState = () => {
         if (!disclaimerPill) {
@@ -1220,6 +1237,8 @@
         } else {
           setDisclaimerState(false);
         }
+        const reachedBottom = window.innerHeight + window.scrollY >= rootElement.scrollHeight - 2;
+        setDisclaimerState(reachedBottom)
       };
 
       setDisclaimerState(false);
