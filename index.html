@@ -23,6 +23,10 @@
       --theme-shadow: rgba(15, 44, 42, 0.32);
       --theme-bright-translucent: rgba(36, 166, 135, 0.16);
       --theme-dark-translucent: rgba(15, 44, 42, 0.18);
+      --text-on-bright: #ffffff;
+      --text-on-dark: #ffffff;
+      --warning-soft: rgba(255, 171, 64, 0.22);
+      --danger-soft: rgba(244, 67, 54, 0.15);
       --card-left: 28px;
       --stack1: var(--theme-bright-lighter);
       --stack2: var(--theme-bright-soft);
@@ -201,7 +205,7 @@
       border: var(--border-width) solid var(--theme-dark);
       border-radius: var(--pill-radius);
       background: var(--theme-bright);
-      color: #fff;
+      color: var(--text-on-bright);
       font-weight: 900;
       letter-spacing: 0.08em;
       cursor: pointer;
@@ -256,18 +260,24 @@
       position: relative;
       width: 100%;
       margin: 0 auto;
-      min-height: clamp(200px, 26vw, 320px);
+      min-height: clamp(140px, 24vw, 220px);
       display: flex;
       align-items: flex-end;
       justify-content: center;
       padding-top: clamp(24px, 6vw, 48px);
-      z-index: 5;
+      margin-bottom: calc(-1 * clamp(32px, 6vw, 48px));
+      z-index: 8;
     }
 
     .logo-shell {
       position: relative;
       width: 95%;
       max-width: 720px;
+      min-height: clamp(80px, 18vw, 140px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-bottom: clamp(32px, 6vw, 48px);
       transition: transform 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         width 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         left 0.22s ease,
@@ -279,22 +289,26 @@
       display: block;
       width: 100%;
       height: auto;
-      border-radius: clamp(22px, 4vw, 30px);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
 
     .logo-wordmark {
       position: absolute;
-      left: 6%;
-      bottom: clamp(8%, 4vw, 14%);
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 50%);
       display: flex;
       gap: 0.4ch;
       align-items: baseline;
+      justify-content: center;
+      text-align: center;
       font-weight: 900;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       font-size: clamp(2.4rem, 5vw, 3.6rem);
-      text-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+      text-shadow: none;
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
@@ -312,6 +326,10 @@
       width: 0.3ch;
     }
 
+    body.logo-collapsed .logo-wrapper {
+      margin-bottom: 0;
+    }
+
     body.logo-collapsed .logo-shell {
       position: fixed;
       top: clamp(16px, 5vw, 32px);
@@ -319,11 +337,13 @@
       width: clamp(140px, 22vw, 240px);
       transform: translateX(-50%);
       z-index: 1500;
+      padding-bottom: 0;
+      min-height: auto;
     }
 
     body.logo-collapsed .logo-wordmark {
       opacity: 0;
-      transform: translateY(-12px);
+      transform: translate(-50%, -12px);
     }
 
     .sr-only {
@@ -382,7 +402,7 @@
       appearance: none;
       border: var(--border-width) solid var(--theme-dark);
       background: var(--theme-bright);
-      color: #fff;
+      color: var(--text-on-bright);
       font-weight: 900;
       font-size: clamp(1rem, 2.4vw, 1.3rem);
       letter-spacing: 0.08em;
@@ -471,7 +491,7 @@
       appearance: none;
       border: var(--border-width) solid var(--theme-dark);
       background: var(--theme-bright);
-      color: #fff;
+      color: var(--text-on-bright);
       font-weight: 900;
       font-size: clamp(1rem, 2.6vw, 1.2rem);
       letter-spacing: 0.08em;
@@ -548,7 +568,7 @@
     .action button {
       border: var(--border-width) solid var(--theme-dark);
       background: var(--theme-bright);
-      color: #fff;
+      color: var(--text-on-bright);
       font-weight: 900;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -628,11 +648,11 @@
     }
 
     .warning-card--orange {
-      background: rgba(255, 171, 64, 0.22);
+      background: var(--warning-soft);
     }
 
     .warning-card--red-soft {
-      background: rgba(244, 67, 54, 0.15);
+      background: var(--danger-soft);
     }
 
     .disclaimer-section {
@@ -646,7 +666,7 @@
       max-width: min(720px, 95vw);
       width: 100%;
       background: var(--theme-dark);
-      color: #fff;
+      color: var(--text-on-dark);
       border-radius: var(--card-radius);
       border: var(--border-width) solid var(--theme-dark);
       padding: clamp(24px, 4vw, 32px);
@@ -681,7 +701,7 @@
       }
 
       .logo-wordmark {
-        left: 8%;
+        left: 50%;
       }
 
       .menu-btn {
