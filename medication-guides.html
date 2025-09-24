@@ -30,19 +30,27 @@
 
   <style>
     :root {
-      --teal-300: #3ec0ab;
-      --teal-400: #24a687;
-      --teal-500: #1f8f7b;
-      --teal-600: #123a37;
-      --ink-900: #0f2c2a;
-      --ink-700: #124643;
+      --theme-dark: #0f2c2a;
+      --theme-dark-strong: #123a37;
+      --theme-dark-soft: #4a6260;
+      --theme-bright: #24a687;
+      --theme-bright-strong: #1f8f7b;
+      --theme-bright-soft: #d6eeea;
+      --theme-bright-lighter: #f1faf8;
+      --theme-shadow: rgba(15, 44, 42, 0.25);
+      --teal-300: var(--theme-bright-soft);
+      --teal-400: var(--theme-bright);
+      --teal-500: var(--theme-bright-strong);
+      --teal-600: var(--theme-dark-strong);
+      --ink-900: var(--theme-dark);
+      --ink-700: var(--theme-dark-strong);
       --bg: #f5f9f9;
       --white: #ffffff;
       --card-bg: rgba(255, 255, 255, 0.92);
       --card-border: 3px solid var(--ink-900);
       --card-radius: 26px;
-      --shadow-card: 0 6px 0 rgba(15, 44, 42, 0.18);
-      --shadow-btn: 0 4px 0 rgba(15, 44, 42, 0.25);
+      --shadow-card: 0 6px 0 var(--theme-shadow);
+      --shadow-btn: 0 4px 0 var(--theme-shadow);
       --shadow-pill: var(--shadow-btn);
     }
 

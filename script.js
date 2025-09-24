@@ -1,3 +1,101 @@
+const THEME_COLOR_PAIRS = [
+  { dark: '#1b2a41', bright: '#00b4d8' },
+  { dark: '#2e2d4d', bright: '#ff6f59' },
+  { dark: '#12312b', bright: '#30c39e' },
+  { dark: '#1a2b49', bright: '#f9a03f' },
+  { dark: '#2d1e2f', bright: '#ff4f79' },
+  { dark: '#202145', bright: '#64dfdf' },
+  { dark: '#2c1f30', bright: '#ff9f1c' },
+  { dark: '#103a3e', bright: '#36c5f0' },
+  { dark: '#2a1a3b', bright: '#d65db1' },
+  { dark: '#173042', bright: '#3ddc97' },
+];
+
+function hexToRgb(hex) {
+  if (typeof hex !== 'string') {
+    return { r: 0, g: 0, b: 0 };
+  }
+  let normalized = hex.trim();
+  if (normalized.startsWith('#')) {
+    normalized = normalized.slice(1);
+  }
+  if (normalized.length === 3) {
+    normalized = normalized
+      .split('')
+      .map((char) => char + char)
+      .join('');
+  }
+  const int = parseInt(normalized, 16);
+  if (Number.isNaN(int)) {
+    return { r: 0, g: 0, b: 0 };
+  }
+  return {
+    r: (int >> 16) & 0xff,
+    g: (int >> 8) & 0xff,
+    b: int & 0xff,
+  };
+}
+
+function rgbToHex(r, g, b) {
+  return (
+    '#' +
+    [r, g, b]
+      .map((value) => {
+        const clamped = Math.max(0, Math.min(255, Math.round(value)));
+        return clamped.toString(16).padStart(2, '0');
+      })
+      .join('')
+  );
+}
+
+function mixColors(source, target, amount) {
+  const ratio = Math.max(0, Math.min(1, amount));
+  const a = hexToRgb(source);
+  const b = hexToRgb(target);
+  const mix = (channelA, channelB) => channelA + (channelB - channelA) * ratio;
+  return rgbToHex(mix(a.r, b.r), mix(a.g, b.g), mix(a.b, b.b));
+}
+
+function lightenColor(color, amount) {
+  return mixColors(color, '#ffffff', amount);
+}
+
+function darkenColor(color, amount) {
+  return mixColors(color, '#000000', amount);
+}
+
+function toRgba(color, alpha) {
+  const { r, g, b } = hexToRgb(color);
+  return `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${Math.max(0, Math.min(1, alpha))})`;
+}
+
+function initThemeColors() {
+  const palette = THEME_COLOR_PAIRS[Math.floor(Math.random() * THEME_COLOR_PAIRS.length)];
+  if (!palette) {
+    return;
+  }
+
+  const root = document.documentElement;
+  const dark = palette.dark;
+  const bright = palette.bright;
+
+  root.style.setProperty('--theme-dark', dark);
+  root.style.setProperty('--theme-dark-strong', darkenColor(dark, 0.18));
+  root.style.setProperty('--theme-dark-soft', lightenColor(dark, 0.65));
+  root.style.setProperty('--theme-bright', bright);
+  root.style.setProperty('--theme-bright-strong', darkenColor(bright, 0.2));
+  root.style.setProperty('--theme-bright-soft', lightenColor(bright, 0.72));
+  root.style.setProperty('--theme-bright-lighter', lightenColor(bright, 0.86));
+  root.style.setProperty('--theme-shadow', toRgba(dark, 0.32));
+  root.style.setProperty('--theme-bright-translucent', toRgba(bright, 0.18));
+  root.style.setProperty('--theme-dark-translucent', toRgba(dark, 0.18));
+  root.style.setProperty('--stack1', lightenColor(bright, 0.88));
+  root.style.setProperty('--stack2', lightenColor(bright, 0.64));
+  root.style.setProperty('--stack3', lightenColor(bright, 0.42));
+}
+
+initThemeColors();
+
 function getElements() {
   return {
     ageSelect: document.getElementById('age'),
