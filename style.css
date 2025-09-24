@@ -59,7 +59,7 @@ body {
   background-color: #050505;
   background-image:
     linear-gradient(160deg, rgba(0, 0, 0, 0.85), rgba(24, 24, 24, 0.95)),
-    url('./images/bg2.jpg');
+    url('./images/light-bg.png');
   background-size: auto, cover;
   background-repeat: no-repeat, no-repeat;
   background-position: center, center;
@@ -151,7 +151,7 @@ body {
   border-color: rgba(214, 214, 214, 0.6);
   color: #111;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-}
+} 
 
 .tabs button {
   display: flex;
@@ -787,8 +787,7 @@ footer small {
     --text-muted: rgba(80, 80, 80, 0.75);
   }
 
- 
-
+}
 
 @media (prefers-color-scheme: light) {
   body {
