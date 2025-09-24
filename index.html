@@ -664,6 +664,45 @@
       display: inline-block;
     }
 
+    .donation-pill[aria-expanded='true'] {
+      background: var(--surface);
+      color: var(--theme-dark);
+    }
+
+    .donation-links {
+      margin-top: clamp(18px, 3vw, 26px);
+      padding: clamp(18px, 3.2vw, 24px);
+      border-radius: var(--inner-radius);
+      background: rgba(255, 255, 255, 0.16);
+      text-align: left;
+    }
+
+    .donation-links p {
+      margin: 0 0 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .donation-links ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .donation-links a {
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .donation-links a:hover,
+    .donation-links a:focus-visible {
+      text-decoration: underline;
+    }
+
     footer {
       text-align: center;
       padding: 24px 16px 40px;
@@ -835,7 +874,35 @@
         <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
       </p>
       <p>Updated 9/21/2025 • Nickolas Mancini, MD, MBA.</p>
-      <a class="pill-link donation-pill" href="https://www.closedose.com/donate" target="_blank" rel="noopener">Donate</a>
+      <button
+        class="pill-link donation-pill"
+        type="button"
+        data-donation-toggle
+        aria-expanded="false"
+        aria-controls="donationLinks"
+      >
+        Donate!
+      </button>
+      <div class="donation-links" id="donationLinks" hidden aria-hidden="true">
+        <p>Support CloseDose</p>
+        <ul>
+          <li>
+            <a href="https://www.closedose.com/donate" target="_blank" rel="noopener" data-donation-focus>
+              Give through our donation portal
+            </a>
+          </li>
+          <li>
+            <a href="https://www.closedose.com/donate?view=wishlist" target="_blank" rel="noopener">
+              Shop our supplies wishlist
+            </a>
+          </li>
+          <li>
+            <a href="https://www.closedose.com/donate?view=monthly" target="_blank" rel="noopener">
+              Become a monthly supporter
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -912,6 +979,33 @@
           first.focus();
         }
       });
+
+      const donationToggle = document.querySelector('[data-donation-toggle]');
+      const donationPanel = document.getElementById('donationLinks');
+      if (donationToggle && donationPanel) {
+        const focusTarget = donationPanel.querySelector('[data-donation-focus]');
+        const setPanelState = (expanded) => {
+          donationToggle.setAttribute('aria-expanded', String(expanded));
+          donationPanel.hidden = !expanded;
+          donationPanel.setAttribute('aria-hidden', String(!expanded));
+        };
+
+        donationToggle.addEventListener('click', (event) => {
+          const isExpanded = donationToggle.getAttribute('aria-expanded') === 'true';
+          const nextExpanded = !isExpanded;
+          setPanelState(nextExpanded);
+          if (nextExpanded && focusTarget && event.detail === 0) {
+            focusTarget.focus();
+          }
+        });
+
+        donationPanel.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') {
+            setPanelState(false);
+            donationToggle.focus();
+          }
+        });
+      }
     })();
   </script>
   <script>
