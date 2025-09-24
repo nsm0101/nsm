@@ -25,6 +25,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
+  /* Wordmark-to-logo scroll transition */
+  .brand {
+    transition: all 0.18s cubic-bezier(.8,0,.2,1);
+  }
+  #wordmark-logo {
+    transition: all 0.18s cubic-bezier(.8,0,.2,1);
+  }
+  .logo-scrolled .brand {
+    width: 220px !important;
+    max-width: 220px !important;
+    min-width: 0 !important;
+    margin-left: -60px !important;
+    margin-top: 0 !important;
+    position: relative;
+    z-index: 10;
+  }
+  .logo-scrolled #wordmark-logo {
+    width: 220px !important;
+    max-width: 220px !important;
+    min-width: 0 !important;
+    height: 69px !important;
+    min-height: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-radius: 18px;
+  }
       #logo-sequence {
         display: block;
         margin: 0 auto;
@@ -272,32 +299,36 @@
 
 .brand {
   display: flex;
-  align-items: center;
-  flex: 1;
-  flex-wrap: wrap;
-  gap: clamp(18px, 4vw, 32px);
+  align-items: flex-start;
+  flex: 1 0 auto;
+  flex-wrap: nowrap;
+  gap: 0;
+  width: 95%;
+  max-width: 95vw;
+  min-width: 120px;
+  background: none;
+  margin: 0 auto 0 auto;
+  padding: 0;
 }
 
 .brand img {
   display: block;
-  height: auto;
+  height: 95%;
   min-height: 69px;
+  margin: 0 auto;
 }
 .brand .logo {
-  width: clamp(660px, 54vw, 720px); /* 150% of previous clamp(440px, 36vw, 480px) */
-  max-width: 100%;
+  display: none;
 }
 .brand .wordmark {
-  align-self: flex-end;
-  margin-left: 18px;
   width: auto;
   max-width: 520px;
-  min-width: 0;
+  min-width: 120px;
   min-height: 69px;
-  height: auto;
+  height: 95%;
   object-fit: contain;
-  aspect-ratio: 520/69;
   display: block;
+  margin: 0 auto;
 }
 
 .brand {
@@ -347,7 +378,22 @@
   <div class="wrap">
     <header>
       <div class="brand">
-  <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="CloseDose animated logo sequence" />
+        <svg id="wordmark-logo" viewBox="0 0 520 69" width="auto" height="95%" style="max-width:520px;min-width:120px;min-height:69px;display:block;margin:0 auto;object-fit:contain;" aria-label="CloseDose wordmark">
+          <text id="close-text" x="0" y="55" font-family="Nunito, sans-serif" font-size="56" font-weight="900">Close</text>
+          <text id="dose-text" x="210" y="55" font-family="Nunito, sans-serif" font-size="56" font-weight="900">Dose</text>
+          <style>
+            #wordmark-logo {
+              width: 100%;
+              max-width: 100%;
+              min-width: 120px;
+              height: auto;
+              min-height: 69px;
+              display: block;
+              margin: 0 auto;
+              object-fit: contain;
+            }
+          </style>
+        </svg>
       </div>
       <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="siteMenu" aria-label="Open menu">
         <span class="label">Menu</span>
@@ -451,6 +497,61 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Scroll-triggered wordmark-to-logo transition
+    document.addEventListener('DOMContentLoaded', function() {
+      const heroCard = document.querySelector('.hero-card');
+      function onScroll() {
+        if (!heroCard) return;
+        const rect = heroCard.getBoundingClientRect();
+        const cardHeight = rect.height || heroCard.offsetHeight;
+        // Collapse logo when scrolled past 1/3 of hero card height
+        if (rect.top < -(cardHeight / 3)) {
+          document.body.classList.add('logo-scrolled');
+        } else {
+          document.body.classList.remove('logo-scrolled');
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      onScroll();
+    });
+  </script>
+  <script>
+    // Vivid color palette pairs
+    const colorPairs = [
+      ['#FF4C60', '#36C5F0'], // red & blue
+      ['#FFB400', '#00C48C'], // yellow & teal
+      ['#36C5F0', '#FF4C60'], // blue & red
+      ['#00C48C', '#FFB400'], // teal & yellow
+      ['#FF4C60', '#00C48C'], // red & teal
+      ['#36C5F0', '#FFB400'], // blue & yellow
+      ['#FFB400', '#FF4C60'], // yellow & red
+      ['#00C48C', '#36C5F0'], // teal & blue
+      ['#FF6F61', '#6B5B95'], // coral & purple
+      ['#F7CAC9', '#92A8D1'], // pink & blue
+      ['#955251', '#B565A7'], // brown & purple
+      ['#009B77', '#DD4124'], // green & orange
+      ['#45B8AC', '#EFC050'], // turquoise & gold
+      ['#5B5EA6', '#9B2335'], // indigo & burgundy
+      ['#DFCFBE', '#55B4B0'], // sand & teal
+    ];
+    function pickRandomPair() {
+      return colorPairs[Math.floor(Math.random() * colorPairs.length)];
+    }
+    function setWordmarkColors() {
+      const [color1, color2] = pickRandomPair();
+      const close = document.getElementById('close-text');
+      const dose = document.getElementById('dose-text');
+      if (close && dose) {
+        close.setAttribute('fill', color1);
+        dose.setAttribute('fill', color2);
+      }
+    }
+    // Ensure colors are set after all DOM and style changes
+    window.addEventListener('DOMContentLoaded', setWordmarkColors);
+    window.addEventListener('load', setWordmarkColors);
+  </script>
   <script>
     // Logo sequence animation on scroll (v2, faster transition)
     (function() {
