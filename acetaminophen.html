@@ -7,12 +7,6 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <nav class="tabs">
-    <a href="index.html">Calculator</a>
-    <a href="acetaminophen.html" class="active">Acetaminophen Guide</a>
-    <a href="ibuprofen.html">Ibuprofen Guide</a>
-  </nav>
-
   <main class="page">
     <section class="panel">
       <h1>Acetaminophen Guide</h1>
@@ -63,5 +57,18 @@
     <p><strong>Disclaimer:</strong> Educational use only &mdash; confirm dosing with a licensed healthcare professional before giving medication.</p>
     <p>Updated 1.13.2025 &bull; Created by Nickolas Mancini, MD, MBA</p>
   </footer>
+
+  <div class="floating-menu" data-floating-menu>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="floating-menu-links">
+      <span class="sr-only">Toggle navigation menu</span>
+      <span class="menu-icon" aria-hidden="true"></span>
+    </button>
+    <ul id="floating-menu-links" class="menu-links" aria-hidden="true">
+      <li><a href="index.html">Calculator</a></li>
+      <li><a href="medication-guides.html">Medication Guides</a></li>
+      <li><a href="acetaminophen.html" aria-current="page">Acetaminophen Guide</a></li>
+      <li><a href="ibuprofen.html">Ibuprofen Guide</a></li>
+    </ul>
+  </div>
 </body>
 </html>

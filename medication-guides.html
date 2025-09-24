@@ -7,11 +7,6 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <nav class="tabs">
-    <a href="index.html">Calculator</a>
-    <a href="medication-guides.html" class="active">Medication Guides</a>
-  </nav>
-
   <main class="page">
     <section class="panel panel-guides">
       <h1>Acetaminophen &amp; Ibuprofen Guides</h1>
@@ -97,6 +92,19 @@
     <p><strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.</p>
     <p>Updated 1.13.2025 &bull; Created by Nickolas Mancini, MD, MBA</p>
   </footer>
+
+  <div class="floating-menu" data-floating-menu>
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="floating-menu-links">
+      <span class="sr-only">Toggle navigation menu</span>
+      <span class="menu-icon" aria-hidden="true"></span>
+    </button>
+    <ul id="floating-menu-links" class="menu-links" aria-hidden="true">
+      <li><a href="index.html">Calculator</a></li>
+      <li><a href="medication-guides.html" aria-current="page">Medication Guides</a></li>
+      <li><a href="acetaminophen.html">Acetaminophen Guide</a></li>
+      <li><a href="ibuprofen.html">Ibuprofen Guide</a></li>
+    </ul>
+  </div>
 
   <script src="./script.js"></script>
 </body>
