@@ -11,6 +11,19 @@ const THEME_COLOR_PAIRS = [
   { dark: '#173042', bright: '#3ddc97' },
 ];
 
+function encodeSvg(svg) {
+  if (typeof TextEncoder !== 'undefined') {
+    const bytes = new TextEncoder().encode(svg);
+    let binary = '';
+    bytes.forEach((value) => {
+      binary += String.fromCharCode(value);
+    });
+    return window.btoa(binary);
+  }
+
+  return window.btoa(unescape(encodeURIComponent(svg)));
+}
+
 function hexToRgb(hex) {
   if (typeof hex !== 'string') {
     return { r: 0, g: 0, b: 0 };
@@ -80,10 +93,52 @@ function getReadableTextColor(color) {
   return luminance > 0.55 ? '#000000' : '#ffffff';
 }
 
+async function updateWordmarkImages(colors) {
+  if (!colors) {
+    return;
+  }
+
+  const wordmarks = Array.from(document.querySelectorAll('[data-wordmark-src]'));
+  if (!wordmarks.length || !window.fetch) {
+    return;
+  }
+
+  const templateUrl = wordmarks[0].getAttribute('data-wordmark-src');
+  if (!templateUrl) {
+    return;
+  }
+
+  try {
+    const response = await fetch(templateUrl);
+    if (!response.ok) {
+      return;
+    }
+
+    let svgText = await response.text();
+    const replacements = [
+      { pattern: /#123934/gi, value: colors.dark },
+      { pattern: /#0a3a35/gi, value: colors.dark },
+      { pattern: /#24a687/gi, value: colors.bright },
+    ];
+
+    replacements.forEach(({ pattern, value }) => {
+      svgText = svgText.replace(pattern, value);
+    });
+
+    const dataUrl = `data:image/svg+xml;base64,${encodeSvg(svgText)}`;
+    wordmarks.forEach((img) => {
+      img.setAttribute('src', dataUrl);
+      img.setAttribute('data-wordmark-loaded', 'true');
+    });
+  } catch (error) {
+    console.error('Failed to update wordmark colors', error);
+  }
+}
+
 function initThemeColors() {
   const palette = THEME_COLOR_PAIRS[Math.floor(Math.random() * THEME_COLOR_PAIRS.length)];
   if (!palette) {
-    return;
+    return null;
   }
 
   const root = document.documentElement;
@@ -107,9 +162,14 @@ function initThemeColors() {
   root.style.setProperty('--text-on-dark', getReadableTextColor(dark));
   root.style.setProperty('--warning-soft', toRgba(bright, 0.24));
   root.style.setProperty('--danger-soft', toRgba(darkenColor(bright, 0.35), 0.24));
+  root.style.setProperty('--wordmark-dark', dark);
+  root.style.setProperty('--wordmark-bright', bright);
+
+  return { dark, bright };
 }
 
-initThemeColors();
+const ACTIVE_THEME = initThemeColors();
+updateWordmarkImages(ACTIVE_THEME);
 
 function getElements() {
   return {

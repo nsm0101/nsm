@@ -281,16 +281,17 @@
       transition: transform 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         width 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         left 0.22s ease,
-        top 0.22s ease;
+        top 0.22s ease,
+        padding-bottom 0.2s ease;
       transform-origin: left center;
+      z-index: 1600;
+      pointer-events: none;
     }
 
-    .logo-shell img {
+    #logo-sequence {
       display: block;
       width: 100%;
       height: auto;
-      opacity: 0;
-      visibility: hidden;
       pointer-events: none;
     }
 
@@ -298,47 +299,38 @@
       position: absolute;
       left: 50%;
       bottom: 0;
-      transform: translate(-50%, 50%);
-      display: flex;
-      gap: 0.4ch;
-      align-items: baseline;
-      justify-content: center;
-      text-align: center;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
-      text-shadow: none;
+      transform: translate(-50%, 42%);
+      width: clamp(260px, 38vw, 440px);
+      max-width: 92%;
+      height: auto;
+      display: block;
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    .wordmark-part--close {
-      color: var(--theme-dark);
-    }
-
-    .wordmark-part--dose {
-      color: var(--theme-bright);
-    }
-
-    .wordmark-break {
-      display: inline-block;
-      width: 0.3ch;
     }
 
     body.logo-collapsed .logo-wrapper {
       margin-bottom: 0;
     }
 
+    body.logo-condensed .logo-shell {
+      width: clamp(320px, 38vw, 460px);
+      padding-bottom: clamp(20px, 4vw, 28px);
+      z-index: 1800;
+    }
+
     body.logo-collapsed .logo-shell {
       position: fixed;
       top: clamp(16px, 5vw, 32px);
-      left: var(--card-left, 28px);
+      left: calc(var(--card-left, 28px) + clamp(40px, 6vw, 96px));
       width: clamp(140px, 22vw, 240px);
-      transform: translateX(-50%);
-      z-index: 1500;
+      transform: translateX(-38%);
+      z-index: 2000;
       padding-bottom: 0;
       min-height: auto;
+    }
+
+    body.logo-condensed .logo-wordmark {
+      transform: translate(-50%, 34%);
     }
 
     body.logo-collapsed .logo-wordmark {
@@ -804,10 +796,13 @@
       <div class="logo-wrapper">
         <div class="logo-shell">
           <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
-          <div class="logo-wordmark" aria-hidden="true">
-            <span class="wordmark-part wordmark-part--close">C<span class="wordmark-break"></span>Lose</span>
-            <span class="wordmark-part wordmark-part--dose">Dose</span>
-          </div>
+          <img
+            class="logo-wordmark"
+            src="images/CloseDose_wordmark.svg"
+            data-wordmark-src="images/CloseDose_wordmark.svg"
+            alt=""
+            aria-hidden="true"
+          />
           <span class="sr-only">CloseDose</span>
         </div>
       </div>
@@ -1037,7 +1032,9 @@
       }
 
       const totalFrames = 29;
-      const collapseDistance = 140;
+      const collapseDistance = 160;
+      const condenseThreshold = 40;
+      const collapseThreshold = 140;
       let currentFrame = 1;
 
       function pad(number) {
@@ -1061,11 +1058,8 @@
         const scrollY = window.scrollY || window.pageYOffset;
         const progress = Math.min(1, Math.max(0, scrollY / collapseDistance));
         setFrame(progress);
-        if (scrollY > 24) {
-          document.body.classList.add('logo-collapsed');
-        } else {
-          document.body.classList.remove('logo-collapsed');
-        }
+        document.body.classList.toggle('logo-condensed', scrollY > condenseThreshold);
+        document.body.classList.toggle('logo-collapsed', scrollY > collapseThreshold);
       }
 
       updateCardLeft();
