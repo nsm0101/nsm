@@ -853,8 +853,8 @@
       <nav class="menu-links">
         <a href="index.html">Calculator</a>
         <a href="medication-guides.html" aria-current="page">Medication Guides</a>
-        <a href="#" aria-disabled="true">Translate</a>
-        <a href="#" aria-disabled="true">Donate</a>
+        <a href="donation.html">Donate</a>
+        <a href="index.html#disclaimer-card">Disclaimer &amp; Support</a>
       </nav>
       <button class="close-menu" type="button">Close</button>
     </div>
@@ -942,6 +942,16 @@
           event.preventDefault();
           first.focus();
         }
+      });
+
+      const menuLinks = overlay.querySelectorAll('a[href]');
+      menuLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            closeMenu();
+          }
+        });
       });
     })();
 
