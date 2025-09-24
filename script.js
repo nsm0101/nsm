@@ -13,13 +13,10 @@ function clearResults(elements) {
   if (elements.results) {
     elements.results.innerHTML = '';
   }
-=======
-  elements.results.innerHTML = '';
-
 }
 
 function updateForm() {
-  const elements = getElements()
+  const elements = getElements();
   if (
     !elements.ageSelect ||
     !elements.weightInput ||
@@ -30,7 +27,6 @@ function updateForm() {
   ) {
     return;
   }
-=======
   const age = elements.ageSelect.value;
 
   clearResults(elements);
@@ -54,12 +50,9 @@ function updateForm() {
 
 function calculateDose() {
   const elements = getElements();
-
   if (!elements.ageSelect || !elements.weightInput || !elements.weightUnit || !elements.results) {
     return;
   }
-=======
-
   const age = elements.ageSelect.value;
   const weightInput = parseFloat(elements.weightInput.value);
   const weightUnit = elements.weightUnit.value;
@@ -88,7 +81,6 @@ function calculateDose() {
     const acetaMl = (acetaMg / 160) * 5;
     const acetaCapped = acetaMg < acetaMgCalculated;
 
-
     html += `
       <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
       Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
@@ -101,21 +93,6 @@ function calculateDose() {
   } else if (age === '6+') {
     const ACETA_MAX_MG_CHILD = 1000;
     const IBU_MAX_MG_CHILD = 800;
-
-=======
-
-    html += `
-      <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
-      Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
-      <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_INFANT} mg.${
-        acetaCapped
-          ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
-          : ''
-      }</p>
-    `;
-  } else if (age === '6+') {
-    const ACETA_MAX_MG_CHILD = 1000;
-    const IBU_MAX_MG_CHILD = 400;
 
     const acetaMgCalculated = 15 * weightKg;
     const acetaMg = Math.min(acetaMgCalculated, ACETA_MAX_MG_CHILD);
@@ -131,8 +108,6 @@ function calculateDose() {
     html += `
       <p><strong>Acetaminophen (160 mg / 5 mL)</strong><br>
       Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 4 hours as needed for fever/pain.</p>
-=======
-      Give ${acetaMl.toFixed(1)} mL (${acetaMg.toFixed(0)} mg) every 6 hours as needed for fever/pain.</p>
       <p class="dose-note">Maximum single dose for this age group is ${ACETA_MAX_MG_CHILD} mg.${
         acetaCapped
           ? ' Weight-based dose was limited to this maximum. Consider discussing dosing with your pediatrician.'
@@ -152,10 +127,6 @@ function calculateDose() {
 
   elements.results.innerHTML = html;
 }
-
-=======
-// Initialize state on first load
-updateForm();
 
 function initCarousels() {
   const carousels = document.querySelectorAll('[data-carousel]');
@@ -195,9 +166,54 @@ function initCarousels() {
   });
 }
 
+function initFloatingMenu() {
+  const menu = document.querySelector('[data-floating-menu]');
+  if (!menu) return;
+
+  const toggle = menu.querySelector('.menu-toggle');
+  const menuLinks = menu.querySelector('.menu-links');
+  if (!toggle || !menuLinks) return;
+
+  const links = Array.from(menuLinks.querySelectorAll('a'));
+
+  const setExpanded = (expanded) => {
+    toggle.setAttribute('aria-expanded', String(expanded));
+    menu.classList.toggle('is-open', expanded);
+    menuLinks.setAttribute('aria-hidden', String(!expanded));
+    links.forEach((link) => {
+      link.tabIndex = expanded ? 0 : -1;
+    });
+  };
+
+  setExpanded(false);
+
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    setExpanded(!expanded);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!menu.contains(event.target)) {
+      setExpanded(false);
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setExpanded(false);
+      toggle.focus();
+    }
+  });
+
+  links.forEach((link) => {
+    link.addEventListener('click', () => {
+      setExpanded(false);
+    });
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   initCarousels();
   updateForm();
+  initFloatingMenu();
 });
-=======
-window.addEventListener('DOMContentLoaded', initCarousels);
