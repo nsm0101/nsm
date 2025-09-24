@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta property="og:image" content="images/og-2400.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="2400" />
+  <meta property="og:image:height" content="1260" />
+  <title>CloseDose – Support CloseDose</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --theme-dark: #0f2c2a;
+      --theme-dark-strong: #0c1f1d;
+      --theme-dark-soft: #4a6260;
+      --theme-bright: #24a687;
+      --theme-bright-strong: #1f8f7b;
+      --theme-bright-soft: #d6eeea;
+      --theme-bright-lighter: #f1faf8;
+      --theme-shadow: rgba(15, 44, 42, 0.32);
+      --theme-bright-translucent: rgba(36, 166, 135, 0.16);
+      --theme-dark-translucent: rgba(15, 44, 42, 0.18);
+      --text-on-bright: #ffffff;
+      --text-on-dark: #ffffff;
+      --warning-soft: rgba(255, 171, 64, 0.22);
+      --danger-soft: rgba(244, 67, 54, 0.15);
+      --card-left: 28px;
+      --stack1: var(--theme-bright-lighter);
+      --stack2: var(--theme-bright-soft);
+      --stack3: var(--theme-bright);
+      --background: #f5f9f9;
+      --surface: #ffffff;
+      --text-color: var(--theme-dark);
+      --card-radius: 18px;
+      --inner-radius: 14px;
+      --pill-radius: 32px;
+      --border-width: 3px;
+      --shadow-card: 0 6px 0 var(--theme-shadow);
+      --shadow-pill: 0 4px 0 var(--theme-shadow);
+      --shadow-btn: 0 3px 0 var(--theme-shadow);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--background) url("images/light-bg.png") repeat;
+      background-size: 900px auto;
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 16px;
+      background: var(--surface);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--pill-radius);
+      padding: 10px 18px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--theme-dark);
+      transition: top 0.2s ease;
+      z-index: 2000;
+    }
+
+    .skip-link:focus {
+      top: 16px;
+    }
+
+    .menu-btn {
+      position: fixed;
+      top: clamp(18px, 5vw, 26px);
+      right: clamp(18px, 6vw, 36px);
+      z-index: 1200;
+      background: var(--surface);
+      color: var(--theme-dark);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--pill-radius);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 1rem;
+      padding: 10px 20px;
+      box-shadow: var(--shadow-pill);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, box-shadow 0.12s, border-color 0.12s;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .menu-btn .hamburger {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 28px;
+      height: 20px;
+    }
+
+    .menu-btn .hamburger span {
+      display: block;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--theme-dark);
+      transition: background 0.12s;
+    }
+
+    .menu-btn:focus-visible {
+      outline: 4px dashed var(--theme-dark);
+      outline-offset: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .menu-btn {
+        font-size: 0;
+        width: 54px;
+        height: 54px;
+        justify-content: center;
+        padding: 12px;
+      }
+
+      .menu-btn .label {
+        display: none;
+      }
+    }
+
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1300;
+      background: rgba(245, 249, 249, 0.96);
+      backdrop-filter: blur(3px) saturate(1.02);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .menu-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-panel {
+      width: min(400px, 92vw);
+      background: var(--surface);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-card);
+      padding: 36px clamp(24px, 3vw, 40px) 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      transform: translateY(12px);
+      transition: transform 0.22s ease;
+    }
+
+    .menu-overlay.open .menu-panel {
+      transform: translateY(0);
+    }
+
+    .menu-links {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .menu-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 260px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      background: var(--surface);
+      color: var(--theme-dark);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--pill-radius);
+      padding: 12px 20px;
+      box-shadow: var(--shadow-pill);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .menu-links a:hover,
+    .menu-links a:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--theme-shadow);
+    }
+
+    .menu-links a[aria-current="page"] {
+      background: var(--theme-bright);
+      color: var(--text-on-bright);
+      border-color: var(--theme-dark);
+    }
+
+    .close-menu {
+      background: var(--theme-dark);
+      color: var(--text-on-dark);
+      border: none;
+      border-radius: var(--pill-radius);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 24px;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .page {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(28px, 5vw, 48px) clamp(18px, 6vw, 56px) 80px;
+      gap: 32px;
+    }
+
+    .card-stack {
+      position: relative;
+      width: min(960px, 100%);
+    }
+
+    .accent-bar {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--card-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+      transform-origin: top left;
+    }
+
+    .stack1 {
+      transform: translateX(calc(var(--card-left) * -1)) translateY(calc(var(--card-left) * -1));
+    }
+
+    .stack2 {
+      transform: translateX(calc(var(--card-left) * -0.5)) translateY(calc(var(--card-left) * -0.5));
+    }
+
+    .stack3 {
+      transform: translateX(calc(var(--card-left) * -0.18)) translateY(calc(var(--card-left) * -0.18));
+    }
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-shell {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 18px 24px;
+      border-radius: var(--pill-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      background: var(--surface);
+      box-shadow: var(--shadow-pill);
+      margin-bottom: 24px;
+    }
+
+    .logo-shell img {
+      max-height: 56px;
+      width: auto;
+    }
+
+    .logo-wordmark {
+      max-height: 42px;
+    }
+
+    .main-card {
+      position: relative;
+      z-index: 3;
+      background: var(--surface);
+      border-radius: var(--card-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      box-shadow: var(--shadow-card);
+      padding: clamp(28px, 4vw, 48px);
+    }
+
+    .hero-intro {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero-intro h1 {
+      font-size: clamp(2.4rem, 1.6vw + 2.2rem, 3.2rem);
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .hero-intro p {
+      font-size: clamp(1.1rem, 0.6vw + 1rem, 1.28rem);
+      margin: 0;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border-radius: var(--pill-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      background: var(--theme-bright);
+      color: var(--text-on-bright);
+      box-shadow: var(--shadow-pill);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .pill-link:hover,
+    .pill-link:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--theme-shadow);
+    }
+
+    .pill-link--secondary {
+      background: var(--surface);
+      color: var(--theme-dark);
+    }
+
+    .donation-section {
+      margin-top: clamp(24px, 6vw, 48px);
+      display: grid;
+      gap: clamp(24px, 4vw, 40px);
+    }
+
+    .donation-intro {
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .donation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: clamp(18px, 3vw, 28px);
+    }
+
+    .donation-card {
+      background: var(--theme-bright-lighter);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--inner-radius);
+      padding: clamp(20px, 3vw, 28px);
+      box-shadow: var(--shadow-card);
+      display: grid;
+      gap: 12px;
+    }
+
+    .donation-card h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .donation-card p {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .donation-card a {
+      font-weight: 700;
+      color: var(--theme-dark);
+      text-decoration: underline;
+    }
+
+    .impact-section {
+      display: grid;
+      gap: 20px;
+      background: var(--surface);
+      border-radius: var(--inner-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      padding: clamp(22px, 4vw, 32px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .impact-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .disclaimer-section {
+      margin: 64px auto 0;
+      width: min(960px, calc(100% - 48px));
+    }
+
+    .disclaimer-card {
+      background: var(--surface);
+      border-radius: var(--card-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      box-shadow: var(--shadow-card);
+      padding: clamp(22px, 4vw, 32px);
+      display: grid;
+      gap: 18px;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 32px 16px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--theme-dark-soft);
+    }
+
+    @media (max-width: 640px) {
+      .card-stack {
+        width: 100%;
+      }
+
+      .accent-bar {
+        display: none;
+      }
+
+      .logo-shell {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <button
+    class="menu-btn"
+    type="button"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls="siteMenu"
+    aria-label="Open menu"
+  >
+    <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span class="label">Menu</span>
+  </button>
+
+  <div class="menu-overlay" id="siteMenu" hidden>
+    <div class="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menuHeading">
+      <h2 id="menuHeading" class="sr-only">Site menu</h2>
+      <nav class="menu-links">
+        <a href="index.html">Calculator</a>
+        <a href="medication-guides.html">Medication Guides</a>
+        <a href="donation.html" aria-current="page">Donate</a>
+        <a href="index.html#disclaimer-card">Disclaimer &amp; Support</a>
+      </nav>
+      <button class="close-menu" type="button">Close</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="card-stack">
+      <div class="accent-bar stack1" aria-hidden="true"></div>
+      <div class="accent-bar stack2" aria-hidden="true"></div>
+      <div class="accent-bar stack3" aria-hidden="true"></div>
+
+      <div class="logo-wrapper">
+        <div class="logo-shell">
+          <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
+          <img
+            class="logo-wordmark"
+            src="images/CloseDose_wordmark.svg"
+            data-wordmark-src="images/CloseDose_wordmark.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span class="sr-only">CloseDose</span>
+        </div>
+      </div>
+
+      <main class="main-card" id="main" role="main">
+        <section class="hero-intro donation-hero">
+          <h1>Support free pediatric dosing guidance</h1>
+          <p>
+            CloseDose is a volunteer-led project that keeps accurate, easy-to-follow dosing information available to every
+            caregiver. Your support funds clinical reviews, design improvements, and new educational resources for families.
+          </p>
+          <div class="pill-row">
+            <a class="pill-link" href="#ways-to-give">See ways to give</a>
+            <a class="pill-link pill-link--secondary" href="index.html#disclaimer-card">Visit the disclaimer &amp; donate pill</a>
+          </div>
+        </section>
+
+        <section class="donation-section" id="ways-to-give" aria-labelledby="waysTitle">
+          <div class="donation-intro">
+            <h2 id="waysTitle">Ways your donation keeps families safe</h2>
+            <p>
+              Every contribution helps maintain a clinical quality standard while keeping CloseDose completely free to caregivers.
+              Choose the option that works best for you below.
+            </p>
+          </div>
+
+          <div class="donation-grid">
+            <article class="donation-card">
+              <h3>One-time gift</h3>
+              <p>Cover hosting, security reviews, and print materials for community workshops.</p>
+              <a href="https://www.closedose.com/donate" target="_blank" rel="noopener">Give through our donation portal</a>
+            </article>
+            <article class="donation-card">
+              <h3>Monthly supporter</h3>
+              <p>Provide stable funding for pediatric expert consultations and bilingual translations.</p>
+              <a href="https://www.closedose.com/donate?view=monthly" target="_blank" rel="noopener">Become a sustaining donor</a>
+            </article>
+            <article class="donation-card">
+              <h3>Supplies wishlist</h3>
+              <p>Send the demo kits and outreach tools our volunteer educators use with families.</p>
+              <a href="https://www.closedose.com/donate?view=wishlist" target="_blank" rel="noopener">Shop the wishlist</a>
+            </article>
+          </div>
+
+          <div class="impact-section" aria-labelledby="impactTitle">
+            <h3 id="impactTitle">Your impact at a glance</h3>
+            <ul class="impact-list">
+              <li>Funds clinical safety reviews that keep dosing recommendations current.</li>
+              <li>Supports new caregiver tools, such as translation overlays and medication guides.</li>
+              <li>Enables rapid updates when pediatric guidelines evolve.</li>
+            </ul>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <section class="disclaimer-section" aria-labelledby="disclaimerHeading">
+    <div class="disclaimer-card">
+      <h2 id="disclaimerHeading">Need the medication disclaimer?</h2>
+      <p>
+        The full educational disclaimer and the in-app donation pill live on our calculator page. Use the button below to jump
+        directly there.
+      </p>
+      <a class="pill-link pill-link--secondary" href="index.html#disclaimer-card">Go to disclaimer &amp; donate pill</a>
+    </div>
+  </section>
+
+  <footer>
+    <small>&copy; <span id="currentYear"></span> CloseDose. All rights reserved.</small>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      const menuButton = document.querySelector('.menu-btn');
+      const overlay = document.getElementById('siteMenu');
+      if (!menuButton || !overlay) {
+        return;
+      }
+      const closeButton = overlay.querySelector('.close-menu');
+      const focusableSelector = 'a, button, [tabindex]:not([tabindex="-1"])';
+
+      function openMenu() {
+        overlay.hidden = false;
+        requestAnimationFrame(() => overlay.classList.add('open'));
+        menuButton.setAttribute('aria-expanded', 'true');
+        menuButton.setAttribute('aria-label', 'Close menu');
+        if (closeButton) {
+          closeButton.focus();
+        }
+      }
+
+      function closeMenu() {
+        overlay.classList.remove('open');
+        overlay.hidden = true;
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Open menu');
+        menuButton.focus();
+      }
+
+      menuButton.addEventListener('click', () => {
+        if (overlay.classList.contains('open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      if (closeButton) {
+        closeButton.addEventListener('click', closeMenu);
+      }
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeMenu();
+        }
+      });
+
+      overlay.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeMenu();
+          return;
+        }
+        if (event.key !== 'Tab' || !overlay.classList.contains('open')) {
+          return;
+        }
+        const focusable = Array.from(overlay.querySelectorAll(focusableSelector));
+        if (!focusable.length) {
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+
+      const menuLinks = overlay.querySelectorAll('a[href]');
+      menuLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            closeMenu();
+          }
+        });
+      });
+    })();
+  </script>
+  <script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

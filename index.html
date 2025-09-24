@@ -782,6 +782,8 @@
       <nav class="menu-links">
         <a href="index.html" aria-current="page">Calculator</a>
         <a href="medication-guides.html">Medication Guides</a>
+        <a href="donation.html">Donate</a>
+        <a href="#disclaimer-card">Disclaimer &amp; Support</a>
       </nav>
       <button class="close-menu" type="button">Close</button>
     </div>
@@ -883,8 +885,8 @@
     </div>
   </div>
 
-  <section class="disclaimer-section">
-    <div class="disclaimer-card">
+  <section class="disclaimer-section" id="disclaimer">
+    <div class="disclaimer-card" id="disclaimer-card">
       <p>
         <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
       </p>
@@ -993,6 +995,16 @@
           event.preventDefault();
           first.focus();
         }
+      });
+
+      const menuLinks = overlay.querySelectorAll('a[href]');
+      menuLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            closeMenu();
+          }
+        });
       });
 
       const donationToggle = document.querySelector('[data-donation-toggle]');

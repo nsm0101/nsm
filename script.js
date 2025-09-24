@@ -178,7 +178,8 @@ function getElements() {
     weightUnit: document.getElementById('weight-unit'),
     message: document.getElementById('message'),
     results: document.getElementById('results'),
-    calculateButton: document.querySelector('#calculator button'),
+    calculateButton: document.querySelector('#calculator button[type="submit"]'),
+    helloBox: document.querySelector('.hello-box'),
   };
 }
 
@@ -210,6 +211,18 @@ function updateForm() {
   elements.calculateButton.disabled = false;
   elements.weightInput.disabled = false;
   elements.weightUnit.disabled = false;
+
+  if (elements.helloBox) {
+    if (!age) {
+      elements.helloBox.textContent = 'Welcome! Choose an age group to begin.';
+    } else if (age === '0-2') {
+      elements.helloBox.textContent = 'Infants under 2 months with a fever need emergency medical care—contact a pediatrician immediately.';
+    } else if (age === '2-6') {
+      elements.helloBox.textContent = 'Great! Enter the weight to calculate an acetaminophen dose.';
+    } else {
+      elements.helloBox.textContent = 'Enter the patient\'s weight to see acetaminophen and ibuprofen guidance.';
+    }
+  }
 
   if (age === '0-2') {
     elements.message.hidden = false;
@@ -245,6 +258,15 @@ function calculateDose() {
 
   if (!age) {
     elements.results.innerHTML = renderWarning('Age required', 'Please select an age group to continue.');
+    return;
+  }
+
+  if (age === '0-2') {
+    elements.results.innerHTML = renderWarning(
+      'Seek immediate medical care',
+      'For infants under 60 days with fever, contact your pediatrician or seek emergency care instead of giving over-the-counter medication.',
+      'warning-card--red-soft'
+    );
     return;
   }
 
@@ -371,6 +393,97 @@ function initCalculator() {
     event.preventDefault();
     calculateDose();
   });
+}
+
+function initAgeSelection() {
+  const ageSelect = document.getElementById('age');
+  const ageButtons = Array.from(document.querySelectorAll('.age-option'));
+
+  if (!ageSelect || ageButtons.length === 0) {
+    return;
+  }
+
+  const setActive = (targetButton) => {
+    ageButtons.forEach((button) => {
+      const isActive = button === targetButton;
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  };
+
+  ageButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-age') || '';
+      if (ageSelect.value === value) {
+        return;
+      }
+      ageSelect.value = value;
+      setActive(button);
+      updateForm();
+    });
+  });
+
+  const presetButton = ageButtons.find((button) => button.getAttribute('data-age') === ageSelect.value);
+  if (presetButton) {
+    setActive(presetButton);
+  } else {
+    setActive(null);
+  }
+}
+
+function initWeightUnits() {
+  const unitSelect = document.getElementById('weight-unit');
+  const weightInput = document.getElementById('weight');
+  const unitButtons = Array.from(document.querySelectorAll('.unit-option'));
+
+  if (!unitSelect || unitButtons.length === 0) {
+    return;
+  }
+
+  const setActive = (targetButton) => {
+    unitButtons.forEach((button) => {
+      const isActive = button === targetButton;
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  };
+
+  const convertWeight = (value, fromUnit, toUnit) => {
+    if (!Number.isFinite(value)) {
+      return value;
+    }
+    if (fromUnit === toUnit) {
+      return value;
+    }
+    return fromUnit === 'lbs' ? value / 2.20462 : value * 2.20462;
+  };
+
+  unitButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const nextUnit = button.getAttribute('data-unit');
+      if (!nextUnit || unitSelect.value === nextUnit) {
+        return;
+      }
+
+      const previousUnit = unitSelect.value || 'lbs';
+      let currentValue = parseFloat(weightInput.value);
+      if (!Number.isNaN(currentValue)) {
+        currentValue = convertWeight(currentValue, previousUnit, nextUnit);
+        weightInput.value = Number.isFinite(currentValue)
+          ? (Math.round(currentValue * 10) / 10).toString()
+          : '';
+      }
+
+      unitSelect.value = nextUnit;
+      setActive(button);
+      weightInput.dispatchEvent(new Event('change'));
+    });
+  });
+
+  const presetButton = unitButtons.find((button) => button.getAttribute('data-unit') === unitSelect.value);
+  if (presetButton) {
+    setActive(presetButton);
+  } else {
+    setActive(null);
+  }
 }
 
 // Initialize state on first load
@@ -626,6 +739,8 @@ function initTranslations() {
 window.addEventListener('DOMContentLoaded', () => {
   initCarousels();
   initCalculator();
+  initAgeSelection();
+  initWeightUnits();
   updateForm();
   initTranslations();
 });
