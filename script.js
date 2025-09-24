@@ -69,6 +69,17 @@ function toRgba(color, alpha) {
   return `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${Math.max(0, Math.min(1, alpha))})`;
 }
 
+function getReadableTextColor(color) {
+  const { r, g, b } = hexToRgb(color);
+  const toLinear = (value) => {
+    const channel = value / 255;
+    return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+  };
+  const luminance =
+    0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  return luminance > 0.55 ? '#000000' : '#ffffff';
+}
+
 function initThemeColors() {
   const palette = THEME_COLOR_PAIRS[Math.floor(Math.random() * THEME_COLOR_PAIRS.length)];
   if (!palette) {
@@ -92,6 +103,10 @@ function initThemeColors() {
   root.style.setProperty('--stack1', lightenColor(bright, 0.88));
   root.style.setProperty('--stack2', lightenColor(bright, 0.64));
   root.style.setProperty('--stack3', lightenColor(bright, 0.42));
+  root.style.setProperty('--text-on-bright', getReadableTextColor(bright));
+  root.style.setProperty('--text-on-dark', getReadableTextColor(dark));
+  root.style.setProperty('--warning-soft', toRgba(bright, 0.24));
+  root.style.setProperty('--danger-soft', toRgba(darkenColor(bright, 0.35), 0.24));
 }
 
 initThemeColors();
