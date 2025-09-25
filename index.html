@@ -99,11 +99,12 @@
       font-size: 1rem;
       padding: 10px 20px;
       box-shadow: var(--shadow-pill);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      transition: background 0.12s, color 0.12s, box-shadow 0.12s, border-color 0.12s;
+      transition: background 0.12s, color 0.12s, box-shadow 0.12s, border-color 0.12s, width 0.18s ease,
+        padding 0.18s ease;
     }
 
     .menu-btn .hamburger {
@@ -129,15 +130,26 @@
 
     @media (max-width: 640px) {
       .menu-btn {
-        font-size: 0;
-        width: 54px;
-        height: 54px;
+        width: 56px;
+        height: 56px;
         justify-content: center;
         padding: 12px;
+        gap: 0;
       }
 
       .menu-btn .label {
         display: none;
+      }
+
+      body.menu-pill-expanded .menu-btn {
+        width: auto;
+        height: auto;
+        padding: 10px 20px;
+        gap: 10px;
+      }
+
+      body.menu-pill-expanded .menu-btn .label {
+        display: inline;
       }
     }
 
@@ -736,13 +748,32 @@
     .disclaimer-section {
       width: 100%;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(18px, 4vw, 24px);
       padding: clamp(32px, 5vw, 48px) 16px;
     }
 
-    .disclaimer-card {
-      max-width: min(720px, 95vw);
+    .support-pills {
+      width: min(760px, 95vw);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(14px, 3vw, 18px);
+    }
+
+    .support-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
+      text-align: center;
+    }
+
+    .disclaimer-card {
+      max-width: min(760px, 95vw);
+      width: 100%;
+      margin: 0 auto;
       background: var(--theme-dark);
       color: var(--text-on-dark);
       border-radius: var(--card-radius);
@@ -758,8 +789,9 @@
     }
 
     .donation-pill {
-      margin-top: clamp(18px, 3vw, 24px);
-      display: inline-block;
+      display: inline-flex;
+      justify-content: center;
+      margin: 0;
     }
 
     .donation-pill[aria-expanded='true'] {
@@ -767,8 +799,46 @@
       color: var(--theme-dark);
     }
 
+    .disclaimer-footer {
+      transition: width 0.28s ease, border-radius 0.28s ease, box-shadow 0.28s ease;
+    }
+
+    .disclaimer-footer[hidden] {
+      display: none;
+    }
+
+    .disclaimer-footer__content {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 2.6vw, 16px);
+    }
+
+    .disclaimer-footer__content h2 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    body.disclaimer-footer-open .disclaimer-footer {
+      width: 100%;
+      max-width: none;
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+      margin: 0;
+      box-shadow: none;
+    }
+
+    body.disclaimer-footer-open .disclaimer-footer__content {
+      max-width: min(760px, 95vw);
+      margin: 0 auto;
+      text-align: center;
+    }
+
     .donation-links {
-      margin-top: clamp(18px, 3vw, 26px);
+      width: min(760px, 95vw);
+      margin: clamp(18px, 3vw, 26px) auto 0;
       padding: clamp(18px, 3.2vw, 24px);
       border-radius: var(--inner-radius);
       background: rgba(255, 255, 255, 0.16);
@@ -799,6 +869,11 @@
     .donation-links a:hover,
     .donation-links a:focus-visible {
       text-decoration: underline;
+    }
+
+    .page-end-sentinel {
+      width: 100%;
+      height: 1px;
     }
 
     footer {
@@ -975,13 +1050,18 @@
   </div>
 
   <section class="disclaimer-section" id="disclaimer">
-    <div class="disclaimer-card" id="disclaimer-card">
-      <p>
-        <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
-      </p>
-      <p>Updated 9/21/2025 • Nickolas Mancini, MD, MBA.</p>
+    <div class="support-pills" role="group" aria-label="Support CloseDose options">
       <button
-        class="pill-link donation-pill"
+        class="pill-link pill-link--secondary support-pill"
+        type="button"
+        id="disclaimerPill"
+        aria-controls="disclaimer-card"
+        aria-expanded="false"
+      >
+        Disclaimer
+      </button>
+      <button
+        class="pill-link support-pill donation-pill"
         type="button"
         data-donation-toggle
         aria-expanded="false"
@@ -989,27 +1069,46 @@
       >
         Donate!
       </button>
-      <div class="donation-links" id="donationLinks" hidden aria-hidden="true">
-        <p>Support CloseDose</p>
-        <ul>
-          <li>
-            <a href="https://www.closedose.com/donate" target="_blank" rel="noopener" data-donation-focus>
-              Give through our donation portal
-            </a>
-          </li>
-          <li>
-            <a href="https://www.closedose.com/donate?view=wishlist" target="_blank" rel="noopener">
-              Shop our supplies wishlist
-            </a>
-          </li>
-          <li>
-            <a href="https://www.closedose.com/donate?view=monthly" target="_blank" rel="noopener">
-              Become a monthly supporter
-            </a>
-          </li>
-        </ul>
+    </div>
+    <div
+      class="disclaimer-card disclaimer-footer"
+      id="disclaimer-card"
+      role="region"
+      aria-labelledby="disclaimerHeading"
+      aria-hidden="true"
+      hidden
+      tabindex="-1"
+    >
+      <div class="disclaimer-footer__content">
+        <h2 id="disclaimerHeading">Disclaimer</h2>
+        <p>
+          <strong>Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for professional medical
+          advice. Always confirm dosing with your pediatrician or pharmacist before administering medication.
+        </p>
+        <p>Updated 9/21/2025 • Nickolas Mancini, MD, MBA.</p>
       </div>
     </div>
+    <div class="donation-links" id="donationLinks" hidden aria-hidden="true">
+      <p>Support CloseDose</p>
+      <ul>
+        <li>
+          <a href="https://www.closedose.com/donate" target="_blank" rel="noopener" data-donation-focus>
+            Give through our donation portal
+          </a>
+        </li>
+        <li>
+          <a href="https://www.closedose.com/donate?view=wishlist" target="_blank" rel="noopener">
+            Shop our supplies wishlist
+          </a>
+        </li>
+        <li>
+          <a href="https://www.closedose.com/donate?view=monthly" target="_blank" rel="noopener">
+            Become a monthly supporter
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="page-end-sentinel" id="pageEndSentinel" aria-hidden="true"></div>
   </section>
 
   <footer>
@@ -1021,80 +1120,97 @@
     (function () {
       const menuButton = document.querySelector('.menu-btn');
       const overlay = document.getElementById('siteMenu');
-      if (!menuButton || !overlay) {
-        return;
-      }
-      const closeButton = overlay.querySelector('.close-menu');
       const focusableSelector = 'a, button, [tabindex]:not([tabindex="-1"])';
 
-      function openMenu() {
-        overlay.hidden = false;
-        requestAnimationFrame(() => overlay.classList.add('open'));
-        menuButton.setAttribute('aria-expanded', 'true');
-        menuButton.setAttribute('aria-label', 'Close menu');
+      if (menuButton && overlay) {
+        const closeButton = overlay.querySelector('.close-menu');
+
+        const openMenu = () => {
+          overlay.hidden = false;
+          requestAnimationFrame(() => overlay.classList.add('open'));
+          menuButton.setAttribute('aria-expanded', 'true');
+          menuButton.setAttribute('aria-label', 'Close menu');
+          if (closeButton) {
+            closeButton.focus();
+          }
+        };
+
+        const closeMenu = () => {
+          overlay.classList.remove('open');
+          overlay.hidden = true;
+          menuButton.setAttribute('aria-expanded', 'false');
+          menuButton.setAttribute('aria-label', 'Open menu');
+          menuButton.focus();
+        };
+
+        menuButton.addEventListener('click', () => {
+          if (overlay.classList.contains('open')) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+
         if (closeButton) {
-          closeButton.focus();
+          closeButton.addEventListener('click', closeMenu);
         }
-      }
 
-      function closeMenu() {
-        overlay.classList.remove('open');
-        overlay.hidden = true;
-        menuButton.setAttribute('aria-expanded', 'false');
-        menuButton.setAttribute('aria-label', 'Open menu');
-        menuButton.focus();
-      }
-
-      menuButton.addEventListener('click', () => {
-        if (overlay.classList.contains('open')) {
-          closeMenu();
-        } else {
-          openMenu();
-        }
-      });
-
-      if (closeButton) {
-        closeButton.addEventListener('click', closeMenu);
-      }
-
-      overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) {
-          closeMenu();
-        }
-      });
-
-      overlay.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-          closeMenu();
-          return;
-        }
-        if (event.key !== 'Tab' || !overlay.classList.contains('open')) {
-          return;
-        }
-        const focusable = Array.from(overlay.querySelectorAll(focusableSelector));
-        if (!focusable.length) {
-          return;
-        }
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      });
-
-      const menuLinks = overlay.querySelectorAll('a[href]');
-      menuLinks.forEach((link) => {
-        link.addEventListener('click', () => {
-          const href = link.getAttribute('href');
-          if (href && href.startsWith('#')) {
+        overlay.addEventListener('click', (event) => {
+          if (event.target === overlay) {
             closeMenu();
           }
         });
-      });
+
+        overlay.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') {
+            closeMenu();
+            return;
+          }
+          if (event.key !== 'Tab' || !overlay.classList.contains('open')) {
+            return;
+          }
+          const focusable = Array.from(overlay.querySelectorAll(focusableSelector));
+          if (!focusable.length) {
+            return;
+          }
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        });
+
+        const menuLinks = overlay.querySelectorAll('a[href]');
+        menuLinks.forEach((link) => {
+          link.addEventListener('click', () => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+              closeMenu();
+            }
+          });
+        });
+      }
+
+      if (menuButton) {
+        let expandedState = null;
+        const updateMenuAppearance = () => {
+          const scrollY = window.scrollY || window.pageYOffset;
+          const shouldExpand = scrollY <= 12;
+          if (shouldExpand !== expandedState) {
+            expandedState = shouldExpand;
+            document.body.classList.toggle('menu-pill-expanded', shouldExpand);
+          }
+        };
+
+        updateMenuAppearance();
+        window.addEventListener('scroll', updateMenuAppearance, { passive: true });
+        window.addEventListener('resize', updateMenuAppearance);
+        window.addEventListener('load', updateMenuAppearance);
+      }
 
       const donationToggle = document.querySelector('[data-donation-toggle]');
       const donationPanel = document.getElementById('donationLinks');
@@ -1121,6 +1237,82 @@
             donationToggle.focus();
           }
         });
+      }
+
+      const disclaimerToggle = document.getElementById('disclaimerPill');
+      const disclaimerPanel = document.getElementById('disclaimer-card');
+      const pageEndSentinel = document.getElementById('pageEndSentinel');
+      if (disclaimerToggle && disclaimerPanel) {
+        let disclaimerExpanded = disclaimerToggle.getAttribute('aria-expanded') === 'true';
+
+        disclaimerPanel.hidden = !disclaimerExpanded;
+        disclaimerPanel.setAttribute('aria-hidden', String(!disclaimerExpanded));
+        document.body.classList.toggle('disclaimer-footer-open', disclaimerExpanded);
+
+        const setDisclaimerState = (expanded, { focus = false } = {}) => {
+          if (expanded === disclaimerExpanded) {
+            if (expanded && focus) {
+              requestAnimationFrame(() => disclaimerPanel.focus());
+            }
+            return;
+          }
+
+          disclaimerExpanded = expanded;
+          disclaimerToggle.setAttribute('aria-expanded', String(expanded));
+          disclaimerPanel.hidden = !expanded;
+          disclaimerPanel.setAttribute('aria-hidden', String(!expanded));
+          document.body.classList.toggle('disclaimer-footer-open', expanded);
+
+          if (expanded && focus) {
+            requestAnimationFrame(() => disclaimerPanel.focus());
+          }
+        };
+
+        setDisclaimerState(disclaimerExpanded);
+
+        disclaimerToggle.addEventListener('click', () => {
+          const nextExpanded = !disclaimerExpanded;
+          setDisclaimerState(nextExpanded, { focus: nextExpanded });
+        });
+
+        disclaimerPanel.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') {
+            setDisclaimerState(false);
+            disclaimerToggle.focus();
+          }
+        });
+
+        const handleHashChange = () => {
+          if (window.location.hash === '#disclaimer-card') {
+            setDisclaimerState(true, { focus: true });
+          }
+        };
+
+        handleHashChange();
+        window.addEventListener('hashchange', handleHashChange);
+
+        if (pageEndSentinel) {
+          const handleReveal = () => setDisclaimerState(true);
+
+          if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  handleReveal();
+                }
+              });
+            }, { threshold: 0.75 });
+            observer.observe(pageEndSentinel);
+          } else {
+            const revealOnScroll = () => {
+              const scrollPosition = (window.scrollY || window.pageYOffset) + window.innerHeight;
+              if (scrollPosition >= document.body.offsetHeight) {
+                handleReveal();
+              }
+            };
+            window.addEventListener('scroll', revealOnScroll, { passive: true });
+          }
+        }
       }
     })();
   </script>
