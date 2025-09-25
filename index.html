@@ -295,19 +295,6 @@
       pointer-events: none;
     }
 
-    .logo-wordmark {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translate(-50%, 42%);
-      width: clamp(260px, 38vw, 440px);
-      max-width: 92%;
-      height: auto;
-      display: block;
-      pointer-events: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
     body.logo-collapsed .logo-wrapper {
       margin-bottom: 0;
     }
@@ -327,15 +314,6 @@
       z-index: 2000;
       padding-bottom: 0;
       min-height: auto;
-    }
-
-    body.logo-condensed .logo-wordmark {
-      transform: translate(-50%, 34%);
-    }
-
-    body.logo-collapsed .logo-wordmark {
-      opacity: 0;
-      transform: translate(-50%, -12px);
     }
 
     .sr-only {
@@ -731,10 +709,6 @@
         width: clamp(140px, 30vw, 220px);
       }
 
-      .logo-wordmark {
-        left: 50%;
-      }
-
       .menu-btn {
         top: 16px;
         right: 16px;
@@ -798,13 +772,6 @@
       <div class="logo-wrapper">
         <div class="logo-shell">
           <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
-          <img
-            class="logo-wordmark"
-            src="images/CloseDose_wordmark.svg"
-            data-wordmark-src="images/CloseDose_wordmark.svg"
-            alt=""
-            aria-hidden="true"
-          />
           <span class="sr-only">CloseDose</span>
         </div>
       </div>
