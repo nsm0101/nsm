@@ -173,7 +173,7 @@
       align-items: center;
       gap: 12px;
       cursor: pointer;
-      box-shadow: var(--shadow-btn);
+      box-shadow: 0 14px 20px rgba(15, 44, 42, 0.25);
       transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
       position: relative;
       z-index: 1200;
@@ -202,13 +202,13 @@
     .menu-btn:hover,
     .menu-btn:focus-visible {
       background: #f0faf6;
-      box-shadow: 0 5px 0 rgba(15, 44, 42, 0.35);
+      box-shadow: 0 12px 18px rgba(15, 44, 42, 0.22);
       outline: none;
     }
 
     .menu-btn:active {
       transform: translateY(2px);
-      box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
+      box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.22);
     }
 
     @media (max-width: 960px) {
@@ -219,7 +219,7 @@
         position: fixed;
         bottom: clamp(20px, 6vw, 40px);
         right: clamp(20px, 6vw, 40px);
-        box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
+        box-shadow: 0 12px 18px rgba(15, 44, 42, 0.22);
         margin-left: 0;
       }
     }
@@ -232,12 +232,20 @@
         background: transparent !important;
       }
       .menu-btn {
-        padding: 12px;
-        width: 64px;
-        height: 64px;
+        padding: 6px;
+        width: 32px;
+        height: 32px;
         justify-content: center;
         border-radius: 50%;
         font-size: 0;
+        box-shadow: 0 10px 16px rgba(15, 44, 42, 0.2);
+      }
+      .menu-btn .hamburger {
+        width: 18px;
+        height: 12px;
+      }
+      .menu-btn .hamburger span {
+        height: 2px;
       }
       .menu-btn .label {
         display: none;
