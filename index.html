@@ -322,7 +322,7 @@
       inset: 0;
       background: var(--surface);
       border: var(--border-width) solid var(--theme-dark);
-      clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+      border-radius: clamp(18px, 4vw, 28px);
       box-shadow: var(--shadow-pill);
       opacity: 0;
       transform: translateX(-120%) scale(0.92);
@@ -383,14 +383,20 @@
     }
 
     body.logo-collapsed .logo-link {
-      width: 100%;
+      width: auto;
       max-width: clamp(160px, 32vw, 260px);
+      padding: clamp(10px, 2.6vw, 16px) clamp(14px, 3.6vw, 22px);
       box-shadow: var(--shadow-pill);
     }
 
     body.logo-collapsed .logo-link::before {
       opacity: 1;
       transform: translateX(0);
+      border-radius: clamp(18px, 4vw, 28px);
+    }
+
+    body.logo-collapsed #logo-sequence {
+      width: clamp(120px, 28vw, 200px);
     }
 
     .sr-only {
