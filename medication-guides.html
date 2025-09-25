@@ -44,11 +44,19 @@
       --teal-600: var(--theme-dark-strong);
       --ink-900: var(--theme-dark);
       --ink-700: var(--theme-dark-strong);
-      --bg: #f5f9f9;
+      --border-width: 3px;
+      --background: #f5f9f9;
+      --surface: #ffffff;
       --white: #ffffff;
+      --text-color: var(--ink-900);
       --card-bg: rgba(255, 255, 255, 0.92);
-      --card-border: 3px solid var(--ink-900);
+      --card-border: var(--border-width) solid var(--ink-900);
       --card-radius: 26px;
+      --card-left: 28px;
+      --stack1: var(--theme-bright-lighter);
+      --stack2: var(--theme-bright-soft);
+      --stack3: var(--theme-bright);
+      --stack-gap: clamp(14px, 3vw, 28px);
       --shadow-card: 0 6px 0 var(--theme-shadow);
       --shadow-btn: 0 4px 0 var(--theme-shadow);
       --shadow-pill: var(--shadow-btn);
@@ -63,9 +71,9 @@
     body {
       margin: 0;
       font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
-      background: var(--bg) url("images/light-bg.png") repeat;
-      background-size: 520px auto;
-      color: var(--ink-900);
+      background: var(--background) url("images/light-bg.png") repeat;
+      background-size: 900px auto;
+      color: var(--text-color);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -85,258 +93,320 @@
 
     .skip-link {
       position: absolute;
-      left: -9999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
+      top: -40px;
+      left: 16px;
+      background: var(--surface);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--pill-radius);
+      padding: 10px 18px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--theme-dark);
+      transition: top 0.2s ease;
+      z-index: 2000;
     }
 
     .skip-link:focus {
-      position: fixed;
-      left: 16px;
       top: 16px;
-      z-index: 200;
-      width: auto;
-      height: auto;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: var(--white);
-      border: 3px solid var(--ink-900);
-      box-shadow: var(--shadow-card);
     }
 
-    .wrap {
+    .page {
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      align-items: center;
+      padding: clamp(40px, 12vw, 120px) clamp(18px, 6vw, 60px) clamp(120px, 18vw, 200px);
     }
 
-    header {
+    .card-stack {
+      width: min(940px, 96vw);
       position: relative;
+      padding-top: calc(var(--stack-gap) * 2 + clamp(48px, 10vw, 92px));
+      padding-bottom: calc(var(--stack-gap) * 2);
+    }
+
+    .accent-bar {
+      position: absolute;
+      inset-inline: -2.5%;
       top: 0;
-      z-index: 100;
+      bottom: 0;
+      border-radius: var(--card-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      pointer-events: none;
+      box-shadow: var(--shadow-card);
+      transition: top 0.3s ease, bottom 0.3s ease;
+    }
+
+    .accent-bar.stack1 {
+      background: var(--stack1);
+      top: calc(-1 * var(--stack-gap) * 2);
+      bottom: calc(-1 * var(--stack-gap) * 2);
+      z-index: 1;
+    }
+
+    .accent-bar.stack2 {
+      background: var(--stack2);
+      top: calc(-1 * var(--stack-gap));
+      bottom: calc(-1 * var(--stack-gap));
+      z-index: 2;
+    }
+
+    .accent-bar.stack3 {
+      background: var(--stack3);
+      z-index: 3;
+    }
+
+    .logo-wrapper {
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+      min-height: clamp(140px, 24vw, 220px);
       display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      gap: clamp(14px, 3vw, 24px);
-      padding: clamp(14px, 3vw, 26px) clamp(18px, 5vw, 48px) clamp(6px, 2vw, 14px);
+      align-items: flex-end;
+      justify-content: center;
+      padding-top: clamp(24px, 6vw, 48px);
+      margin-bottom: calc(-1 * clamp(24px, 5vw, 40px));
+      z-index: 8;
+    }
+
+    .logo-shell {
+      position: relative;
+      width: 92%;
+      max-width: 720px;
+      min-height: clamp(80px, 18vw, 140px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(16px, 4vw, 28px);
+      padding-bottom: clamp(32px, 6vw, 48px);
+      transition: transform 0.22s cubic-bezier(0.8, 0, 0.2, 1),
+        width 0.22s cubic-bezier(0.8, 0, 0.2, 1),
+        left 0.22s ease,
+        top 0.22s ease,
+        padding-bottom 0.2s ease,
+        gap 0.2s ease;
+      transform-origin: left center;
+      z-index: 1800;
+      pointer-events: none;
+    }
+
+    .logo-wordmark {
+      display: block;
+      width: clamp(260px, 58vw, 420px);
+      max-width: 520px;
+      height: auto;
+      pointer-events: none;
+      transition: width 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .logo-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 640px;
+      text-decoration: none;
+      pointer-events: auto;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      z-index: 1;
+    }
+
+    .logo-link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: clamp(18px, 4vw, 28px);
+      box-shadow: var(--shadow-pill);
+      opacity: 0;
+      transform: translateX(-120%) scale(0.92);
+      transition: transform 0.3s ease, opacity 0.2s ease;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .logo-link:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    .logo-link:focus-visible {
+      outline: 4px dashed var(--theme-dark);
+      outline-offset: 6px;
+    }
+
+    #logo-sequence {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    body.logo-collapsed .logo-wrapper {
       margin-bottom: 0;
     }
 
-    .brand {
-      display: flex;
-      align-items: stretch;
+    body.logo-condensed .logo-shell {
+      width: clamp(320px, 38vw, 460px);
+      padding-bottom: clamp(20px, 4vw, 28px);
+      gap: clamp(12px, 3vw, 22px);
+      z-index: 2000;
+    }
+
+    body.logo-condensed .logo-wordmark {
+      width: clamp(220px, 48vw, 340px);
+    }
+
+    body.logo-collapsed .logo-shell {
+      position: fixed;
+      top: clamp(18px, 5vw, 26px);
+      left: clamp(18px, 6vw, 36px);
+      width: clamp(160px, 32vw, 260px);
+      transform: none;
+      z-index: 2200;
+      padding-bottom: 0;
+      min-height: auto;
+      flex-direction: row;
+      gap: 0;
+      align-items: center;
       justify-content: flex-start;
-      flex: 1;
-      flex-wrap: nowrap;
-      gap: clamp(12px, 2.6vw, 22px);
-      min-width: 0;
     }
 
-    .brand img {
-      display: block;
-      height: auto;
-      min-height: 58px;
+    body.logo-collapsed .logo-wordmark {
+      display: none;
     }
 
-    .brand .logo {
-      width: clamp(128px, 22vw, 204px);
-      max-width: 100%;
-      flex-shrink: 0;
+    body.logo-collapsed .logo-link {
+      width: auto;
+      max-width: clamp(160px, 32vw, 260px);
+      padding: clamp(10px, 2.6vw, 16px) clamp(14px, 3.6vw, 22px);
+      box-shadow: var(--shadow-pill);
     }
 
-    .brand .wordmark {
-      flex: 1 1 auto;
-      width: 100%;
-      max-width: none;
-      min-width: 180px;
-      min-height: 58px;
-      height: auto;
-      object-fit: contain;
-      overflow: visible;
+    body.logo-collapsed .logo-link::before {
+      opacity: 1;
+      transform: translateX(0);
+      border-radius: clamp(18px, 4vw, 28px);
+    }
+
+    body.logo-collapsed #logo-sequence {
+      width: clamp(120px, 28vw, 200px);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .main-card {
+      position: relative;
+      z-index: 6;
+      background: var(--surface);
+      border-radius: var(--card-radius);
+      border: var(--border-width) solid var(--theme-dark);
+      box-shadow: var(--shadow-card);
+      padding: clamp(28px, 4vw, 44px);
+      display: grid;
+      gap: clamp(32px, 5vw, 40px);
     }
 
     .menu-btn {
-      appearance: none;
-      border: var(--card-border);
-      border-radius: 999px;
-      background: var(--white);
-      color: var(--ink-900);
-      font-weight: 900;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 12px 20px;
-      font-size: 0.95rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      box-shadow: var(--shadow-btn);
-      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-      position: relative;
+      position: fixed;
+      top: clamp(18px, 5vw, 26px);
+      right: clamp(18px, 6vw, 36px);
       z-index: 1200;
-      margin-left: auto;
+      background: var(--surface);
+      color: var(--theme-dark);
+      border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--pill-radius);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 1rem;
+      padding: 10px 20px;
+      box-shadow: var(--shadow-pill);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, box-shadow 0.12s, border-color 0.12s;
     }
 
     .menu-btn .hamburger {
-      width: 24px;
-      height: 16px;
-      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 28px;
+      height: 20px;
     }
 
     .menu-btn .hamburger span {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 3px;
-      border-radius: 999px;
-      background: var(--ink-900);
+      display: block;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--theme-dark);
+      transition: background 0.12s;
     }
 
-    .menu-btn .hamburger span:nth-child(1) { top: 0; }
-    .menu-btn .hamburger span:nth-child(2) { top: 6px; }
-    .menu-btn .hamburger span:nth-child(3) { top: 12px; }
-
-    .menu-btn:hover,
     .menu-btn:focus-visible {
-      background: #f0faf6;
-      box-shadow: 0 5px 0 rgba(15, 44, 42, 0.35);
-      outline: none;
-    }
-
-    .menu-btn:active {
-      transform: translateY(2px);
-      box-shadow: inset 0 4px 8px rgba(15, 44, 42, 0.25);
-    }
-
-    @media (max-width: 960px) {
-      header {
-        padding-inline: clamp(16px, 5vw, 32px);
-      }
-      .menu-btn {
-        position: fixed;
-        bottom: clamp(20px, 6vw, 40px);
-        right: clamp(20px, 6vw, 40px);
-        box-shadow: 0 8px 0 rgba(15, 44, 42, 0.35);
-        margin-left: 0;
-      }
+      outline: 4px dashed var(--theme-dark);
+      outline-offset: 4px;
     }
 
     @media (max-width: 640px) {
-      header {
-        align-items: flex-start;
-        gap: 10px;
-        padding: clamp(10px, 3vw, 18px) clamp(16px, 6vw, 28px) clamp(4px, 2vw, 12px);
-        background: transparent !important;
-      }
       .menu-btn {
-        padding: 12px;
-        width: 64px;
-        height: 64px;
-        justify-content: center;
-        border-radius: 50%;
         font-size: 0;
+        width: 54px;
+        height: 54px;
+        justify-content: center;
+        padding: 12px;
       }
+
       .menu-btn .label {
         display: none;
       }
-      .brand {
-        flex-direction: column;
-        gap: clamp(8px, 4vw, 16px);
-      }
-      .brand .logo {
-        width: clamp(120px, 42vw, 180px);
-      }
-      .brand .wordmark {
-        width: 100%;
-        min-width: 0;
-        max-width: none;
-        min-height: 54px;
-      }
     }
 
-    main {
-      flex: 1;
-      width: 100%;
-      padding: 0 clamp(18px, 5vw, 52px) clamp(48px, 8vw, 80px);
-      box-sizing: border-box;
-    }
-
-    .page-content {
-      width: min(1100px, 100%);
+    .hero-guides {
+      display: grid;
+      gap: clamp(20px, 4vw, 28px);
+      text-align: center;
       margin: 0 auto;
-      display: grid;
-      gap: clamp(24px, 4vw, 36px);
+      max-width: min(720px, 100%);
+      justify-items: center;
     }
 
-    .card {
-      background: var(--card-bg);
-      border: var(--card-border);
-      border-radius: var(--card-radius);
-      box-shadow: var(--shadow-card);
-      padding: clamp(24px, 4vw, 36px);
-    }
-
-    .hero {
-      display: grid;
-      gap: clamp(20px, 3vw, 28px);
-    }
-
-    .hero-header {
-      display: flex;
-      align-items: center;
-      gap: clamp(18px, 4vw, 28px);
-      flex-wrap: wrap;
-    }
-
-    .hero-header img {
-      display: block;
-      height: auto;
-    }
-
-    .hero-header .hero-logo {
-      width: clamp(150px, 20vw, 220px);
-    }
-
-    .hero-header .hero-wordmark {
-  flex: 1 1 clamp(320px, 60vw, 620px);
-  width: min(100%, clamp(320px, 60vw, 620px));
-  min-height: 69px;
-  height: auto;
-  object-fit: contain;
-  overflow: visible;
-    }
-
-    @media (max-width: 640px) {
-      .hero-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .hero-header .hero-wordmark {
-        width: 100%;
-      }
-    }
-
-    .hero h1 {
+    .hero-guides h1 {
       margin: 0;
-      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-size: clamp(2.1rem, 5vw, 3rem);
       font-weight: 900;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .hero p {
+    .hero-guides p {
       margin: 0;
-      font-size: 1.05rem;
-      line-height: 1.6;
+      font-size: clamp(1.05rem, 2.6vw, 1.2rem);
+      line-height: 1.65;
       color: var(--teal-600);
     }
 
     .tab-stack {
       display: flex;
       gap: 6px;
+      justify-content: center;
+      margin: 0 auto;
+      width: min(320px, 100%);
     }
 
     .tab-stack span {
@@ -351,6 +421,11 @@
     .tab-stack span:nth-child(1) { width: 42%; }
     .tab-stack span:nth-child(2) { width: 32%; }
     .tab-stack span:nth-child(3) { width: 26%; }
+
+    .guide-section {
+      display: grid;
+      gap: clamp(24px, 4vw, 32px);
+    }
 
     .guide-intro h2 {
       margin: 0 0 8px;
@@ -392,8 +467,8 @@
         background: #07201d;
         color: #e6f3f1;
       }
-      .card {
-        background: rgba(8, 32, 29, 0.8);
+      .main-card {
+        background: rgba(8, 32, 29, 0.85);
       }
       .guide-card {
         background: rgba(8, 32, 29, 0.7);
@@ -492,24 +567,26 @@
 
     .carousel-dots {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
     }
 
     .carousel-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
+      width: 6px;
+      height: 28px;
+      border-radius: 999px;
       border: 2px solid var(--teal-500);
-      background: rgba(36, 166, 135, 0.2);
+      background: rgba(36, 166, 135, 0.24);
       padding: 0;
       cursor: pointer;
-      transition: background 0.18s ease, transform 0.18s ease;
+      transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+      display: inline-block;
     }
 
     .carousel-dot.is-active {
       background: var(--teal-500);
-      transform: scale(1.15);
+      border-color: var(--ink-900);
+      transform: scaleY(1.12);
     }
 
     .carousel-dot:focus-visible {
@@ -693,41 +770,53 @@
 </head>
 <body>
   <a class="skip-link" href="#guides">Skip to medication guides</a>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <img class="logo" src="images/logo-hex2tone.png" alt="CloseDose logo">
-        <img
-          class="wordmark"
-          src="images/CloseDose_wordmark.svg"
-          data-wordmark-src="images/CloseDose_wordmark.svg"
-          alt="CloseDose wordmark"
-        >
-      </div>
-      <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menuOverlay" aria-label="Open menu">
-        <span class="label">Menu</span>
-        <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
-      </button>
-    </header>
+  <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menuOverlay" aria-label="Open menu">
+    <span class="label">Menu</span>
+    <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+  </button>
 
-    <main>
-      <div class="page-content">
-        <section class="card hero">
-          <div class="hero-header">
-            <img class="hero-logo" src="images/logo-hex2tone.png" alt="CloseDose logo">
-            <img
-              class="hero-wordmark"
-              src="images/CloseDose_wordmark.svg"
-              data-wordmark-src="images/CloseDose_wordmark.svg"
-              alt="CloseDose wordmark"
-            >
-          </div>
+  <div class="menu-overlay" id="menuOverlay" hidden>
+    <div class="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menuHeading">
+      <h2 id="menuHeading" class="visually-hidden">Site menu</h2>
+      <nav class="menu-links">
+        <a href="index.html">Calculator</a>
+        <a href="medication-guides.html" aria-current="page">Medication Guides</a>
+        <a href="donation.html">Donate</a>
+        <a href="index.html#disclaimer-card">Disclaimer &amp; Support</a>
+      </nav>
+      <button class="close-menu" type="button">Close</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="card-stack">
+      <div class="accent-bar stack1" aria-hidden="true"></div>
+      <div class="accent-bar stack2" aria-hidden="true"></div>
+      <div class="accent-bar stack3" aria-hidden="true"></div>
+
+      <div class="logo-wrapper">
+        <div class="logo-shell">
+          <img
+            class="logo-wordmark"
+            src="images/CloseDose_wordmark.svg"
+            data-wordmark-src="images/CloseDose_wordmark.svg"
+            alt="CloseDose wordmark"
+          />
+          <a class="logo-link" href="index.html" aria-label="CloseDose home">
+            <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
+          </a>
+          <span class="sr-only">CloseDose</span>
+        </div>
+      </div>
+
+      <main class="main-card" role="main">
+        <section class="hero-guides">
           <div class="tab-stack" aria-hidden="true"><span></span><span></span><span></span></div>
           <h1>Fever &amp; Pain Medication Guides</h1>
           <p>Use these quick references to view common acetaminophen and ibuprofen products for infants and children. Double-check concentrations and dosing with your pediatrician or pharmacist.</p>
         </section>
 
-        <section class="card guide-section" id="guides">
+        <section class="guide-section" id="guides">
           <div class="guide-intro">
             <h2>Product comparisons</h2>
             <p>Swipe through brand-name and generic options, then review dosing reminders tailored to your patient.</p>
@@ -746,7 +835,7 @@
                   <figcaption>Amazon Basics® Children's Acetaminophen</figcaption>
                 </figure>
                 <figure class="carousel-slide">
-                  <img src="images/Acetaminophen/Target acetaminophen iso.png" alt="Target up & up children's acetaminophen 160 mg per 5 mL">
+                  <img src="images/Acetaminophen/Target acetaminophen iso.png" alt="Target up &amp; up children's acetaminophen 160 mg per 5 mL">
                   <figcaption>up &amp; up® Children's Acetaminophen</figcaption>
                 </figure>
                 <figure class="carousel-slide">
@@ -843,20 +932,7 @@
             </article>
           </div>
         </section>
-      </div>
-    </main>
-  </div>
-
-  <div class="menu-overlay" id="menuOverlay" hidden>
-    <div class="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menuHeading">
-      <h2 id="menuHeading" class="visually-hidden">Site menu</h2>
-      <nav class="menu-links">
-        <a href="index.html">Calculator</a>
-        <a href="medication-guides.html" aria-current="page">Medication Guides</a>
-        <a href="donation.html">Donate</a>
-        <a href="index.html#disclaimer-card">Disclaimer &amp; Support</a>
-      </nav>
-      <button class="close-menu" type="button">Close</button>
+      </main>
     </div>
   </div>
 
@@ -955,6 +1031,59 @@
       });
     })();
 
+  </script>
+  <script>
+    (function () {
+      const logo = document.getElementById('logo-sequence');
+      const mainCard = document.querySelector('.main-card');
+      if (!logo || !mainCard) {
+        return;
+      }
+
+      const totalFrames = 29;
+      const collapseDistance = 160;
+      const condenseThreshold = 40;
+      const collapseThreshold = 140;
+      let currentFrame = 1;
+
+      function pad(number) {
+        return number.toString().padStart(2, '0');
+      }
+
+      function setFrame(progress) {
+        const frame = Math.max(1, Math.min(totalFrames, Math.round(1 + progress * (totalFrames - 1))));
+        if (frame !== currentFrame) {
+          currentFrame = frame;
+          logo.setAttribute('src', `images/CD-logo-seq/v2/logo-seq${pad(frame)}.svg`);
+        }
+      }
+
+      function updateCardLeft() {
+        const rect = mainCard.getBoundingClientRect();
+        document.documentElement.style.setProperty('--card-left', `${Math.round(rect.left)}px`);
+      }
+
+      function handleScroll() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        const progress = Math.min(1, Math.max(0, scrollY / collapseDistance));
+        setFrame(progress);
+        document.body.classList.toggle('logo-condensed', scrollY > condenseThreshold);
+        document.body.classList.toggle('logo-collapsed', scrollY > collapseThreshold);
+      }
+
+      updateCardLeft();
+      handleScroll();
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', () => {
+        updateCardLeft();
+        handleScroll();
+      });
+      window.addEventListener('load', () => {
+        updateCardLeft();
+        handleScroll();
+      });
+    })();
   </script>
 </body>
 </html>
