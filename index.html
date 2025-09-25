@@ -31,6 +31,7 @@
       --stack1: var(--theme-bright-lighter);
       --stack2: var(--theme-bright-soft);
       --stack3: var(--theme-bright);
+      --stack-gap: clamp(14px, 3vw, 28px);
       --background: #f5f9f9;
       --surface: #ffffff;
       --text-color: var(--theme-dark);
@@ -223,36 +224,36 @@
     .card-stack {
       width: min(760px, 95vw);
       position: relative;
+      padding-top: calc(var(--stack-gap) * 2 + clamp(48px, 10vw, 92px));
     }
 
     .accent-bar {
       position: absolute;
-      inset-inline: -4%;
+      inset-inline: -2.5%;
+      top: 0;
+      height: 100%;
       border-radius: var(--card-radius);
       border: var(--border-width) solid var(--theme-dark);
       pointer-events: none;
       transform-origin: center;
+      transition: transform 0.3s ease;
+      box-shadow: var(--shadow-card);
     }
 
     .accent-bar.stack1 {
       background: var(--stack1);
-      top: -11%;
-      height: 120%;
+      transform: translateY(calc(-1 * var(--stack-gap) * 2));
       z-index: 1;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .accent-bar.stack2 {
       background: var(--stack2);
-      top: -6%;
-      height: 112%;
+      transform: translateY(calc(-1 * var(--stack-gap)));
       z-index: 2;
     }
 
     .accent-bar.stack3 {
       background: var(--stack3);
-      top: -1%;
-      height: 104%;
       z-index: 3;
     }
 
@@ -265,27 +266,65 @@
       align-items: flex-end;
       justify-content: center;
       padding-top: clamp(24px, 6vw, 48px);
-      margin-bottom: calc(-1 * clamp(32px, 6vw, 48px));
+      margin-bottom: calc(-1 * clamp(24px, 5vw, 40px));
       z-index: 8;
     }
 
     .logo-shell {
       position: relative;
-      width: 95%;
+      width: 92%;
       max-width: 720px;
       min-height: clamp(80px, 18vw, 140px);
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       justify-content: center;
-      padding-bottom: clamp(32px, 6vw, 48px);
+      padding-bottom: clamp(28px, 5vw, 44px);
       transition: transform 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         width 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         left 0.22s ease,
         top 0.22s ease,
         padding-bottom 0.2s ease;
       transform-origin: left center;
-      z-index: 1600;
+      z-index: 1800;
       pointer-events: none;
+    }
+
+    .logo-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 640px;
+      text-decoration: none;
+      pointer-events: auto;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      z-index: 1;
+    }
+
+    .logo-link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      border: var(--border-width) solid var(--theme-dark);
+      clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+      box-shadow: var(--shadow-pill);
+      opacity: 0;
+      transform: translateX(-120%) scale(0.92);
+      transition: transform 0.3s ease, opacity 0.2s ease;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .logo-link:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    .logo-link:focus-visible {
+      outline: 4px dashed var(--theme-dark);
+      outline-offset: 6px;
     }
 
     #logo-sequence {
@@ -302,18 +341,31 @@
     body.logo-condensed .logo-shell {
       width: clamp(320px, 38vw, 460px);
       padding-bottom: clamp(20px, 4vw, 28px);
-      z-index: 1800;
+      z-index: 2000;
     }
 
     body.logo-collapsed .logo-shell {
       position: fixed;
-      top: clamp(16px, 5vw, 32px);
-      left: calc(var(--card-left, 28px) + clamp(40px, 6vw, 96px));
-      width: clamp(140px, 22vw, 240px);
-      transform: translateX(-38%);
-      z-index: 2000;
+      top: clamp(18px, 5vw, 26px);
+      left: clamp(18px, 6vw, 36px);
+      width: clamp(160px, 32vw, 260px);
+      transform: none;
+      z-index: 2200;
       padding-bottom: 0;
       min-height: auto;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    body.logo-collapsed .logo-link {
+      width: 100%;
+      max-width: clamp(160px, 32vw, 260px);
+      box-shadow: var(--shadow-pill);
+    }
+
+    body.logo-collapsed .logo-link::before {
+      opacity: 1;
+      transform: translateX(0);
     }
 
     .sr-only {
@@ -702,11 +754,17 @@
 
     @media (max-width: 720px) {
       .accent-bar {
-        inset-inline: -2%;
+        inset-inline: -4%;
       }
 
       body.logo-collapsed .logo-shell {
-        width: clamp(140px, 30vw, 220px);
+        top: 16px;
+        left: 16px;
+        width: clamp(150px, 40vw, 230px);
+      }
+
+      body.logo-collapsed .logo-link {
+        max-width: clamp(150px, 40vw, 230px);
       }
 
       .menu-btn {
@@ -771,7 +829,9 @@
 
       <div class="logo-wrapper">
         <div class="logo-shell">
-          <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
+          <a class="logo-link" href="index.html" aria-label="CloseDose home">
+            <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
+          </a>
           <span class="sr-only">CloseDose</span>
         </div>
       </div>
