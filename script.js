@@ -116,7 +116,7 @@ async function updateWordmarkImages(colors) {
 
     let svgText = await response.text();
     const replacements = [
-      { pattern: /#123934/gi, value: colors.bright },
+      { pattern: /#123934/gi, value: colors.dark },
       { pattern: /#0a3a35/gi, value: colors.dark },
       { pattern: /#24a687/gi, value: colors.bright },
     ];
