@@ -225,30 +225,32 @@
       width: min(760px, 95vw);
       position: relative;
       padding-top: calc(var(--stack-gap) * 2 + clamp(48px, 10vw, 92px));
+      padding-bottom: calc(var(--stack-gap) * 2);
     }
 
     .accent-bar {
       position: absolute;
       inset-inline: -2.5%;
       top: 0;
-      height: 100%;
+      bottom: 0;
       border-radius: var(--card-radius);
       border: var(--border-width) solid var(--theme-dark);
       pointer-events: none;
-      transform-origin: center;
-      transition: transform 0.3s ease;
       box-shadow: var(--shadow-card);
+      transition: top 0.3s ease, bottom 0.3s ease;
     }
 
     .accent-bar.stack1 {
       background: var(--stack1);
-      transform: translateY(calc(-1 * var(--stack-gap) * 2));
+      top: calc(-1 * var(--stack-gap) * 2);
+      bottom: calc(-1 * var(--stack-gap) * 2);
       z-index: 1;
     }
 
     .accent-bar.stack2 {
       background: var(--stack2);
-      transform: translateY(calc(-1 * var(--stack-gap)));
+      top: calc(-1 * var(--stack-gap));
+      bottom: calc(-1 * var(--stack-gap));
       z-index: 2;
     }
 
@@ -276,17 +278,29 @@
       max-width: 720px;
       min-height: clamp(80px, 18vw, 140px);
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: clamp(28px, 5vw, 44px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(16px, 4vw, 28px);
+      padding-bottom: clamp(32px, 6vw, 48px);
       transition: transform 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         width 0.22s cubic-bezier(0.8, 0, 0.2, 1),
         left 0.22s ease,
         top 0.22s ease,
-        padding-bottom 0.2s ease;
+        padding-bottom 0.2s ease,
+        gap 0.2s ease;
       transform-origin: left center;
       z-index: 1800;
       pointer-events: none;
+    }
+
+    .logo-wordmark {
+      display: block;
+      width: clamp(260px, 58vw, 420px);
+      max-width: 520px;
+      height: auto;
+      pointer-events: none;
+      transition: width 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
     }
 
     .logo-link {
@@ -341,7 +355,12 @@
     body.logo-condensed .logo-shell {
       width: clamp(320px, 38vw, 460px);
       padding-bottom: clamp(20px, 4vw, 28px);
+      gap: clamp(12px, 3vw, 22px);
       z-index: 2000;
+    }
+
+    body.logo-condensed .logo-wordmark {
+      width: clamp(220px, 48vw, 340px);
     }
 
     body.logo-collapsed .logo-shell {
@@ -353,8 +372,14 @@
       z-index: 2200;
       padding-bottom: 0;
       min-height: auto;
+      flex-direction: row;
+      gap: 0;
       align-items: center;
       justify-content: flex-start;
+    }
+
+    body.logo-collapsed .logo-wordmark {
+      display: none;
     }
 
     body.logo-collapsed .logo-link {
@@ -829,6 +854,12 @@
 
       <div class="logo-wrapper">
         <div class="logo-shell">
+          <img
+            class="logo-wordmark"
+            src="images/CloseDose_wordmark.svg"
+            data-wordmark-src="images/CloseDose_wordmark.svg"
+            alt="CloseDose wordmark"
+          />
           <a class="logo-link" href="index.html" aria-label="CloseDose home">
             <img id="logo-sequence" src="images/CD-logo-seq/v2/logo-seq01.svg" alt="" aria-hidden="true" />
           </a>
