@@ -312,7 +312,7 @@ function calculateDose() {
       renderWarning(
         '',
         '<em>Ibuprofen is not recommended for infants under six months. Consult your pediatrician before using ibuprofen for this age group.</em>',
-        'warning-card--red-soft'
+        'warning-card--red-note'
       )
     );
 

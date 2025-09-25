@@ -27,6 +27,10 @@
       --text-on-dark: #ffffff;
       --warning-soft: rgba(255, 171, 64, 0.22);
       --danger-soft: rgba(244, 67, 54, 0.15);
+      --warning-orange-bg: #fff3e0;
+      --warning-orange-text: #c25a00;
+      --warning-red-bg: #fdecea;
+      --warning-red-text: #c62828;
       --card-left: 28px;
       --stack1: var(--theme-bright-lighter);
       --stack2: var(--theme-bright-soft);
@@ -703,11 +707,30 @@
     }
 
     .warning-card--orange {
-      background: var(--warning-soft);
+      background: var(--warning-orange-bg);
+      color: var(--warning-orange-text);
+      font-weight: 800;
+      border-color: var(--warning-orange-text);
     }
 
     .warning-card--red-soft {
-      background: var(--danger-soft);
+      background: var(--warning-red-bg);
+      color: var(--warning-red-text);
+      font-weight: 800;
+      border-color: var(--warning-red-text);
+    }
+
+    .warning-card--red-note {
+      background: var(--warning-red-bg);
+      color: var(--warning-red-text);
+      font-style: italic;
+      font-weight: 600;
+      border-color: var(--warning-red-text);
+    }
+
+    .warning-card--red-note em {
+      color: inherit;
+      font-style: inherit;
     }
 
     .disclaimer-section {
