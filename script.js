@@ -11,6 +11,19 @@ const THEME_COLOR_PAIRS = [
   { dark: '#173042', bright: '#3ddc97' },
 ];
 
+function encodeSvg(svg) {
+  if (typeof TextEncoder !== 'undefined') {
+    const bytes = new TextEncoder().encode(svg);
+    let binary = '';
+    bytes.forEach((value) => {
+      binary += String.fromCharCode(value);
+    });
+    return window.btoa(binary);
+  }
+
+  return window.btoa(unescape(encodeURIComponent(svg)));
+}
+
 function hexToRgb(hex) {
   if (typeof hex !== 'string') {
     return { r: 0, g: 0, b: 0 };
@@ -69,10 +82,63 @@ function toRgba(color, alpha) {
   return `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${Math.max(0, Math.min(1, alpha))})`;
 }
 
+function getReadableTextColor(color) {
+  const { r, g, b } = hexToRgb(color);
+  const toLinear = (value) => {
+    const channel = value / 255;
+    return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+  };
+  const luminance =
+    0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  return luminance > 0.55 ? '#000000' : '#ffffff';
+}
+
+async function updateWordmarkImages(colors) {
+  if (!colors) {
+    return;
+  }
+
+  const wordmarks = Array.from(document.querySelectorAll('[data-wordmark-src]'));
+  if (!wordmarks.length || !window.fetch) {
+    return;
+  }
+
+  const templateUrl = wordmarks[0].getAttribute('data-wordmark-src');
+  if (!templateUrl) {
+    return;
+  }
+
+  try {
+    const response = await fetch(templateUrl);
+    if (!response.ok) {
+      return;
+    }
+
+    let svgText = await response.text();
+    const replacements = [
+      { pattern: /#123934/gi, value: colors.dark },
+      { pattern: /#0a3a35/gi, value: colors.dark },
+      { pattern: /#24a687/gi, value: colors.bright },
+    ];
+
+    replacements.forEach(({ pattern, value }) => {
+      svgText = svgText.replace(pattern, value);
+    });
+
+    const dataUrl = `data:image/svg+xml;base64,${encodeSvg(svgText)}`;
+    wordmarks.forEach((img) => {
+      img.setAttribute('src', dataUrl);
+      img.setAttribute('data-wordmark-loaded', 'true');
+    });
+  } catch (error) {
+    console.error('Failed to update wordmark colors', error);
+  }
+}
+
 function initThemeColors() {
   const palette = THEME_COLOR_PAIRS[Math.floor(Math.random() * THEME_COLOR_PAIRS.length)];
   if (!palette) {
-    return;
+    return null;
   }
 
   const root = document.documentElement;
@@ -92,9 +158,18 @@ function initThemeColors() {
   root.style.setProperty('--stack1', lightenColor(bright, 0.88));
   root.style.setProperty('--stack2', lightenColor(bright, 0.64));
   root.style.setProperty('--stack3', lightenColor(bright, 0.42));
+  root.style.setProperty('--text-on-bright', getReadableTextColor(bright));
+  root.style.setProperty('--text-on-dark', getReadableTextColor(dark));
+  root.style.setProperty('--warning-soft', toRgba(bright, 0.24));
+  root.style.setProperty('--danger-soft', toRgba(darkenColor(bright, 0.35), 0.24));
+  root.style.setProperty('--wordmark-dark', dark);
+  root.style.setProperty('--wordmark-bright', bright);
+
+  return { dark, bright };
 }
 
-initThemeColors();
+const ACTIVE_THEME = initThemeColors();
+updateWordmarkImages(ACTIVE_THEME);
 
 function getElements() {
   return {
@@ -103,7 +178,8 @@ function getElements() {
     weightUnit: document.getElementById('weight-unit'),
     message: document.getElementById('message'),
     results: document.getElementById('results'),
-    calculateButton: document.querySelector('#calculator button'),
+    calculateButton: document.querySelector('#calculator button[type="submit"]'),
+    helloBox: document.querySelector('.hello-box'),
   };
 }
 
@@ -135,6 +211,18 @@ function updateForm() {
   elements.calculateButton.disabled = false;
   elements.weightInput.disabled = false;
   elements.weightUnit.disabled = false;
+
+  if (elements.helloBox) {
+    if (!age) {
+      elements.helloBox.textContent = 'Welcome! Choose an age group to begin.';
+    } else if (age === '0-2') {
+      elements.helloBox.textContent = 'Infants under 2 months with a fever need emergency medical care—contact a pediatrician immediately.';
+    } else if (age === '2-6') {
+      elements.helloBox.textContent = 'Great! Enter the weight to calculate an acetaminophen dose.';
+    } else {
+      elements.helloBox.textContent = 'Enter the patient\'s weight to see acetaminophen and ibuprofen guidance.';
+    }
+  }
 
   if (age === '0-2') {
     elements.message.hidden = false;
@@ -170,6 +258,15 @@ function calculateDose() {
 
   if (!age) {
     elements.results.innerHTML = renderWarning('Age required', 'Please select an age group to continue.');
+    return;
+  }
+
+  if (age === '0-2') {
+    elements.results.innerHTML = renderWarning(
+      'Seek immediate medical care',
+      'For infants under 60 days with fever, contact your pediatrician or seek emergency care instead of giving over-the-counter medication.',
+      'warning-card--red-soft'
+    );
     return;
   }
 
@@ -215,7 +312,7 @@ function calculateDose() {
       renderWarning(
         '',
         '<em>Ibuprofen is not recommended for infants under six months. Consult your pediatrician before using ibuprofen for this age group.</em>',
-        'warning-card--red-soft'
+        'warning-card--red-note'
       )
     );
 
@@ -296,6 +393,97 @@ function initCalculator() {
     event.preventDefault();
     calculateDose();
   });
+}
+
+function initAgeSelection() {
+  const ageSelect = document.getElementById('age');
+  const ageButtons = Array.from(document.querySelectorAll('.age-option'));
+
+  if (!ageSelect || ageButtons.length === 0) {
+    return;
+  }
+
+  const setActive = (targetButton) => {
+    ageButtons.forEach((button) => {
+      const isActive = button === targetButton;
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  };
+
+  ageButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-age') || '';
+      if (ageSelect.value === value) {
+        return;
+      }
+      ageSelect.value = value;
+      setActive(button);
+      updateForm();
+    });
+  });
+
+  const presetButton = ageButtons.find((button) => button.getAttribute('data-age') === ageSelect.value);
+  if (presetButton) {
+    setActive(presetButton);
+  } else {
+    setActive(null);
+  }
+}
+
+function initWeightUnits() {
+  const unitSelect = document.getElementById('weight-unit');
+  const weightInput = document.getElementById('weight');
+  const unitButtons = Array.from(document.querySelectorAll('.unit-option'));
+
+  if (!unitSelect || unitButtons.length === 0) {
+    return;
+  }
+
+  const setActive = (targetButton) => {
+    unitButtons.forEach((button) => {
+      const isActive = button === targetButton;
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  };
+
+  const convertWeight = (value, fromUnit, toUnit) => {
+    if (!Number.isFinite(value)) {
+      return value;
+    }
+    if (fromUnit === toUnit) {
+      return value;
+    }
+    return fromUnit === 'lbs' ? value / 2.20462 : value * 2.20462;
+  };
+
+  unitButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const nextUnit = button.getAttribute('data-unit');
+      if (!nextUnit || unitSelect.value === nextUnit) {
+        return;
+      }
+
+      const previousUnit = unitSelect.value || 'lbs';
+      let currentValue = parseFloat(weightInput.value);
+      if (!Number.isNaN(currentValue)) {
+        currentValue = convertWeight(currentValue, previousUnit, nextUnit);
+        weightInput.value = Number.isFinite(currentValue)
+          ? (Math.round(currentValue * 10) / 10).toString()
+          : '';
+      }
+
+      unitSelect.value = nextUnit;
+      setActive(button);
+      weightInput.dispatchEvent(new Event('change'));
+    });
+  });
+
+  const presetButton = unitButtons.find((button) => button.getAttribute('data-unit') === unitSelect.value);
+  if (presetButton) {
+    setActive(presetButton);
+  } else {
+    setActive(null);
+  }
 }
 
 // Initialize state on first load
@@ -551,6 +739,8 @@ function initTranslations() {
 window.addEventListener('DOMContentLoaded', () => {
   initCarousels();
   initCalculator();
+  initAgeSelection();
+  initWeightUnits();
   updateForm();
   initTranslations();
 });
