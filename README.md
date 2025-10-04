@@ -1,3 +1,5 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D71M8JMY)
+
 # CloseDose
 
 CloseDose is a simple front-end prototype for a pediatric medication dosing calculator. It is built with plain HTML, CSS and JavaScript and is hosted via GitHub Pages. The project uses a responsive layout and adapts to your device's preferred color scheme.
