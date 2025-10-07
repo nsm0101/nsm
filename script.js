@@ -220,7 +220,8 @@ function updateForm() {
     } else if (age === '2-6') {
       elements.helloBox.textContent = 'Great! Enter the weight to calculate an acetaminophen dose.';
     } else {
-      elements.helloBox.textContent = 'Enter the patient\'s weight to see acetaminophen and ibuprofen guidance.';
+      elements.helloBox.textContent =
+        "Enter the patient's weight to see acetaminophen, ibuprofen, and antihistamine guidance.";
     }
   }
 
@@ -316,10 +317,29 @@ function calculateDose() {
       )
     );
 
+    group.push(
+      renderWarning(
+        'Diphenhydramine caution',
+        'Oral diphenhydramine (Benadryl) is not recommended for infants under six months. Speak with your pediatrician before giving this medication.',
+        'warning-card--red-note'
+      )
+    );
+
+    group.push(
+      renderWarning(
+        'Cetirizine caution',
+        'Cetirizine (Zyrtec) is typically started at six months of age. Check with your pediatrician before using it for younger infants.',
+        'warning-card--red-note'
+      )
+    );
+
     resultBlocks.push(`<div class="result-group">${group.join('')}</div>`);
   } else if (age === '6+') {
     const ACETA_MAX_SINGLE_DOSE_MG = 1000;
     const IBU_MAX_SINGLE_DOSE_MG = 800;
+    const DIPHEN_MAX_SINGLE_DOSE_MG = 50;
+    const CETIR_MAX_SINGLE_DOSE_MG = 10;
+    const CETIR_MIN_SINGLE_DOSE_MG = 2.5;
 
     const acetaMgCalculated = 15 * weightKg;
     const acetaMg = Math.min(acetaMgCalculated, ACETA_MAX_SINGLE_DOSE_MG);
@@ -331,6 +351,18 @@ function calculateDose() {
     const ibuCapped = ibuMg < ibuMgCalculated;
     const ibuMl50 = (ibuMg / 50) * 1.25;
     const ibuMl100 = (ibuMg / 100) * 5;
+
+    const diphenMgCalculated = 1 * weightKg;
+    const diphenMg = Math.min(diphenMgCalculated, DIPHEN_MAX_SINGLE_DOSE_MG);
+    const diphenMl = diphenMg / 2.5;
+    const diphenCapped = diphenMg < diphenMgCalculated;
+
+    const cetirMgCalculated = 0.25 * weightKg;
+    const cetirMgClamped = Math.min(cetirMgCalculated, CETIR_MAX_SINGLE_DOSE_MG);
+    const cetirMg = Math.max(cetirMgClamped, CETIR_MIN_SINGLE_DOSE_MG);
+    const cetirMl = cetirMg; // 1 mg/mL solution (5 mg / 5 mL)
+    const cetirCappedHigh = cetirMg < cetirMgCalculated;
+    const cetirAdjustedUp = cetirMg > cetirMgCalculated;
 
     const group = [];
 
@@ -369,10 +401,61 @@ function calculateDose() {
       </article>
     `);
 
+    group.push(`
+      <article class="result-card">
+        <h3>Diphenhydramine (12.5 mg / 5 mL)</h3>
+        <p>Give ${diphenMl.toFixed(1)} mL (${diphenMg.toFixed(0)} mg) every 6 hours as needed for allergic symptoms.</p>
+        <p class="dose-note">Maximum single dose for this age group is ${DIPHEN_MAX_SINGLE_DOSE_MG} mg of diphenhydramine every 6 hours.</p>
+        ${
+          diphenCapped
+            ? renderWarning(
+                'Maximum dose reached',
+                'Weight-based dose was limited to this maximum. Contact your pediatrician if symptoms are not controlled.',
+                'warning-card--orange'
+              )
+            : ''
+        }
+      </article>
+    `);
+
+    group.push(
+      renderWarning(
+        'Diphenhydramine safety',
+        'Diphenhydramine can cause drowsiness or agitation. Avoid using it to help children sleep and check for other sedating medications.',
+        'warning-card--teal'
+      )
+    );
+
+    group.push(`
+      <article class="result-card">
+        <h3>Cetirizine (5 mg / 5 mL)</h3>
+        <p>Give ${cetirMl.toFixed(1)} mL (${cetirMg.toFixed(1)} mg) once every 24 hours for allergy symptoms.</p>
+        <p class="dose-note">Maximum single daily dose is ${CETIR_MAX_SINGLE_DOSE_MG} mg of cetirizine.</p>
+        ${
+          cetirCappedHigh
+            ? renderWarning(
+                'Maximum dose reached',
+                'Weight-based dose was limited to the 10 mg maximum. Discuss persistent symptoms with your pediatrician.',
+                'warning-card--orange'
+              )
+            : ''
+        }
+        ${
+          cetirAdjustedUp
+            ? renderWarning(
+                'Standard minimum applied',
+                'A minimum 2.5 mg dose was used for younger patients. Consult your pediatrician before giving repeat doses within 24 hours.',
+                'warning-card--teal'
+              )
+            : ''
+        }
+      </article>
+    `);
+
     group.push(
       renderWarning(
         'Dose spacing reminder',
-        `Never exceed ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen or ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen in a single dose, and allow at least 6 hours between doses.`,
+        `Never exceed ${ACETA_MAX_SINGLE_DOSE_MG} mg of acetaminophen, ${IBU_MAX_SINGLE_DOSE_MG} mg of ibuprofen, ${DIPHEN_MAX_SINGLE_DOSE_MG} mg of diphenhydramine, or ${CETIR_MAX_SINGLE_DOSE_MG} mg of cetirizine in a single dose. Follow age-appropriate timing between doses (acetaminophen/ibuprofen every 6 hours, diphenhydramine every 6 hours, cetirizine every 24 hours).`,
         'warning-card--teal'
       )
     );
