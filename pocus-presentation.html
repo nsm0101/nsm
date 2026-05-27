@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pass the Pointer — POCUS in Pediatric EM | May 2026</title>
+<style>
+  :root {
+    --teal: #00b4b4;
+    --teal-dark: #007e7e;
+    --teal-light: #00d4d4;
+    --bg: #0d1117;
+    --card: #161b22;
+    --card2: #1c2330;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --green: #3fb950;
+    --purple: #bc8cff;
+    --orange: #ff7b43;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── SLIDE CONTAINER ── */
+  #deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 32px 48px 24px;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── CHROME ── */
+  #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--border);
+    z-index: 100;
+  }
+  #progress-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--teal), var(--teal-light));
+    transition: width 0.3s ease;
+  }
+
+  #nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(22,27,34,0.95);
+    border: 1px solid var(--border);
+    border-radius: 32px;
+    padding: 8px 20px;
+    backdrop-filter: blur(8px);
+  }
+
+  #nav button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    width: 36px; height: 36px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  #nav button:hover { border-color: var(--teal); color: var(--teal); }
+  #nav button:disabled { opacity: 0.3; cursor: default; }
+
+  #slide-counter {
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 64px;
+    text-align: center;
+  }
+
+  #timer-display {
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 42px;
+    text-align: right;
+  }
+
+  #timer-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  #timer-btn:hover { border-color: var(--teal); color: var(--teal); }
+  #timer-btn.running { color: var(--green); border-color: var(--green); }
+
+  /* ── TYPOGRAPHY ── */
+  .case-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .tag-pem { background: rgba(0,180,180,0.15); color: var(--teal); border: 1px solid rgba(0,180,180,0.3); }
+  .tag-trauma { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .tag-gyn { background: rgba(188,140,255,0.15); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+  .tag-urology { background: rgba(255,123,67,0.15); color: var(--orange); border: 1px solid rgba(255,123,67,0.3); }
+  .tag-title { background: rgba(0,180,180,0.1); color: var(--teal); border: 1px solid rgba(0,180,180,0.2); }
+  .tag-section { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.25); }
+
+  h1 { font-size: clamp(28px, 3.5vw, 48px); line-height: 1.15; font-weight: 800; color: var(--text); }
+  h2 { font-size: clamp(20px, 2.4vw, 32px); line-height: 1.2; font-weight: 700; }
+  h3 { font-size: clamp(14px, 1.6vw, 20px); font-weight: 600; color: var(--teal); margin-bottom: 8px; }
+  h4 { font-size: clamp(12px, 1.2vw, 16px); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+
+  p, li { font-size: clamp(12px, 1.2vw, 16px); line-height: 1.6; color: var(--text); }
+  .lead { font-size: clamp(15px, 1.6vw, 22px); color: var(--muted); line-height: 1.5; }
+  .small { font-size: clamp(11px, 1vw, 14px); color: var(--muted); }
+
+  /* ── LAYOUT HELPERS ── */
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; overflow: hidden; }
+  .cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; flex: 1; overflow: hidden; }
+  .col-6040 { display: grid; grid-template-columns: 6fr 4fr; gap: 20px; flex: 1; overflow: hidden; }
+  .col-4060 { display: grid; grid-template-columns: 4fr 6fr; gap: 20px; flex: 1; overflow: hidden; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .flex-row { display: flex; align-items: center; gap: 12px; }
+  .spacer { flex: 1; }
+  .mt-auto { margin-top: auto; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    overflow: hidden;
+  }
+  .card-accent {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .card-teal {
+    background: rgba(0,180,180,0.08);
+    border: 1px solid rgba(0,180,180,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .card-red {
+    background: rgba(248,81,73,0.08);
+    border: 1px solid rgba(248,81,73,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .card-yellow {
+    background: rgba(210,153,34,0.08);
+    border: 1px solid rgba(210,153,34,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .card-green {
+    background: rgba(63,185,80,0.08);
+    border: 1px solid rgba(63,185,80,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .card-purple {
+    background: rgba(188,140,255,0.08);
+    border: 1px solid rgba(188,140,255,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .card-orange {
+    background: rgba(255,123,67,0.08);
+    border: 1px solid rgba(255,123,67,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+
+  /* ── LISTS ── */
+  ul, ol { padding-left: 18px; }
+  ul li, ol li { margin-bottom: 4px; }
+  .no-bullet { list-style: none; padding-left: 0; }
+  .no-bullet li::before { content: "→ "; color: var(--teal); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-teal { background: rgba(0,180,180,0.2); color: var(--teal); }
+  .badge-red { background: rgba(248,81,73,0.2); color: var(--red); }
+  .badge-green { background: rgba(63,185,80,0.2); color: var(--green); }
+  .badge-yellow { background: rgba(210,153,34,0.2); color: var(--yellow); }
+  .badge-purple { background: rgba(188,140,255,0.2); color: var(--purple); }
+  .badge-orange { background: rgba(255,123,67,0.2); color: var(--orange); }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+  /* ── MEASUREMENT BOX ── */
+  .measure-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .measure-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .measure-value {
+    font-size: clamp(20px, 2.4vw, 30px);
+    font-weight: 800;
+    color: var(--teal);
+    line-height: 1;
+  }
+  .measure-unit { font-size: 12px; color: var(--muted); }
+  .measure-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .measure-item.abnormal .measure-value { color: var(--red); }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .timeline-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--teal);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .timeline-item .timeline-dot.red { background: var(--red); }
+  .timeline-item .timeline-dot.green { background: var(--green); }
+
+  /* ── PROBE BOX ── */
+  .probe-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .probe-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  /* ── PEARL / PITFALL ── */
+  .pearl {
+    background: rgba(63,185,80,0.08);
+    border-left: 3px solid var(--green);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+  .pitfall {
+    background: rgba(248,81,73,0.08);
+    border-left: 3px solid var(--red);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+
+  /* ── TITLE SLIDE ── */
+  .title-slide {
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at 60% 40%, rgba(0,180,180,0.06) 0%, transparent 70%);
+  }
+
+  .case-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .case-thumb {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+    transition: border-color 0.15s;
+  }
+  .case-thumb:hover { border-color: var(--teal); cursor: pointer; }
+  .case-thumb .case-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .case-thumb h3 { font-size: 14px; margin-bottom: 2px; }
+  .case-thumb p { font-size: 12px; color: var(--muted); }
+
+  /* ── SECTION DIVIDER ── */
+  .section-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .case-number-big {
+    font-size: clamp(80px, 12vw, 140px);
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--teal) 0%, rgba(0,180,180,0.2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── US SIGN CARDS ── */
+  .sign-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .sign-emoji { font-size: 32px; line-height: 1; margin-bottom: 8px; }
+  .sign-name { font-weight: 700; font-size: 14px; color: var(--teal); margin-bottom: 4px; }
+  .sign-desc { font-size: 12px; color: var(--muted); }
+
+  /* ── ALGORITHM STEP ── */
+  .algo-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .algo-step:last-child { border-bottom: none; }
+  .algo-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #000;
+    font-weight: 800;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── SCANNING ZONES ── */
+  .zone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 8px;
+  }
+  .zone {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .zone.highlight { border-color: var(--teal); color: var(--teal); background: rgba(0,180,180,0.08); }
+
+  /* ── DISPO BOX ── */
+  .dispo-row {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+  }
+  .dispo-item {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .dispo-item h4 { margin-bottom: 4px; }
+  .dispo-item p { font-size: 12px; }
+
+  /* ── SCROLLABLE INNER ── */
+  .scroll-inner {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
+  }
+  .scroll-inner::-webkit-scrollbar { width: 4px; }
+  .scroll-inner::-webkit-scrollbar-track { background: transparent; }
+  .scroll-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .slide { padding: 24px 24px 20px; }
+    .cols-2, .cols-3, .col-6040, .col-4060 { grid-template-columns: 1fr; gap: 10px; }
+    .case-overview-grid { grid-template-columns: 1fr 1fr; }
+    .dispo-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div id="topbar"><div id="progress-bar"></div></div>
+
+<div id="deck">
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 0 — TITLE
+══════════════════════════════════════════════ -->
+<div class="slide active title-slide">
+  <div class="spacer"></div>
+  <div>
+    <span class="case-tag tag-title">Pass the Pointer</span>
+    <h1 style="font-size:clamp(32px,5vw,64px); margin-bottom: 12px;">POCUS in Pediatric EM</h1>
+    <p class="lead">6 Cases · 45 Minutes · May 2026</p>
+    <p class="small" style="margin-top:8px;">Pediatric Emergency Medicine Department</p>
+  </div>
+  <div class="case-overview-grid">
+    <div class="case-thumb" onclick="goTo(2)">
+      <div class="case-num">Case 1 · PEM</div>
+      <h3>Pyloric Stenosis</h3>
+      <p>6-week-old, projectile vomiting</p>
+    </div>
+    <div class="case-thumb" onclick="goTo(5)">
+      <div class="case-num">Case 2 · PEM</div>
+      <h3>Intussusception</h3>
+      <p>20-month-old, colicky pain</p>
+    </div>
+    <div class="case-thumb" onclick="goTo(8)">
+      <div class="case-num">Case 3 · PEM</div>
+      <h3>Appendicitis</h3>
+      <p>10-year-old, RLQ pain</p>
+    </div>
+    <div class="case-thumb" onclick="goTo(11)">
+      <div class="case-num">Case 4 · PEM</div>
+      <h3>Pediatric Lung US</h3>
+      <p>4-year-old, fever + hypoxia</p>
+    </div>
+    <div class="case-thumb" onclick="goTo(14)">
+      <div class="case-num">Case 5 · Urology</div>
+      <h3>Testicular Torsion</h3>
+      <p>14-year-old, acute scrotal pain</p>
+    </div>
+    <div class="case-thumb" onclick="goTo(17)">
+      <div class="case-num">Case 6 · Trauma</div>
+      <h3>eFAST Exam</h3>
+      <p>16-year-old, MVC, unstable</p>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <p class="small" style="text-align:center;">← → Arrow keys or buttons below to navigate</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 1 — HOW TO USE
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-title">Format</span>
+  <h2 style="margin-bottom:16px;">Session Structure</h2>
+  <div class="cols-2" style="flex:unset; gap:16px; margin-bottom: 20px;">
+    <div class="card-teal">
+      <h3>Pass the Pointer Model</h3>
+      <ul class="no-bullet" style="margin-top:6px;">
+        <li>Each case ~7 min</li>
+        <li>Presenter shows image → group identifies finding</li>
+        <li>Rotate "the pointer" (presenter role) each case</li>
+        <li>Discuss teaching points together</li>
+      </ul>
+    </div>
+    <div class="card-accent">
+      <h3>45-Minute Timeline</h3>
+      <div class="timeline" style="margin-top:8px;">
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>0–2 min</strong> — Intro &amp; housekeeping</p></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>2–9 min</strong> — Case 1: Pyloric Stenosis</p></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>9–16 min</strong> — Case 2: Intussusception</p></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>16–23 min</strong> — Case 3: Appendicitis</p></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>23–30 min</strong> — Case 4: Lung US</p></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>30–37 min</strong> — Case 5: Testicular Torsion</p></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><p><strong>37–44 min</strong> — Case 6: eFAST Exam</p></div>
+        <div class="timeline-item"><div class="timeline-dot green"></div><p><strong>44–45 min</strong> — Q&amp;A / wrap-up</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="card-yellow">
+    <h3>Learning Objectives</h3>
+    <div class="cols-2" style="flex:unset;">
+      <ul style="margin-top:4px;">
+        <li>Identify probe selection and scanning technique for each application</li>
+        <li>Recognize classic ultrasound signs and diagnostic criteria</li>
+      </ul>
+      <ul style="margin-top:4px;">
+        <li>Understand diagnostic accuracy and limitations</li>
+        <li>Apply findings to clinical decision-making and disposition</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 2 — CASE 1 DIVIDER
+══════════════════════════════════════════════ -->
+<div class="slide section-slide">
+  <span class="case-tag tag-pem">Case 1 · PEM</span>
+  <div class="case-number-big">01</div>
+  <h2 style="margin-top:8px; font-size:clamp(24px,4vw,48px);">Pyloric Stenosis</h2>
+  <p class="lead" style="margin-top:8px;">"The baby that keeps projectile vomiting"</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 3 — CASE 1 HISTORY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 1 · PEM — Pyloric Stenosis</span>
+  <h2 style="margin-bottom:14px;">Clinical Presentation</h2>
+  <div class="col-6040">
+    <div class="stack">
+      <div class="card">
+        <h3>History</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>6-week-old male</strong>, born at 38 weeks, no prior issues</li>
+          <li>3-day history of <strong>non-bilious projectile vomiting</strong> after every feed</li>
+          <li>Initially spitting up → now forceful ejection across the room</li>
+          <li>Still hungry and eager to feed immediately after vomiting ("hungry vomiter")</li>
+          <li>Last wet diaper 10 hours ago</li>
+          <li>No fever, no diarrhea</li>
+          <li>Father had pyloric stenosis as an infant</li>
+        </ul>
+      </div>
+      <div class="card-accent">
+        <h3>Exam</h3>
+        <ul style="margin-top:6px;">
+          <li>HR 148, RR 36, T 37.1°C, Weight 4.1 kg</li>
+          <li>Sunken fontanelle, dry mucous membranes</li>
+          <li>Abdomen: soft, non-distended, "olive" palpable in epigastrium <span class="badge badge-yellow">10–20% of cases</span></li>
+          <li>Visible peristaltic waves left → right (rare, pathognomonic)</li>
+        </ul>
+      </div>
+      <div class="card-yellow">
+        <h4>Classic Labs</h4>
+        <p>Hypochloremic, hypokalemic <strong>metabolic alkalosis</strong><br>
+        <span class="small">Na↓ · K↓ · Cl↓↓ · HCO₃↑↑ · pH↑</span></p>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card-teal">
+        <h3>Why POCUS?</h3>
+        <p style="margin-top:6px;">Ultrasound is the <strong>gold standard</strong> for pyloric stenosis — no radiation, bedside, fast, and highly accurate.</p>
+        <div style="margin-top:10px;" class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value">97%</div>
+            <div class="measure-label">Sensitivity</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">99%</div>
+            <div class="measure-label">Specificity</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-accent">
+        <h4>Differential Dx</h4>
+        <ul class="no-bullet">
+          <li>GERD / overfeeding</li>
+          <li>Malrotation / volvulus <span class="badge badge-red">must exclude</span></li>
+          <li>Adrenal insufficiency</li>
+          <li>Overfeeding / formula intolerance</li>
+          <li>Antral web (rare)</li>
+        </ul>
+      </div>
+      <div class="card-red">
+        <h4>🚨 Key Question</h4>
+        <p>Non-bilious vs bilious? Bilious = malrotation until proven otherwise.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 4 — CASE 1 ULTRASOUND
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 1 · PEM — Pyloric Stenosis</span>
+  <h2 style="margin-bottom:14px;">Ultrasound Technique &amp; Findings</h2>
+  <div class="cols-2">
+    <div class="stack scroll-inner">
+      <div class="probe-box">
+        <div class="probe-icon">🔬</div>
+        <div>
+          <h4>Probe &amp; Settings</h4>
+          <p><strong>High-frequency linear</strong> 7–15 MHz</p>
+          <p class="small">Neonates: highest frequency available · Gain up slightly</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Patient Positioning &amp; Prep</h3>
+        <div class="algo-step">
+          <div class="algo-num">1</div>
+          <p>Right lateral decubitus or supine — positions stomach over pylorus</p>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">2</div>
+          <p>Offer 10–20 mL of clear liquid or formula — fills stomach to trace pylorus</p>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">3</div>
+          <p>Find gallbladder first (right epigastrium) — pylorus lies medial to it</p>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">4</div>
+          <p>Follow gastric antrum distally to the pyloric channel</p>
+        </div>
+        <div class="algo-step">
+          <div class="algo-num">5</div>
+          <p>Obtain transverse AND longitudinal views — confirm both planes</p>
+        </div>
+      </div>
+      <div class="card-teal">
+        <h3>Diagnostic Criteria</h3>
+        <div class="measure-grid">
+          <div class="measure-item abnormal">
+            <div class="measure-value">≥4</div>
+            <div class="measure-unit">mm</div>
+            <div class="measure-label">Muscle Thickness (single wall)</div>
+          </div>
+          <div class="measure-item abnormal">
+            <div class="measure-value">≥17</div>
+            <div class="measure-unit">mm</div>
+            <div class="measure-label">Channel Length</div>
+          </div>
+          <div class="measure-item abnormal">
+            <div class="measure-value">≥14</div>
+            <div class="measure-unit">mm</div>
+            <div class="measure-label">Pyloric Diameter</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:8px;">Single wall thickness ≥4 mm is the most reliable criterion. Premature infants: adjust cutoffs.</p>
+      </div>
+    </div>
+    <div class="stack scroll-inner">
+      <div class="cols-2" style="flex:unset; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="sign-card">
+          <div class="sign-emoji">🍩</div>
+          <div class="sign-name">Donut Sign</div>
+          <div class="sign-desc">Transverse view — hypoechoic muscle ring surrounding echogenic mucosa and submucosa</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🔱</div>
+          <div class="sign-name">Cervix Sign</div>
+          <div class="sign-desc">Longitudinal view — thickened pyloric muscle flanks the echogenic channel, resembles a cervix</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🎯</div>
+          <div class="sign-name">Target Sign</div>
+          <div class="sign-desc">Concentric rings — inner echogenic mucosa, outer hypoechoic muscle on cross-section</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🌊</div>
+          <div class="sign-name">Antiperistalsis</div>
+          <div class="sign-desc">Real-time: observe gastric fluid moving retrograde toward esophagus</div>
+        </div>
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> The muscle appears hypoechoic (dark) — measure from outer edge to inner mucosa (not lumen). Don't include the mucosal layer.
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Watch in real-time for peristaltic waves that fail to open the pylorus — dynamic finding supporting obstruction.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Mistaking the antrum for the pylorus — the antrum IS compressible. Trace all the way to where the channel closes.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Air in the duodenum (shadowing) can obscure measurement. Change to right lateral decubitus, gentle pressure.
+      </div>
+      <div class="card-green">
+        <h4>Disposition</h4>
+        <p>NPO · IV access · 0.9% NaCl 20 mL/kg bolus → maintenance · Correct alkalosis BEFORE OR · Surgical consult for pyloromyotomy (Ramstedt procedure) · Not a surgical emergency until electrolytes corrected</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 5 — CASE 2 DIVIDER
+══════════════════════════════════════════════ -->
+<div class="slide section-slide">
+  <span class="case-tag tag-pem">Case 2 · PEM</span>
+  <div class="case-number-big">02</div>
+  <h2 style="margin-top:8px; font-size:clamp(24px,4vw,48px);">Intussusception</h2>
+  <p class="lead" style="margin-top:8px;">"The baby that screams, then goes quiet"</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 6 — CASE 2 HISTORY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 2 · PEM — Intussusception</span>
+  <h2 style="margin-bottom:14px;">Clinical Presentation</h2>
+  <div class="col-6040">
+    <div class="stack">
+      <div class="card">
+        <h3>History</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>20-month-old female</strong>, previously healthy</li>
+          <li>8-hour history of <strong>episodic colicky abdominal pain</strong> — crying inconsolably, drawing legs to abdomen, then becoming lethargic/limp between episodes</li>
+          <li>2 episodes of non-bilious vomiting</li>
+          <li>One stool described as "currant jelly" — blood and mucus mixed <span class="badge badge-red">Late sign</span></li>
+          <li>Refuses to eat, decreased oral intake</li>
+        </ul>
+      </div>
+      <div class="card-accent">
+        <h3>Exam</h3>
+        <ul style="margin-top:6px;">
+          <li>HR 132, RR 28, T 38.1°C, SpO₂ 99%</li>
+          <li>Lethargic in mother's arms, rouses to exam</li>
+          <li>Abdomen: soft during quiet phase, voluntary guarding during pain; <strong>sausage-shaped mass RUQ/RLQ</strong> (50–60% cases)</li>
+          <li>Rectal: small amount of blood on glove</li>
+        </ul>
+      </div>
+      <div class="card-yellow">
+        <h4>Classic Triad (only 20–40% present with all three)</h4>
+        <p>Colicky pain · Vomiting · Currant jelly stool</p>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card-teal">
+        <h3>Why POCUS?</h3>
+        <p style="margin-top:6px;">Ultrasound is the <strong>diagnostic test of choice</strong> — replaces barium/air enema for diagnosis (not for reduction).</p>
+        <div style="margin-top:10px;" class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value">98%</div>
+            <div class="measure-label">Sensitivity</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">98%</div>
+            <div class="measure-label">Specificity</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-accent">
+        <h4>Epidemiology</h4>
+        <ul class="no-bullet">
+          <li>Peak: <strong>6 months – 3 years</strong></li>
+          <li>M &gt; F (3:1)</li>
+          <li>Ileocolic = 90% of cases</li>
+          <li>Lead point in older children (~5%)</li>
+          <li>Lead points: Meckel's, lymphoma, polyp</li>
+        </ul>
+      </div>
+      <div class="card-red">
+        <h4>🚨 Don't Miss</h4>
+        <p>Altered mental status in intussusception — can be presenting sign (opioid-like effect from distended bowel). Consider US in any lethargic toddler.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 7 — CASE 2 ULTRASOUND
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 2 · PEM — Intussusception</span>
+  <h2 style="margin-bottom:14px;">Ultrasound Technique &amp; Findings</h2>
+  <div class="cols-2">
+    <div class="stack scroll-inner">
+      <div class="probe-box">
+        <div class="probe-icon">🔬</div>
+        <div>
+          <h4>Probe &amp; Settings</h4>
+          <p><strong>High-frequency linear</strong> 7–12 MHz · Switch to <strong>curvilinear</strong> if deeper or larger child</p>
+          <p class="small">Color Doppler essential — assess vascularity of intussusceptum</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Scanning Technique</h3>
+        <div class="algo-step"><div class="algo-num">1</div><p>Start RLQ — most common location for ileocolic intussusception</p></div>
+        <div class="algo-step"><div class="algo-num">2</div><p>Sweep transversely from RLQ → RUQ → transverse colon</p></div>
+        <div class="algo-step"><div class="algo-num">3</div><p>Use gentle graded compression to displace gas</p></div>
+        <div class="algo-step"><div class="algo-num">4</div><p>When mass found — image in both planes (transverse + longitudinal)</p></div>
+        <div class="algo-step"><div class="algo-num">5</div><p>Apply color Doppler — assess flow within intussusceptum</p></div>
+        <div class="algo-step"><div class="algo-num">6</div><p>Survey for free fluid, assess for lead point</p></div>
+      </div>
+      <div class="card-teal">
+        <h3>Diagnostic Criteria</h3>
+        <div class="measure-grid">
+          <div class="measure-item abnormal">
+            <div class="measure-value">&gt;3</div>
+            <div class="measure-unit">cm</div>
+            <div class="measure-label">Outer diameter (axial)</div>
+          </div>
+          <div class="measure-item abnormal">
+            <div class="measure-value">&gt;1.4</div>
+            <div class="measure-unit">cm</div>
+            <div class="measure-label">Depth of intussusceptum</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:8px;">Small bowel–small bowel intussusception &lt;3 cm with no symptoms = transient, benign — no treatment needed.</p>
+      </div>
+    </div>
+    <div class="stack scroll-inner">
+      <div class="cols-2" style="flex:unset; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="sign-card">
+          <div class="sign-emoji">🎯</div>
+          <div class="sign-name">Target Sign</div>
+          <div class="sign-desc">Transverse: hyperechoic center (intussusceptum) within hypoechoic rim (intussuscipiens) — "bull's eye"</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🥩</div>
+          <div class="sign-name">Pseudokidney Sign</div>
+          <div class="sign-desc">Longitudinal: layered bowel wall appears like a kidney. Hyperechoic mesentery sandwiched between walls.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🌀</div>
+          <div class="sign-name">Crescent Sign</div>
+          <div class="sign-desc">Hyperechoic crescentic mesenteric fat trapped within the intussuscipiens</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🌈</div>
+          <div class="sign-name">Color Doppler</div>
+          <div class="sign-desc">Absent flow in intussusceptum = bowel ischemia → poorer reduction success, higher OR risk</div>
+        </div>
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Absent Doppler flow → warn surgery before air enema. Doesn't contraindicate reduction but signals higher failure/perforation risk.
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Free fluid alone does not predict perforation. A small amount is common. Large complex fluid = more concerning.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Mesenteric lymph nodes can mimic target sign. Nodes have a hyperechoic hilum and are oval, not round. Always image in both planes.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Failure to visualize ≠ absence. Scan the full colon. Get radiology if inconclusive and clinical suspicion high.
+      </div>
+      <div class="card-green">
+        <h4>Disposition</h4>
+        <p>NPO · IV access · Surgical consult · <strong>Air enema reduction</strong> (~80% success, fluoroscopic or US-guided) · Admit post-reduction (10–15% recurrence within 24h) · Peritonitis / failed reduction / no Doppler flow → OR</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 8 — CASE 3 DIVIDER
+══════════════════════════════════════════════ -->
+<div class="slide section-slide">
+  <span class="case-tag tag-pem">Case 3 · PEM</span>
+  <div class="case-number-big">03</div>
+  <h2 style="margin-top:8px; font-size:clamp(24px,4vw,48px);">Pediatric Appendicitis</h2>
+  <p class="lead" style="margin-top:8px;">"The great masquerader"</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 9 — CASE 3 HISTORY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 3 · PEM — Appendicitis</span>
+  <h2 style="margin-bottom:14px;">Clinical Presentation</h2>
+  <div class="col-6040">
+    <div class="stack">
+      <div class="card">
+        <h3>History</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>10-year-old male</strong></li>
+          <li>36-hour history of abdominal pain — started <strong>periumbilical</strong>, now localizing to <strong>RLQ</strong> (McBurney's point)</li>
+          <li>Anorexia, nausea, 1 episode of vomiting</li>
+          <li>Low-grade fever — parents noted this morning</li>
+          <li>Walking hunched over, pain worsens with movement</li>
+        </ul>
+      </div>
+      <div class="card-accent">
+        <h3>Exam</h3>
+        <ul style="margin-top:6px;">
+          <li>T 38.7°C, HR 104, RR 20, SpO₂ 99%</li>
+          <li>RLQ tenderness, guarding, Rovsing's sign +, Psoas sign +</li>
+          <li>Rebound tenderness present</li>
+          <li>WBC 16,200 with 82% neutrophils, CRP 48 mg/L</li>
+        </ul>
+      </div>
+      <div class="card-teal">
+        <h4>Pediatric Appendicitis Score (PAS)</h4>
+        <div class="cols-2" style="flex:unset; gap:8px;">
+          <div>
+            <p class="small">Anorexia (+1) · Nausea/vomiting (+1)</p>
+            <p class="small">Migration of pain (+1) · Fever ≥38°C (+1)</p>
+            <p class="small">Cough/hop/percussion RLQ tenderness (+2)</p>
+          </div>
+          <div>
+            <p class="small">RLQ tenderness (+2) · WBC &gt;10k (+1)</p>
+            <p class="small">Polymorphonuclear neutrophilia (+1)</p>
+            <p class="small" style="margin-top:6px;"><strong>This patient: PAS 7/10</strong> <span class="badge badge-red">High Risk</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card-teal">
+        <h3>Why POCUS First?</h3>
+        <p style="margin-top:6px;">POCUS + clinical score can reduce CT utilization in pediatrics. Goal: diagnose appendicitis with US, reserve CT for non-visualization or indeterminate cases.</p>
+        <div style="margin-top:10px;" class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value">72–85%</div>
+            <div class="measure-label">Sensitivity</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">94–97%</div>
+            <div class="measure-label">Specificity</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:6px;">Non-visualization rate 20–35% in EDs. ALARA: "US first" algorithms reduce CT use by 40–50%.</p>
+      </div>
+      <div class="card-red">
+        <h4>🚨 Perforation Risk</h4>
+        <p>Children have higher perforation rates (~30–40%) due to diagnostic delay. Younger children (&lt;5y) may present atypically.</p>
+      </div>
+      <div class="card-accent">
+        <h4>Decision Algorithm (simplified)</h4>
+        <ul class="no-bullet">
+          <li>PAS ≤3 → Discharge with return precautions</li>
+          <li>PAS 4–6 → US first; CT if non-diagnostic</li>
+          <li>PAS ≥7 → US; direct OR if positive; CT if non-vis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 10 — CASE 3 ULTRASOUND
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 3 · PEM — Appendicitis</span>
+  <h2 style="margin-bottom:14px;">Ultrasound Technique &amp; Findings</h2>
+  <div class="cols-2">
+    <div class="stack scroll-inner">
+      <div class="probe-box">
+        <div class="probe-icon">🔬</div>
+        <div>
+          <h4>Probe &amp; Settings</h4>
+          <p><strong>High-frequency linear</strong> 7–12 MHz · <strong>Curvilinear</strong> for obese patients or deep structures</p>
+          <p class="small">Split screen or side-by-side color Doppler can assess hyperemia</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Graded Compression Technique</h3>
+        <div class="algo-step"><div class="algo-num">1</div><p>Start at ASIS, sweep medially and inferiorly with <strong>progressive gentle compression</strong></p></div>
+        <div class="algo-step"><div class="algo-num">2</div><p>Displace overlying bowel gas laterally — compress until you see psoas muscle</p></div>
+        <div class="algo-step"><div class="algo-num">3</div><p>Identify the cecum (haustra, largest gas-filled structure RLQ)</p></div>
+        <div class="algo-step"><div class="algo-num">4</div><p>Follow the cecum to the appendix origin at base — tip-to-base visualization required</p></div>
+        <div class="algo-step"><div class="algo-num">5</div><p>Measure <strong>outer wall to outer wall</strong> in transverse plane</p></div>
+        <div class="algo-step"><div class="algo-num">6</div><p>If not found: try posterior (retrocecal), or patient left lateral decubitus</p></div>
+      </div>
+      <div class="card-teal">
+        <h3>Diagnostic Criteria</h3>
+        <div class="measure-grid">
+          <div class="measure-item abnormal">
+            <div class="measure-value">≥6</div>
+            <div class="measure-unit">mm</div>
+            <div class="measure-label">Outer-wall diameter</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">&lt;6</div>
+            <div class="measure-unit">mm</div>
+            <div class="measure-label">Normal (compressible)</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:8px;">6–8 mm = equivocal, consider CT/MRI. Normal appendix: compressible, blind-ending, peristalsis visible in adjacent bowel.</p>
+      </div>
+    </div>
+    <div class="stack scroll-inner">
+      <div class="cols-2" style="flex:unset; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="sign-card">
+          <div class="sign-emoji">🎯</div>
+          <div class="sign-name">Target Sign</div>
+          <div class="sign-desc">Transverse: non-compressible blind-ending tubular structure &gt;6mm, concentric rings</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🪨</div>
+          <div class="sign-name">Appendicolith</div>
+          <div class="sign-desc">Hyperechoic focus with posterior shadowing — increases perforation risk, should prompt urgent surgery</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">✨</div>
+          <div class="sign-name">Fat Stranding</div>
+          <div class="sign-desc">Hyperechoic periappendiceal fat (mesenteric fat reaction) — nonspecific but supports diagnosis</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">💧</div>
+          <div class="sign-name">Periappendiceal Fluid</div>
+          <div class="sign-desc">Anechoic free fluid adjacent to appendix or in pelvis — look for complex/loculated fluid suggesting abscess</div>
+        </div>
+      </div>
+      <div class="card-red" style="padding:10px 14px;">
+        <h3>Perforation Signs</h3>
+        <ul style="margin-top:6px;">
+          <li>Loss of echogenic submucosal layer (wall disruption)</li>
+          <li>Periappendiceal abscess (complex fluid collection)</li>
+          <li>Phlegmon — hyperechoic mass with shadowing</li>
+          <li>Free intraperitoneal air (rare — posterior acoustic enhancement)</li>
+        </ul>
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Graded compression is both diagnostic and therapeutic — it moves bowel gas aside to reveal the appendix. Never skip it.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Retrocecal appendix (25% of cases) — won't compress anteriorly. Roll patient left lateral, scan posteriorly.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Measuring the lumen instead of outer wall → underestimates diameter. Always outer-wall to outer-wall.
+      </div>
+      <div class="card-green">
+        <h4>Disposition</h4>
+        <p>NPO · IV antibiotics if perforated (pip/tazo or amp/sulbactam) · Surgical consult · Non-perforated: OR or antibiotic-first shared decision · Perforated + abscess: IV abx → interval appendectomy</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 11 — CASE 4 DIVIDER
+══════════════════════════════════════════════ -->
+<div class="slide section-slide">
+  <span class="case-tag tag-pem">Case 4 · PEM</span>
+  <div class="case-number-big">04</div>
+  <h2 style="margin-top:8px; font-size:clamp(24px,4vw,48px);">Pediatric Lung Ultrasound</h2>
+  <p class="lead" style="margin-top:8px;">"The stethoscope of the 21st century"</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 12 — CASE 4 HISTORY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 4 · PEM — Lung Ultrasound</span>
+  <h2 style="margin-bottom:14px;">Clinical Presentation</h2>
+  <div class="col-6040">
+    <div class="stack">
+      <div class="card">
+        <h3>History</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>4-year-old female</strong></li>
+          <li>3 days of <strong>fever to 39.5°C</strong> and worsening cough</li>
+          <li>Progressive tachypnea, now working hard to breathe</li>
+          <li>Decreased oral intake, no sick contacts initially</li>
+          <li>No prior lung disease, vaccinations up to date</li>
+          <li>Father had URI 1 week ago</li>
+        </ul>
+      </div>
+      <div class="card-accent">
+        <h3>Exam</h3>
+        <ul style="margin-top:6px;">
+          <li>T 39.3°C, HR 148, RR 42, SpO₂ <strong>91% on RA → 97% on 2L NC</strong></li>
+          <li>Moderate subcostal/intercostal retractions</li>
+          <li>Right: <strong>decreased breath sounds at base</strong>, dullness to percussion</li>
+          <li>Left: clear</li>
+          <li>CXR would show: RLL opacity with blunting of right costophrenic angle</li>
+        </ul>
+      </div>
+      <div class="card-yellow">
+        <h4>Clinical Question</h4>
+        <p>Pneumonia vs parapneumonic effusion? Does the effusion need drainage?<br>
+        <span class="small">Lung US can answer both questions at bedside, in real-time.</span></p>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card-teal">
+        <h3>Why Lung US over CXR?</h3>
+        <div class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value">96%</div>
+            <div class="measure-label">LUS Sensitivity</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">93%</div>
+            <div class="measure-label">LUS Specificity</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">87%</div>
+            <div class="measure-label">CXR Sensitivity</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:8px;">No radiation · Bedside · Dynamic assessment · Guides procedural planning</p>
+      </div>
+      <div class="card-accent">
+        <h4>Causes of Pediatric Effusion</h4>
+        <ul class="no-bullet">
+          <li>Parapneumonic (most common)</li>
+          <li>Empyema (complicated)</li>
+          <li>Malignancy (leukemia, lymphoma)</li>
+          <li>Chylothorax</li>
+          <li>Heart failure (transudate)</li>
+        </ul>
+      </div>
+      <div class="card-red">
+        <h4>🚨 Danger Signs</h4>
+        <p>Septated effusion · Loculated complex fluid · Lung herniation into effusion · All = empyema until proven otherwise</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 13 — CASE 4 ULTRASOUND
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-pem">Case 4 · PEM — Lung Ultrasound</span>
+  <h2 style="margin-bottom:14px;">Ultrasound Technique &amp; Findings</h2>
+  <div class="cols-2">
+    <div class="stack scroll-inner">
+      <div class="probe-box">
+        <div class="probe-icon">🔬</div>
+        <div>
+          <h4>Probe &amp; Settings</h4>
+          <p><strong>Phased array</strong> (adults, older kids) · <strong>Linear</strong> (neonates/infants — highest resolution)</p>
+          <p class="small">No special lung preset needed. Harmonics off for B-lines. Depth 6–8 cm for most peds.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Scanning Zones (BLUE Protocol)</h3>
+        <p class="small" style="margin-bottom:8px;">6 zones per side: anterior upper/lower, lateral, posterior upper/lower/basal</p>
+        <div class="zone-grid">
+          <div class="zone highlight">Ant Upper</div>
+          <div class="zone highlight">Ant Lower</div>
+          <div class="zone">Lateral</div>
+          <div class="zone highlight">Post Upper</div>
+          <div class="zone highlight">Post Lower</div>
+          <div class="zone highlight">Post Basal</div>
+        </div>
+        <p class="small" style="margin-top:6px;">Posterior basal zones most sensitive for pneumonia (gravity-dependent consolidation)</p>
+      </div>
+      <div class="card-teal">
+        <h3>Normal Lung US Findings</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>Pleural line</strong>: bright, hyperechoic, moves with respiration</li>
+          <li><strong>Lung sliding</strong>: shimmering movement of visceral on parietal pleura</li>
+          <li><strong>A-lines</strong>: horizontal reverberation artifacts (air in lung = normal)</li>
+          <li><strong>Seashore sign</strong>: M-mode — "waves on a beach" above pleural line, granular below</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Effusion Assessment</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>Simple/anechoic</strong>: transudate or early exudate</li>
+          <li><strong>Complex/echogenic</strong>: exudate, hemorrhage, empyema</li>
+          <li><strong>Septations</strong>: fibrinous stranding within fluid = complicated</li>
+          <li>Measure largest AP dimension above diaphragm</li>
+          <li>Mark safe spot for thoracentesis or chest drain placement</li>
+        </ul>
+      </div>
+    </div>
+    <div class="stack scroll-inner">
+      <div class="cols-2" style="flex:unset; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="sign-card">
+          <div class="sign-emoji">⚡</div>
+          <div class="sign-name">B-lines</div>
+          <div class="sign-desc">Vertical laser-like hyperechoic artifacts from pleural line to bottom of screen — move with sliding. ≥3 per field = pathologic. Interstitial fluid.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🫁</div>
+          <div class="sign-name">Consolidation</div>
+          <div class="sign-desc">Tissue-like (hepatization) echogenicity replacing normal air-filled lung. Jagged border (shred sign) at air-consolidation interface.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">💨</div>
+          <div class="sign-name">Air Bronchograms</div>
+          <div class="sign-desc"><strong>Dynamic</strong> = patent airways (pneumonia). <strong>Static</strong> = atelectasis. Fluid bronchograms = anechoic tubes in consolidation = complicated.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🌊</div>
+          <div class="sign-name">Sinusoid Sign</div>
+          <div class="sign-desc">M-mode: lung moves toward pleura in inspiration creating sinusoidal pattern — confirms free-flowing effusion (vs empyema)</div>
+        </div>
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Dynamic air bronchograms (hyperechoic dots moving toward probe during inspiration) = pneumonia, not atelectasis. This distinction can change management (antibiotics vs physiotherapy).
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Compare bilateral posterior zones — even subtle asymmetry in B-line density suggests pathology on the side with more.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Skin fold or subcutaneous emphysema can abolish lung sliding — don't diagnose pneumothorax on absence of sliding alone without other features (absent B-lines + lung point).
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Right-sided "effusion" below the diaphragm = intrahepatic fluid or ascites. Always identify the diaphragm first.
+      </div>
+      <div class="card-green">
+        <h4>Disposition</h4>
+        <p>O₂ to maintain SpO₂ ≥94% · IV amoxicillin/ampicillin (typical) or ceftriaxone · Simple effusion: treat underlying pneumonia · Complex/empyema: chest tube or VATS, surgery consult · Admit all with SpO₂ &lt;95% or significant effusion</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 14 — CASE 5 DIVIDER
+══════════════════════════════════════════════ -->
+<div class="slide section-slide">
+  <span class="case-tag tag-urology">Case 5 · Urology</span>
+  <div class="case-number-big" style="background: linear-gradient(135deg, var(--orange) 0%, rgba(255,123,67,0.2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">05</div>
+  <h2 style="margin-top:8px; font-size:clamp(24px,4vw,48px);">Testicular Torsion</h2>
+  <p class="lead" style="margin-top:8px;">"Time is testicle" — every hour matters</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 15 — CASE 5 HISTORY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-urology">Case 5 · Urology — Testicular Torsion</span>
+  <h2 style="margin-bottom:14px;">Clinical Presentation</h2>
+  <div class="col-6040">
+    <div class="stack">
+      <div class="card">
+        <h3>History</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>14-year-old male</strong></li>
+          <li>Woke from sleep with <strong>sudden onset left testicular pain</strong> 5 hours ago</li>
+          <li>Nausea, 1 episode of vomiting</li>
+          <li>No fever, no dysuria, no trauma</li>
+          <li>No prior episodes</li>
+          <li>Denies sexual activity</li>
+        </ul>
+      </div>
+      <div class="card-accent">
+        <h3>Exam</h3>
+        <ul style="margin-top:6px;">
+          <li>HR 98, afebrile, BP 118/70</li>
+          <li>Left testis: high-riding, <strong>horizontal (transverse) lie</strong></li>
+          <li>Left testis tender to light touch, swollen, firm</li>
+          <li>Cremasteric reflex: <strong>absent left</strong>, present right</li>
+          <li>Prehn's sign negative (elevation doesn't relieve pain)</li>
+          <li>Scrotal skin: minimal erythema, no warmth (early presentation)</li>
+        </ul>
+      </div>
+      <div class="card-orange">
+        <h4>Bimodal Age Distribution</h4>
+        <p>Peak 1: <strong>Perinatal</strong> (extravaginal torsion) · Peak 2: <strong>12–18 years</strong> (intravaginal, bell-clapper deformity)</p>
+        <p class="small" style="margin-top:4px;">Bell-clapper deformity = bilateral in 40% → both testicles at risk</p>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card-orange">
+        <h3>Time to Salvage</h3>
+        <div class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value" style="color:var(--green);">&gt;90%</div>
+            <div class="measure-label">Salvage &lt;6 hrs</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value" style="color:var(--yellow);">50%</div>
+            <div class="measure-label">Salvage 12–24 hrs</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value" style="color:var(--red);">&lt;10%</div>
+            <div class="measure-label">Salvage &gt;24 hrs</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-red">
+        <h4>🚨 Critical Rule</h4>
+        <p>If clinical suspicion is <strong>high</strong> for torsion, <strong>do not delay to OR for imaging</strong>. POCUS is adjunct, not a gatekeeper. When in doubt, call urology first.</p>
+      </div>
+      <div class="card-accent">
+        <h4>Differential Diagnosis</h4>
+        <ul class="no-bullet">
+          <li>Torsion of appendix testis (most common misdiagnosis)</li>
+          <li>Epididymo-orchitis</li>
+          <li>Incarcerated inguinal hernia</li>
+          <li>Trauma / hematocele</li>
+          <li>Tumor (painless, slow onset)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 16 — CASE 5 ULTRASOUND
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-urology">Case 5 · Urology — Testicular Torsion</span>
+  <h2 style="margin-bottom:14px;">Ultrasound Technique &amp; Findings</h2>
+  <div class="cols-2">
+    <div class="stack scroll-inner">
+      <div class="probe-box">
+        <div class="probe-icon">🔬</div>
+        <div>
+          <h4>Probe &amp; Settings</h4>
+          <p><strong>High-frequency linear</strong> 12–15 MHz · Hockey stick probe for smaller patients</p>
+          <p class="small">Highest sensitivity color/power Doppler settings · Low PRF · Color box large enough to cover full testis</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Technique</h3>
+        <div class="algo-step"><div class="algo-num">1</div><p><strong>Start with the normal side</strong> — establish baseline flow for comparison</p></div>
+        <div class="algo-step"><div class="algo-num">2</div><p>Gray scale bilateral: assess size, echotexture, hydrocele, epididymis</p></div>
+        <div class="algo-step"><div class="algo-num">3</div><p>Apply color Doppler bilaterally — use same settings both sides</p></div>
+        <div class="algo-step"><div class="algo-num">4</div><p>Power Doppler: more sensitive for low-flow states (late torsion)</p></div>
+        <div class="algo-step"><div class="algo-num">5</div><p>Image spermatic cord in transverse — look for <strong>whirlpool sign</strong></p></div>
+        <div class="algo-step"><div class="algo-num">6</div><p>Document any asymmetry in flow — even reduced flow is abnormal</p></div>
+      </div>
+      <div class="card-teal">
+        <h3>Diagnostic Accuracy</h3>
+        <div class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value">88–97%</div>
+            <div class="measure-label">Sensitivity</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">97–99%</div>
+            <div class="measure-label">Specificity</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:8px;">Sensitivity lower for <strong>intermittent torsion</strong> (may have normal flow at time of scan). Clinical suspicion overrides imaging.</p>
+      </div>
+    </div>
+    <div class="stack scroll-inner">
+      <div class="cols-2" style="flex:unset; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="sign-card">
+          <div class="sign-emoji">🔇</div>
+          <div class="sign-name">Absent Flow</div>
+          <div class="sign-desc">No color Doppler signal in affected testis vs normal contralateral — the most important finding. Absent = torsion until proven otherwise.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🌀</div>
+          <div class="sign-name">Whirlpool Sign</div>
+          <div class="sign-desc">Twisted spermatic cord seen on B-mode or color Doppler — "pinwheel" appearance at cord entry. Pathognomonic.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🔶</div>
+          <div class="sign-name">Heterogeneous Echotexture</div>
+          <div class="sign-desc">Late finding — loss of normal homogeneous pattern indicates infarction/necrosis. Poor prognostic sign.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">💧</div>
+          <div class="sign-name">Reactive Hydrocele</div>
+          <div class="sign-desc">Anechoic fluid around testis — common in torsion, epididymo-orchitis. Not specific but often present.</div>
+        </div>
+      </div>
+      <div class="card-orange" style="padding:10px 14px;">
+        <h3>Torsion of Appendix Testis</h3>
+        <ul style="margin-top:6px;">
+          <li>Small hyperechoic nodule near epididymal head</li>
+          <li><strong>"Blue dot sign"</strong> on exam (pathognomonic if seen)</li>
+          <li>Normal testicular flow on Doppler</li>
+          <li>Treatment: NSAIDs, supportive care (self-limiting)</li>
+        </ul>
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Always compare bilaterally with identical Doppler settings. Asymmetric flow — even if some flow present — is abnormal and warrants urgent urology consultation.
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> The whirlpool sign (twisted cord) can sometimes be seen in B-mode — always scan the cord. Its absence does not exclude torsion.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> "Present flow" does not exclude torsion. Partial torsion (&lt;360°) or early/intermittent torsion may have preserved flow. Treat the patient, not the image.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Epididymo-orchitis shows <strong>increased</strong> flow (hyperemia). If you see hyperperfusion = NOT torsion (but confirm with clinical picture and consider both diagnoses co-existing in teens — uncommon but possible).
+      </div>
+      <div class="card-green">
+        <h4>Disposition</h4>
+        <p>Urology emergency consult immediately · NPO · IV access · Analgesia · Informed consent for bilateral orchiopexy (bell-clapper repairs both sides) · If no urologist available: manual detorsion "open the book" lateral-to-medial + transfer</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 17 — CASE 6 DIVIDER
+══════════════════════════════════════════════ -->
+<div class="slide section-slide">
+  <span class="case-tag tag-trauma">Case 6 · Trauma</span>
+  <div class="case-number-big" style="background: linear-gradient(135deg, var(--red) 0%, rgba(248,81,73,0.2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">06</div>
+  <h2 style="margin-top:8px; font-size:clamp(24px,4vw,48px);">eFAST Exam</h2>
+  <p class="lead" style="margin-top:8px;">"Ultrasound in resuscitation is the rule, not the exception"</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 18 — CASE 6 HISTORY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-trauma">Case 6 · Trauma — eFAST Exam</span>
+  <h2 style="margin-bottom:14px;">Clinical Presentation</h2>
+  <div class="col-6040">
+    <div class="stack">
+      <div class="card">
+        <h3>History</h3>
+        <ul style="margin-top:6px;">
+          <li><strong>16-year-old male</strong>, unrestrained rear passenger</li>
+          <li>High-speed MVC, T-bone collision, airbag deployed</li>
+          <li>EMS: GCS 13 at scene, now 14 in ED</li>
+          <li>Complaining of abdominal and chest pain</li>
+          <li>No obvious external hemorrhage</li>
+          <li>Pelvis stable on exam</li>
+        </ul>
+      </div>
+      <div class="card-accent">
+        <h3>Primary Survey (Trauma Bay)</h3>
+        <ul style="margin-top:6px;">
+          <li>A: Patent, C-collar in place</li>
+          <li>B: Tachypneic RR 28, SpO₂ 96%, decreased L breath sounds</li>
+          <li>C: <strong>HR 138, BP 88/58, cool clammy skin</strong>, cap refill 4s</li>
+          <li>D: GCS 14, pupils equal and reactive</li>
+          <li>E: Seatbelt sign across abdomen, multiple abrasions</li>
+        </ul>
+      </div>
+      <div class="card-red">
+        <h4>🚨 Hemodynamically Unstable</h4>
+        <p>Shock index (HR/SBP) = <strong>1.57</strong> — high hemorrhage risk. eFAST is the <strong>first test</strong> — faster than CT.</p>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card-teal">
+        <h3>Why eFAST Changes Everything</h3>
+        <p style="margin-top:6px;">In pediatric trauma, positive eFAST + hemodynamic instability = hemorrhagic shock until proven otherwise. <strong>No time for CT.</strong></p>
+        <div style="margin-top:10px;" class="measure-grid">
+          <div class="measure-item">
+            <div class="measure-value">~73%</div>
+            <div class="measure-label">Sensitivity (hemoperitoneum)</div>
+          </div>
+          <div class="measure-item">
+            <div class="measure-value">~94%</div>
+            <div class="measure-label">Specificity</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:6px;">Negative eFAST does NOT rule out injury (solid organ injury may not free-bleed initially). Serial eFAST every 30 min if concern persists.</p>
+      </div>
+      <div class="card-accent">
+        <h4>eFAST Views (6 total)</h4>
+        <ul class="no-bullet">
+          <li>RUQ — Morrison's pouch (hepatorenal)</li>
+          <li>LUQ — Splenorenal</li>
+          <li>Pelvis — Pouch of Douglas / rectovesical</li>
+          <li>Subxiphoid — Pericardial</li>
+          <li>R chest — Pneumothorax / hemothorax</li>
+          <li>L chest — Pneumothorax / hemothorax</li>
+        </ul>
+      </div>
+      <div class="card-yellow">
+        <h4>Pediatric Differences</h4>
+        <p class="small">Children compensate longer → BP drops late. Liver and spleen proportionally larger and less protected. Solid organ injury more common than hollow viscus. Seatbelt sign = 10× risk of hollow viscus injury.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 19 — CASE 6 ULTRASOUND
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-trauma">Case 6 · Trauma — eFAST Exam</span>
+  <h2 style="margin-bottom:14px;">Ultrasound Technique &amp; Findings</h2>
+  <div class="cols-2">
+    <div class="stack scroll-inner">
+      <div class="probe-box">
+        <div class="probe-icon">🔬</div>
+        <div>
+          <h4>Probe &amp; Settings</h4>
+          <p><strong>Curvilinear</strong> 2–5 MHz (abdomen) · <strong>Phased array</strong> (cardiac/subxiphoid) · <strong>Linear</strong> (chest — PTX)</p>
+          <p class="small">No special setting. Depth: start at 12–16 cm, adjust per view.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Systematic Approach (Goal: &lt;2 min)</h3>
+        <div class="algo-step"><div class="algo-num">1</div>
+          <div><p><strong>RUQ — Morison's Pouch</strong></p><p class="small">Coronal view, mid-axillary line R. Look in hepatorenal space, subphrenic, around gallbladder. Most sensitive for hemoperitoneum.</p></div>
+        </div>
+        <div class="algo-step"><div class="algo-num">2</div>
+          <div><p><strong>LUQ — Splenorenal</strong></p><p class="small">More posterior than RUQ. Fan superior (subphrenic), inferior (splenorenal), check for free fluid. Harder due to posterior position.</p></div>
+        </div>
+        <div class="algo-step"><div class="algo-num">3</div>
+          <div><p><strong>Pelvis — Suprapubic</strong></p><p class="small">Transverse and longitudinal above bladder. Free fluid collects posterior/superior to bladder (POD or rectovesical pouch). Full bladder helps.</p></div>
+        </div>
+        <div class="algo-step"><div class="algo-num">4</div>
+          <div><p><strong>Subxiphoid — Cardiac</strong></p><p class="small">Subcostal 4-chamber. Pericardial effusion = dark stripe around heart. Tamponade physiology: RV collapse in diastole.</p></div>
+        </div>
+        <div class="algo-step"><div class="algo-num">5</div>
+          <div><p><strong>Bilateral Chest — PTX/Hemothorax</strong></p><p class="small">Linear probe, 2nd ICS MCL. Absent sliding + absent B-lines + lung point = PTX. Hemothorax: anechoic fluid above diaphragm, compressed lung.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="stack scroll-inner">
+      <div class="cols-2" style="flex:unset; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="sign-card">
+          <div class="sign-emoji">🩸</div>
+          <div class="sign-name">Free Fluid</div>
+          <div class="sign-desc">Anechoic (early) or echogenic (clotted) fluid in dependent spaces. Even a thin 5mm stripe = significant volume.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">❤️</div>
+          <div class="sign-name">Tamponade</div>
+          <div class="sign-desc">Pericardial effusion + RV collapse during diastole + IVC plethora. Physiologic tamponade = immediate pericardiocentesis.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">💨</div>
+          <div class="sign-name">Pneumothorax</div>
+          <div class="sign-desc">Absent lung sliding + absent B-lines + "barcode sign" on M-mode + lung point (specific). Sensitivity ~86–98%.</div>
+        </div>
+        <div class="sign-card">
+          <div class="sign-emoji">🔴</div>
+          <div class="sign-name">Hemothorax</div>
+          <div class="sign-desc">Anechoic/hypoechoic fluid above diaphragm. Look in thoracic views and also LUQ/RUQ for subphrenic fluid.</div>
+        </div>
+      </div>
+      <div class="card-red" style="padding:10px 14px;">
+        <h3>Semi-Quantitative Free Fluid Score</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px;">
+          <div style="text-align:center; padding:8px; background:rgba(63,185,80,0.1); border-radius:8px;">
+            <div style="font-size:18px; font-weight:800; color:var(--green);">0</div>
+            <div class="small">No fluid</div>
+          </div>
+          <div style="text-align:center; padding:8px; background:rgba(210,153,34,0.1); border-radius:8px;">
+            <div style="font-size:18px; font-weight:800; color:var(--yellow);">1–2</div>
+            <div class="small">Small (&lt;1 cm stripe) · Consider CT if stable</div>
+          </div>
+          <div style="text-align:center; padding:8px; background:rgba(248,81,73,0.1); border-radius:8px;">
+            <div style="font-size:18px; font-weight:800; color:var(--red);">3+</div>
+            <div class="small">Large (clot, multiple spaces) · OR if unstable</div>
+          </div>
+        </div>
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> Perinephric fat can mimic free fluid. Fat is slightly echogenic, does not shift with position change, and has no sharp border with the kidney.
+      </div>
+      <div class="pearl">
+        <strong>Pearl:</strong> The liver is your best friend in RUQ — identify it first, then the kidney below, then look in the space between them (Morison's pouch). Even 1mm of fluid here is significant.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Ascites in a trauma patient — free fluid doesn't always mean hemorrhage. Look for echogenicity (blood = variable, exudate = echogenic swirling). Clinical context is everything.
+      </div>
+      <div class="pitfall">
+        <strong>Pitfall:</strong> Negative FAST in hemodynamic instability ≠ no intra-abdominal injury. Retroperitoneal hematoma, early solid organ injury, mesenteric tears won't show on FAST. Repeat and escalate.
+      </div>
+      <div class="card-green">
+        <h4>Decision Algorithm</h4>
+        <p><strong>Positive FAST + unstable</strong> → OR (hemorrhage control) · <strong>Positive FAST + stable</strong> → CT abdomen/pelvis with contrast · <strong>Negative FAST + unstable</strong> → Repeat FAST, consider DPL, re-examine, or empiric laparotomy</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 20 — SUMMARY
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-title">Summary</span>
+  <h2 style="margin-bottom:16px;">Key Takeaways</h2>
+  <div class="cols-3" style="gap:14px;">
+    <div class="card-teal stack" style="gap:8px;">
+      <span class="case-tag tag-pem" style="margin-bottom:0;">PEM Cases</span>
+      <div>
+        <p><strong>Pyloric Stenosis:</strong> Muscle ≥4mm · Cervix sign · Correct lytes before OR</p>
+      </div>
+      <hr>
+      <div>
+        <p><strong>Intussusception:</strong> Target/pseudokidney sign · Doppler predicts reduction success</p>
+      </div>
+      <hr>
+      <div>
+        <p><strong>Appendicitis:</strong> Graded compression · ≥6mm outer wall · PAS score guides US-first pathway</p>
+      </div>
+      <hr>
+      <div>
+        <p><strong>Lung US:</strong> B-lines · Dynamic air bronchograms · Assess effusion character</p>
+      </div>
+    </div>
+    <div class="card-orange stack" style="gap:8px;">
+      <span class="case-tag tag-urology" style="margin-bottom:0;">Testicular Torsion</span>
+      <p>Always compare bilateral flow. Absent flow = OR. Don't let a "normal" POCUS delay urology consult if clinical suspicion is high.</p>
+      <hr>
+      <div class="measure-grid" style="grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="measure-item">
+          <div class="measure-value" style="color:var(--green); font-size:20px;">&gt;90%</div>
+          <div class="measure-label">Salvage &lt;6h</div>
+        </div>
+        <div class="measure-item">
+          <div class="measure-value" style="color:var(--red); font-size:20px;">&lt;10%</div>
+          <div class="measure-label">Salvage &gt;24h</div>
+        </div>
+      </div>
+      <p class="small">Whirlpool sign = pathognomonic. Bell-clapper = bilateral risk.</p>
+    </div>
+    <div class="card-red stack" style="gap:8px;">
+      <span class="case-tag tag-trauma" style="margin-bottom:0;">eFAST</span>
+      <p>6 views. Goal &lt;2 minutes. Positive + unstable = OR. Negative does NOT rule out injury.</p>
+      <hr>
+      <ul class="no-bullet" style="font-size:13px;">
+        <li>RUQ most sensitive</li>
+        <li>LUQ is most posterior</li>
+        <li>Pelvis needs full bladder</li>
+        <li>Lung point = specific for PTX</li>
+        <li>RV diastolic collapse = tamponade</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card-accent" style="margin-top:16px;">
+    <div class="flex-row" style="flex-wrap:wrap; gap:16px;">
+      <div>
+        <h4>Universal POCUS Principles</h4>
+      </div>
+      <div style="flex:1; display:flex; gap:16px; flex-wrap:wrap;">
+        <span class="badge badge-teal">Probe selection matters</span>
+        <span class="badge badge-green">Bilateral comparison</span>
+        <span class="badge badge-yellow">Clinical + US together</span>
+        <span class="badge badge-red">Negative ≠ excluded</span>
+        <span class="badge badge-purple">Graded compression</span>
+        <span class="badge badge-orange">Serial exams if uncertain</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 21 — REFERENCES
+══════════════════════════════════════════════ -->
+<div class="slide">
+  <span class="case-tag tag-title">References</span>
+  <h2 style="margin-bottom:14px;">Key Evidence &amp; Resources</h2>
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card">
+        <h4>Pyloric Stenosis</h4>
+        <ul style="margin-top:6px;">
+          <li class="small">Hernanz-Schulman M. Pyloric stenosis: role of imaging. <em>Pediatr Radiol</em> 2009</li>
+          <li class="small">Blumhagen JD et al. Sonographic diagnosis of HPS. <em>AJR</em> 1988</li>
+          <li class="small">Maheshwai P et al. Pyloric stenosis US criteria. <em>J Pediatr Surg</em> 2014</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Intussusception</h4>
+        <ul style="margin-top:6px;">
+          <li class="small">Bhisitkul DM et al. Clinical application of US for intussusception. <em>Pediatrics</em> 1992</li>
+          <li class="small">Del-Pozo G et al. Intussusception: US findings. <em>Radiology</em> 1996</li>
+          <li class="small">Menke J. Diagnostic accuracy of US for intussusception. <em>Eur Radiol</em> 2019 (meta-analysis)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Appendicitis</h4>
+        <ul style="margin-top:6px;">
+          <li class="small">Samuel M. Pediatric appendicitis score. <em>J Pediatr Surg</em> 2002</li>
+          <li class="small">Doria AS et al. US vs CT for appendicitis. <em>Radiology</em> 2006</li>
+          <li class="small">Kharbanda AB et al. US-first pathway. <em>Pediatrics</em> 2020</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Lung Ultrasound</h4>
+        <ul style="margin-top:6px;">
+          <li class="small">Lichtenstein DA. BLUE protocol. <em>Chest</em> 2008</li>
+          <li class="small">Pereda MA et al. LUS for community-acquired pneumonia in children. <em>Pediatrics</em> 2015 (meta-analysis)</li>
+          <li class="small">Volpicelli G et al. International consensus statement on LUS. <em>Intensive Care Med</em> 2012</li>
+        </ul>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <h4>Testicular Torsion</h4>
+        <ul style="margin-top:6px;">
+          <li class="small">Frush DP et al. US of testicular torsion. <em>Radiol Clin North Am</em> 2006</li>
+          <li class="small">Baud C et al. Whirlpool sign in testicular torsion. <em>Pediatr Radiol</em> 1998</li>
+          <li class="small">Yagil Y et al. Doppler US in testicular torsion. <em>J Ultrasound Med</em> 2010</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>eFAST</h4>
+        <ul style="margin-top:6px;">
+          <li class="small">Rozycki GS et al. FAST in trauma. <em>Ann Surg</em> 1998</li>
+          <li class="small">Holmes JF et al. FAST in pediatric blunt abdominal trauma. <em>Ann Emerg Med</em> 2012</li>
+          <li class="small">Montoya J et al. eFAST including pneumothorax. <em>J Trauma</em> 2016</li>
+        </ul>
+      </div>
+      <div class="card-teal">
+        <h4>Recommended Resources</h4>
+        <ul class="no-bullet" style="margin-top:6px;">
+          <li>ACEP Emergency Ultrasound Section (acep.org)</li>
+          <li>POCUS Atlas (pocusatlas.com)</li>
+          <li>Ultrasound Podcast (ultrasoundpodcast.com)</li>
+          <li>Core Ultrasound (core-ultrasound.com)</li>
+          <li>5MinSono (5minsono.com)</li>
+          <li>SAEM POCUS Interest Group resources</li>
+        </ul>
+      </div>
+      <div class="card-accent" style="text-align:center; padding:20px;">
+        <p style="font-size:28px; margin-bottom:8px;">🎉</p>
+        <h3>Great session!</h3>
+        <p class="small" style="margin-top:4px;">Questions? Scan review? Schedule next Pass the Pointer?</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #deck -->
+
+<!-- ── NAVIGATION ── -->
+<div id="nav">
+  <button id="btn-prev" onclick="prev()" title="Previous (←)">&#8592;</button>
+  <span id="slide-counter">1 / 22</span>
+  <button id="btn-next" onclick="next()" title="Next (→)">&#8594;</button>
+  <span style="width:1px; height:20px; background:var(--border);"></span>
+  <button id="timer-btn" onclick="toggleTimer()">▶ 45:00</button>
+  <span id="timer-display"></span>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  let timerInterval = null;
+  let timerSeconds = 45 * 60;
+  let timerRunning = false;
+
+  function updateNav() {
+    document.getElementById('slide-counter').textContent = `${current + 1} / ${slides.length}`;
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === slides.length - 1;
+    const pct = (current / (slides.length - 1)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateNav();
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(slides.length - 1);
+    if (e.key === 't' || e.key === 'T') toggleTimer();
+  });
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  }
+
+  function toggleTimer() {
+    const btn = document.getElementById('timer-btn');
+    if (timerRunning) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      btn.classList.remove('running');
+      btn.textContent = `▶ ${formatTime(timerSeconds)}`;
+    } else {
+      timerRunning = true;
+      btn.classList.add('running');
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          btn.textContent = `⏸ ${formatTime(timerSeconds)}`;
+        } else {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          btn.classList.remove('running');
+          btn.textContent = '⏰ Done!';
+          btn.style.color = 'var(--red)';
+          btn.style.borderColor = 'var(--red)';
+        }
+      }, 1000);
+    }
+  }
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+  });
+
+  updateNav();
+</script>
+</body>
+</html>
