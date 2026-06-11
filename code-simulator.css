@@ -82,6 +82,38 @@ html, body {
 .scn-go { display: inline-block; margin-top: 6px; font-weight: 900; color: var(--bright); }
 .how-list { line-height: 1.5; color: #cdeee7; padding-left: 20px; }
 .how-list em { color: #fff; font-style: normal; font-weight: 800; }
+.mic-setup {
+  margin-top: 18px;
+  background: rgba(36, 166, 135, 0.1);
+  border: 1px solid rgba(36, 166, 135, 0.4);
+  border-radius: 14px; padding: 14px;
+}
+.mic-enable {
+  font-family: inherit; font-weight: 900; font-size: 1rem;
+  background: var(--bright); color: #fff; border: none; border-radius: 30px;
+  padding: 12px 22px; cursor: pointer; box-shadow: 0 4px 0 var(--shadow);
+  transition: transform 0.1s, background 0.1s;
+}
+.mic-enable:hover { background: var(--bright-strong); }
+.mic-enable:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--shadow); }
+.mic-enable:disabled { background: #4a6a64; cursor: progress; }
+.mic-setup-state { font-size: 0.85rem; font-weight: 700; margin: 10px 0 0; color: #cdeee7; }
+.mic-setup-state.ok { color: #6fe3c2; }
+.mic-setup-state.bad { color: var(--amber); }
+
+/* live input-level meter in the HUD */
+.mic-meter-wrap { display: flex; align-items: center; gap: 8px; }
+.mic-meter-label { font-size: 0.6rem; letter-spacing: 0.14em; font-weight: 900; opacity: 0.7; }
+.mic-meter {
+  width: 84px; height: 10px; border-radius: 6px; overflow: hidden;
+  background: rgba(255,255,255,0.14); border: 1px solid rgba(214,238,234,0.3);
+}
+.mic-meter-bar {
+  height: 100%; width: 100%; transform-origin: left center; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--bright), #6fe3c2 70%, #f2c94c);
+  transition: transform 0.06s linear;
+}
+
 .setup-note {
   background: rgba(242, 153, 74, 0.14);
   border: 1px solid rgba(242, 153, 74, 0.4);
