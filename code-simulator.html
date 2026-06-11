@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PALS Code Simulator – CloseDose</title>
+  <meta name="description" content="A first-person, real-time, voice-driven 3D pediatric Cardiac Arrest team-leader simulator built on the PALS algorithm." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="code-simulator.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- ===================== SETUP / BRIEFING ===================== -->
+  <section id="setup" class="setup">
+    <header class="setup-head">
+      <a class="back-link" href="index.html">← CloseDose</a>
+      <h1>PALS Code Simulator</h1>
+      <p class="tagline">
+        First-person, real-time mock codes — you are the <strong>team leader at the foot of the bed</strong>.
+        Give your orders out loud; your team executes, closes the loop, and the rhythm responds in real time.
+        Built on the AHA / PALS Pediatric Cardiac Arrest Algorithm.
+      </p>
+    </header>
+
+    <div class="setup-grid">
+      <div class="setup-main">
+        <h2>Choose your patient</h2>
+        <div id="scenarioGrid" class="scn-grid"></div>
+      </div>
+      <aside class="setup-aside">
+        <h2>How to run the code</h2>
+        <ol class="how-list">
+          <li><b>Hold the talk button</b> (or enable hands-free) and speak orders naturally — e.g. <em>“Attach the monitor, start compressions.”</em></li>
+          <li>Drive the algorithm: <em>charge</em> → <em>shock</em> → resume CPR, give <em>epinephrine</em>, get <em>IO access</em>, secure the <em>airway</em>, and work the <em>reversible causes</em>.</li>
+          <li>Your team answers with <b>closed-loop</b> read-backs and the recorder tracks every event and the 2-minute cycles.</li>
+          <li>Reassess at each rhythm check; manage well and you’ll get <b>ROSC</b>, then a full debrief.</li>
+        </ol>
+        <div class="setup-note">
+          <b>Best in Chrome or Edge</b> for voice recognition. A microphone-permission prompt will appear.
+          No mic? You can type every order. Headphones recommended so the team’s voices don’t feed back into the mic.
+        </div>
+        <p class="disclaimer">For training and rehearsal only. Not a substitute for an accredited PALS course or for clinical judgment. Doses are illustrative and weight-based per PALS — always verify against your institution’s references.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== SIMULATION ===================== -->
+  <section id="sim" class="sim hidden">
+    <canvas id="scene"></canvas>
+
+    <!-- top status bar -->
+    <div class="hud hud-top">
+      <div class="timer-block">
+        <div class="timer-main"><label>CODE</label><span id="codeTimer">00:00</span></div>
+        <div class="timer-cycle"><label>CYCLE</label><span id="cycleTimer">00:00</span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><label>Rhythm</label><span id="statRhythm" class="stat-val">—</span></div>
+        <div class="stat"><label>Shocks</label><span id="statShocks" class="stat-val">0</span></div>
+        <div class="stat"><label>Epi</label><span id="statEpi" class="stat-val">0</span></div>
+        <div class="stat"><label>Access</label><span id="statAccess" class="stat-val">none</span></div>
+        <div class="stat"><label>Airway</label><span id="statAirway" class="stat-val">BVM</span></div>
+      </div>
+      <div class="mic-block">
+        <span id="micState" class="mic-state">Mic idle</span>
+        <label class="hf"><input type="checkbox" id="handsFree" /> Hands-free</label>
+      </div>
+    </div>
+
+    <!-- mini monitor mirror (always visible from foot of bed) -->
+    <div class="hud monitor-mirror">
+      <canvas id="hudMonitor" width="384" height="225"></canvas>
+    </div>
+
+    <!-- dose quick-reference (team-leader's cognitive aid) -->
+    <div id="doseCard" class="hud dose-card"></div>
+
+    <!-- recorder feed / event log -->
+    <div class="hud log-panel">
+      <div class="log-title">Code Record</div>
+      <div id="logFeed" class="log-feed"></div>
+    </div>
+
+    <!-- quick action rail (non-voice + reference) -->
+    <div class="hud action-rail">
+      <button data-cmd="monitor">Monitor / Pads</button>
+      <button data-cmd="startCPR">Start CPR</button>
+      <button data-cmd="rhythmCheck">Rhythm Check</button>
+      <button data-cmd="charge">Charge</button>
+      <button data-cmd="shock">Shock</button>
+      <button data-cmd="access">IO Access</button>
+      <button data-cmd="epi">Epinephrine</button>
+      <button data-cmd="amio">Amiodarone</button>
+      <button data-cmd="fluid">Fluid Bolus</button>
+      <button data-cmd="airway">Advanced Airway</button>
+      <button data-cmd="switch">Switch Compressor</button>
+      <button data-cmd="reversible">H's &amp; T's</button>
+      <button data-cmd="status">Status Recap</button>
+    </div>
+
+    <!-- bottom command bar -->
+    <div class="hud cmd-bar">
+      <button id="ptt" class="ptt" title="Hold to talk">
+        <span class="ptt-dot"></span> Hold&nbsp;to&nbsp;Talk
+      </button>
+      <form id="cmdForm" class="cmd-form">
+        <input id="cmdInput" type="text" placeholder="…or type an order (e.g. “give epinephrine”)" autocomplete="off" />
+        <button type="submit">Order</button>
+      </form>
+      <span id="heard" class="heard"></span>
+      <div class="cmd-tools">
+        <button id="helpBtn" type="button">Orders</button>
+        <button id="endBtn" type="button" class="danger">Call Code</button>
+      </div>
+    </div>
+    <div id="micNote" class="mic-note"></div>
+
+    <!-- help / command reference -->
+    <div id="helpPanel" class="help-panel hidden">
+      <h3>Things you can say</h3>
+      <ul>
+        <li><b>“Attach the monitor / put the pads on”</b></li>
+        <li><b>“Start compressions / resume CPR”</b> · <b>“Hold CPR”</b></li>
+        <li><b>“Check the rhythm / pulse check”</b></li>
+        <li><b>“Charge to 30 joules”</b> · <b>“Shock / everybody clear”</b></li>
+        <li><b>“Give epinephrine”</b> · <b>“Give amiodarone / lidocaine”</b></li>
+        <li><b>“Get IO access”</b> · <b>“Push a fluid bolus”</b></li>
+        <li><b>“Place an advanced airway”</b> · <b>“Start bagging”</b> · <b>“Attach capnography”</b></li>
+        <li><b>“Switch compressors”</b> · <b>“What are the H's and T's?”</b></li>
+        <li><b>“Status / how long has it been?”</b> · <b>“Call the code”</b></li>
+      </ul>
+      <button onclick="document.getElementById('helpPanel').classList.add('hidden')">Close</button>
+    </div>
+  </section>
+
+  <!-- ===================== DEBRIEF ===================== -->
+  <div id="debrief" class="debrief hidden">
+    <div class="debrief-card">
+      <h2>Code Debrief</h2>
+      <div id="debriefBody"></div>
+      <div class="debrief-actions">
+        <button id="restartBtn" class="primary">Run another code</button>
+      </div>
+      <p class="disclaimer">Educational simulation. Scoring reflects core PALS quality metrics and is not a clinical assessment.</p>
+    </div>
+  </div>
+
+  <script type="module" src="code-simulator.js"></script>
+</body>
+</html>
