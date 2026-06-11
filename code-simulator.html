@@ -44,8 +44,12 @@
           <li>Your team answers with <b>closed-loop</b> read-backs and the recorder tracks every event and the 2-minute cycles.</li>
           <li>Reassess at each rhythm check; manage well and you’ll get <b>ROSC</b>, then a full debrief.</li>
         </ol>
+        <div class="mic-setup">
+          <button id="enableMic" type="button" class="mic-enable">🎙️ Enable microphone &amp; voice</button>
+          <p id="micSetupState" class="mic-setup-state">Microphone not yet enabled</p>
+        </div>
         <div class="setup-note">
-          <b>Best in Chrome or Edge</b> for voice recognition. A microphone-permission prompt will appear.
+          <b>Best in Chrome or Edge</b> for voice recognition. A microphone-permission prompt will appear when you enable the mic or start a code.
           No mic? You can type every order. Headphones recommended so the team’s voices don’t feed back into the mic.
         </div>
         <p class="disclaimer">For training and rehearsal only. Not a substitute for an accredited PALS course or for clinical judgment. Doses are illustrative and weight-based per PALS — always verify against your institution’s references.</p>
@@ -71,6 +75,10 @@
         <div class="stat"><label>Airway</label><span id="statAirway" class="stat-val">BVM</span></div>
       </div>
       <div class="mic-block">
+        <div id="micMeterWrap" class="mic-meter-wrap hidden" title="Live microphone input level">
+          <span class="mic-meter-label">MIC</span>
+          <div class="mic-meter"><div id="micMeterBar" class="mic-meter-bar"></div></div>
+        </div>
         <span id="micState" class="mic-state">Mic idle</span>
         <label class="hf"><input type="checkbox" id="handsFree" /> Hands-free</label>
       </div>

@@ -323,6 +323,83 @@ const ROLE_VOICE = {
 };
 
 /* =====================================================================
+   4b. MICROPHONE  (explicit getUserMedia permission + live level meter)
+   ---------------------------------------------------------------------
+   The Web Speech API requests the mic on its own, but to give the user a
+   clear permission moment and visible confirmation that audio is being
+   captured, we open an explicit getUserMedia() stream and drive a live
+   input-level meter from an AnalyserNode.
+   ===================================================================== */
+
+class Mic {
+  constructor(onLevel, onStatus) {
+    this.onLevel = onLevel || (() => {});
+    this.onStatus = onStatus || (() => {});
+    this.stream = null;
+    this.ctx = null;
+    this.analyser = null;
+    this.raf = null;
+    this.enabled = false;
+    this.supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+
+  async enable() {
+    if (!this.supported) {
+      this.onStatus("unsupported");
+      return false;
+    }
+    if (this.enabled) return true;
+    this.onStatus("requesting");
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+    } catch (err) {
+      this.onStatus(err && err.name === "NotAllowedError" ? "denied" : "error");
+      return false;
+    }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AC();
+    if (this.ctx.state === "suspended") await this.ctx.resume();
+    const src = this.ctx.createMediaStreamSource(this.stream);
+    this.analyser = this.ctx.createAnalyser();
+    this.analyser.fftSize = 512;
+    this.analyser.smoothingTimeConstant = 0.75;
+    src.connect(this.analyser);
+    this.buf = new Uint8Array(this.analyser.fftSize);
+    this.enabled = true;
+    this.onStatus("granted");
+    this._loop();
+    return true;
+  }
+
+  _loop() {
+    this.analyser.getByteTimeDomainData(this.buf);
+    let sum = 0;
+    for (let i = 0; i < this.buf.length; i++) {
+      const v = (this.buf[i] - 128) / 128;
+      sum += v * v;
+    }
+    const rms = Math.sqrt(sum / this.buf.length);
+    // perceptual scaling 0..1
+    this.onLevel(Math.min(1, rms * 3.2));
+    this.raf = requestAnimationFrame(() => this._loop());
+  }
+
+  stop() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.stream) this.stream.getTracks().forEach((t) => t.stop());
+    if (this.ctx) this.ctx.close();
+    this.enabled = false;
+    this.stream = this.ctx = this.analyser = null;
+  }
+}
+
+/* =====================================================================
    5. 3D SCENE
    ===================================================================== */
 
@@ -332,22 +409,24 @@ class Scene3D {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    if ("outputColorSpace" in this.renderer) this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0c1f1d);
-    this.scene.fog = new THREE.Fog(0x0c1f1d, 9, 22);
+    this.scene.background = new THREE.Color(0x0e1c22);
+    this.scene.fog = new THREE.Fog(0x0e1c22, 11, 28);
 
     this.camera = new THREE.PerspectiveCamera(58, 1, 0.1, 100);
     // First person: standing at the FOOT of the bed, ~eye height, looking
     // toward the patient's head.
-    this.camera.position.set(0, 1.65, 4.2);
+    this.camera.position.set(0, 1.62, 4.2);
 
     this.controls = new OrbitControls(this.camera, canvas);
-    this.controls.target.set(0, 1.0, 0.4); // patient torso
+    this.controls.target.set(0, 1.0, -0.2); // patient torso
     this.controls.enablePan = false;
-    this.controls.minDistance = 2.0;
-    this.controls.maxDistance = 6.0;
+    this.controls.minDistance = 1.6;
+    this.controls.maxDistance = 6.5;
     this.controls.maxPolarAngle = Math.PI * 0.62;
-    this.controls.minPolarAngle = Math.PI * 0.18;
+    this.controls.minPolarAngle = Math.PI * 0.16;
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
 
@@ -356,73 +435,272 @@ class Scene3D {
     this.compressor = null;
     this.patientGroup = null;
     this.chest = null;
-    this.bagSqueeze = null;
+    this.bvm = null;
     this.ventilating = false;
+    this.avatars = {};            // keyed by engine role -> { group, body, head, ring, baseY }
+    this._defibGlow = null;
+    this._defibCharged = false;
+    this._chargeFxUntil = 0;
+    this._shockFxUntil = 0;
 
-    this._build();
     this._resize();
     window.addEventListener("resize", () => this._resize());
     this.renderer.setAnimationLoop(() => this._tick());
   }
 
   _light() {
-    const amb = new THREE.AmbientLight(0xbfeee6, 0.55);
+    // Cool clinical ambient
+    const amb = new THREE.AmbientLight(0xcfe7ef, 0.5);
     this.scene.add(amb);
-    const key = new THREE.DirectionalLight(0xffffff, 0.9);
+    const hemi = new THREE.HemisphereLight(0xeaf6ff, 0x223033, 0.55);
+    this.scene.add(hemi);
+    // Ceiling fluorescent fill
+    const fill = new THREE.DirectionalLight(0xffffff, 0.55);
+    fill.position.set(-4, 7, 4);
+    this.scene.add(fill);
+    // Key with shadows
+    const key = new THREE.DirectionalLight(0xffffff, 0.85);
     key.position.set(3, 8, 5);
     key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.near = 1;
+    key.shadow.camera.far = 24;
+    key.shadow.camera.left = -8;
+    key.shadow.camera.right = 8;
+    key.shadow.camera.top = 8;
+    key.shadow.camera.bottom = -8;
+    key.shadow.bias = -0.0005;
     this.scene.add(key);
-    // Surgical overhead light above the bed
-    const spot = new THREE.SpotLight(0xffffff, 1.6, 14, Math.PI / 5, 0.5, 1.2);
-    spot.position.set(0, 5.2, 0.4);
-    spot.target.position.set(0, 0.9, 0.4);
+
+    // Surgical overhead light cluster directly over the bed
+    const lightGroup = new THREE.Group();
+    const spot = new THREE.SpotLight(0xffffff, 2.2, 16, Math.PI / 5, 0.45, 1.1);
+    spot.position.set(0, 5.2, -0.4);
+    spot.target.position.set(0, 0.9, -0.4);
+    spot.castShadow = true;
     this.scene.add(spot);
     this.scene.add(spot.target);
-    const lampGeo = new THREE.CylinderGeometry(0.55, 0.7, 0.22, 24);
-    const lamp = new THREE.Mesh(lampGeo, new THREE.MeshStandardMaterial({ color: 0xeeeeee, emissive: 0x666666 }));
-    lamp.position.set(0, 4.9, 0.4);
-    this.scene.add(lamp);
+    // Twin lamp heads on an articulated arm
+    const lampMat = new THREE.MeshStandardMaterial({ color: 0xf2f6f7, metalness: 0.6, roughness: 0.35, emissive: 0x9fb9bd, emissiveIntensity: 0.5 });
+    const armMat = new THREE.MeshStandardMaterial({ color: 0xb8c4c6, metalness: 0.7, roughness: 0.4 });
+    for (const dx of [-0.55, 0.55]) {
+      const head = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.5, 0.16, 28), lampMat);
+      head.position.set(dx, 4.78, -0.4);
+      lightGroup.add(head);
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(0.4, 28), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(dx, 4.69, -0.4);
+      lightGroup.add(lens);
+    }
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.08, 0.08), armMat);
+    arm.position.set(0, 4.85, -0.4);
+    lightGroup.add(arm);
+    const drop = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.4, 16), armMat);
+    drop.position.set(0, 5.5, -0.4);
+    lightGroup.add(drop);
+    this.scene.add(lightGroup);
   }
 
   _room() {
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x16403b, roughness: 0.9 });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), floorMat);
+    // --- Tiled vinyl floor (canvas texture) ---
+    const floorTex = makeTileTexture();
+    floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
+    floorTex.repeat.set(12, 12);
+    const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, color: 0xcfe0dc, roughness: 0.55, metalness: 0.05 });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x123733, roughness: 1 });
-    const back = new THREE.Mesh(new THREE.PlaneGeometry(20, 8), wallMat);
-    back.position.set(0, 4, -3.2);
+    // --- Ceiling with recessed light panels ---
+    const ceilMat = new THREE.MeshStandardMaterial({ color: 0xeaf2f1, roughness: 1 });
+    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), ceilMat);
+    ceil.rotation.x = Math.PI / 2;
+    ceil.position.y = 6;
+    this.scene.add(ceil);
+    const panelMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xdff3ff, emissiveIntensity: 0.8 });
+    for (const [px, pz] of [[-2.4, -1.5], [2.4, -1.5], [-2.4, 1.5], [2.4, 1.5]]) {
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.8), panelMat);
+      panel.rotation.x = Math.PI / 2;
+      panel.position.set(px, 5.98, pz);
+      this.scene.add(panel);
+    }
+
+    // --- Walls ---
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xdfeae8, roughness: 0.95 });
+    const baseMat = new THREE.MeshStandardMaterial({ color: 0x2a4d48, roughness: 0.8 });
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(24, 6), wallMat);
+    back.position.set(0, 3, -3.4);
+    back.receiveShadow = true;
     this.scene.add(back);
-    const left = new THREE.Mesh(new THREE.PlaneGeometry(12, 8), wallMat);
+    // skirting / bumper rail on back wall
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(24, 0.18, 0.06), baseMat);
+    rail.position.set(0, 0.9, -3.37);
+    this.scene.add(rail);
+    const left = new THREE.Mesh(new THREE.PlaneGeometry(14, 6), wallMat);
     left.rotation.y = Math.PI / 2;
-    left.position.set(-5, 4, 0);
+    left.position.set(-5.5, 3, 0);
+    left.receiveShadow = true;
     this.scene.add(left);
     const right = left.clone();
     right.rotation.y = -Math.PI / 2;
-    right.position.set(5, 4, 0);
+    right.position.set(5.5, 3, 0);
     this.scene.add(right);
+
+    this._headwall();
+    this._curtain();
+    this._counter();
+  }
+
+  // Headwall behind the patient: medical gas outlets, O2 flowmeter, suction.
+  _headwall() {
+    const g = new THREE.Group();
+    // Stainless headwall console strip
+    const stripMat = new THREE.MeshStandardMaterial({ color: 0xc8d2d3, metalness: 0.65, roughness: 0.35 });
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.7, 0.08), stripMat);
+    strip.position.set(0, 2.15, -3.33);
+    g.add(strip);
+    // Gas outlets: O2 (green), Air (yellow), Vacuum (white)
+    const gasColors = [0x2ecc71, 0xf1c40f, 0xecf0f1];
+    gasColors.forEach((c, i) => {
+      const outlet = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.06, 0.06, 0.08, 16),
+        new THREE.MeshStandardMaterial({ color: c, metalness: 0.4, roughness: 0.5 })
+      );
+      outlet.rotation.x = Math.PI / 2;
+      outlet.position.set(-0.9 + i * 0.42, 2.15, -3.27);
+      g.add(outlet);
+    });
+    // O2 flowmeter (glass tube + green ball)
+    const flowBody = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 0.34, 12),
+      new THREE.MeshStandardMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.6 })
+    );
+    flowBody.position.set(0.7, 2.2, -3.25);
+    g.add(flowBody);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 10), new THREE.MeshStandardMaterial({ color: 0x2ecc71, emissive: 0x125c2c }));
+    ball.position.set(0.7, 2.16, -3.23);
+    g.add(ball);
+    // Wall suction canister
+    const canister = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, 0.34, 16),
+      new THREE.MeshStandardMaterial({ color: 0xeaf6f8, transparent: true, opacity: 0.85 })
+    );
+    canister.position.set(1.25, 2.0, -3.22);
+    g.add(canister);
+    // Backlit "BAY 4" sign
+    const sign = makeSignSprite("RESUS · BAY 4");
+    sign.position.set(-1.4, 2.75, -3.2);
+    sign.scale.set(1.1, 0.28, 1);
+    g.add(sign);
+    this.scene.add(g);
+  }
+
+  // Privacy curtain on a ceiling track along the right side.
+  _curtain() {
+    const g = new THREE.Group();
+    const trackMat = new THREE.MeshStandardMaterial({ color: 0xaab4b6, metalness: 0.6, roughness: 0.4 });
+    const track = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 5.2), trackMat);
+    track.position.set(3.4, 4.4, -0.6);
+    g.add(track);
+    const curtainMat = new THREE.MeshStandardMaterial({ color: 0x3aa3a0, roughness: 1, side: THREE.DoubleSide });
+    // pleated curtain via several panels
+    for (let i = 0; i < 14; i++) {
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 2.6), curtainMat);
+      panel.position.set(3.4, 3.0, -2.7 + i * 0.32);
+      panel.rotation.y = (i % 2 ? 1 : -1) * 0.5;
+      g.add(panel);
+    }
+    this.scene.add(g);
+  }
+
+  // Supply counter + sink along the left wall.
+  _counter() {
+    const g = new THREE.Group();
+    const topMat = new THREE.MeshStandardMaterial({ color: 0xdfe7e7, roughness: 0.5 });
+    const cabMat = new THREE.MeshStandardMaterial({ color: 0xe8eded, roughness: 0.7 });
+    const counter = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.06, 3.2), topMat);
+    counter.position.set(-4.7, 0.92, -0.6);
+    counter.castShadow = counter.receiveShadow = true;
+    g.add(counter);
+    const cab = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.9, 3.1), cabMat);
+    cab.position.set(-4.72, 0.45, -0.6);
+    g.add(cab);
+    // Sink basin
+    const sink = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.12, 0.4), new THREE.MeshStandardMaterial({ color: 0xb9c6c7, metalness: 0.7, roughness: 0.3 }));
+    sink.position.set(-4.62, 0.9, 0.5);
+    g.add(sink);
+    const faucet = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.012, 8, 16, Math.PI), new THREE.MeshStandardMaterial({ color: 0x9fb0b1, metalness: 0.8, roughness: 0.2 }));
+    faucet.position.set(-4.62, 0.98, 0.62);
+    faucet.rotation.y = Math.PI / 2;
+    g.add(faucet);
+    // Glove boxes + supply bins on the counter
+    const binColors = [0x2f80ed, 0x6fcf97, 0xf2994a];
+    binColors.forEach((c, i) => {
+      const box = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 0.3), new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 }));
+      box.position.set(-4.66, 1.03, -1.6 + i * 0.34);
+      g.add(box);
+    });
+    // Wall-mounted sharps container (red)
+    const sharps = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.3, 0.18), new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 }));
+    sharps.position.set(-5.35, 1.5, -1.8);
+    g.add(sharps);
+    this.scene.add(g);
   }
 
   _bed() {
     const g = new THREE.Group();
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0x2a4d48, metalness: 0.4, roughness: 0.5 });
-    const matMat = new THREE.MeshStandardMaterial({ color: 0xd6eeea, roughness: 0.8 });
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x9fb0b2, metalness: 0.6, roughness: 0.4 });
+    const matMat = new THREE.MeshStandardMaterial({ color: 0xeaf4f2, roughness: 0.85 });
+    const sheetMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 });
     // Mattress — long axis along Z (head at -Z, foot at +Z)
-    const mattress = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.18, 2.4), matMat);
-    mattress.position.set(0, 0.82, 0.2);
+    const mattress = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.16, 2.4), matMat);
+    mattress.position.set(0, 0.83, 0.1);
     mattress.castShadow = mattress.receiveShadow = true;
     g.add(mattress);
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.5, 2.5), frameMat);
-    base.position.set(0, 0.5, 0.2);
+    // White draw sheet over the mattress
+    const sheet = new THREE.Mesh(new THREE.BoxGeometry(0.97, 0.04, 1.9), sheetMat);
+    sheet.position.set(0, 0.92, 0.25);
+    sheet.receiveShadow = true;
+    g.add(sheet);
+    // Pillow at head
+    const pillow = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.1, 0.34), sheetMat);
+    pillow.position.set(0, 0.95, -1.0);
+    g.add(pillow);
+    // Frame base
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.4, 2.5), frameMat);
+    base.position.set(0, 0.6, 0.1);
+    base.castShadow = true;
     g.add(base);
-    // legs
-    for (const [x, z] of [[-0.42, -0.95], [0.42, -0.95], [-0.42, 1.3], [0.42, 1.3]]) {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.5), frameMat);
-      leg.position.set(x, 0.25, z + 0.2);
+    // Head + foot boards
+    const boardMat = new THREE.MeshStandardMaterial({ color: 0xdfe7e7, roughness: 0.6 });
+    const headBoard = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.5, 0.06), boardMat);
+    headBoard.position.set(0, 1.05, -1.18);
+    g.add(headBoard);
+    const footBoard = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.45, 0.06), boardMat);
+    footBoard.position.set(0, 1.0, 1.35);
+    g.add(footBoard);
+    // Side rails (both sides)
+    const railMat = new THREE.MeshStandardMaterial({ color: 0xc4d0d1, metalness: 0.7, roughness: 0.3 });
+    for (const sx of [-0.52, 0.52]) {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.28, 1.4), railMat);
+      rail.position.set(sx, 1.08, 0.1);
+      g.add(rail);
+      for (const rz of [-0.5, 0.1, 0.7]) {
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.28, 8), railMat);
+        post.position.set(sx, 1.0, rz);
+        g.add(post);
+      }
+    }
+    // Casters
+    for (const [x, z] of [[-0.42, -0.95], [0.42, -0.95], [-0.42, 1.15], [0.42, 1.15]]) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.42, 10), frameMat);
+      leg.position.set(x, 0.21, z);
       g.add(leg);
+      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.025, 8, 16), new THREE.MeshStandardMaterial({ color: 0x2b2b2b }));
+      wheel.rotation.y = Math.PI / 2;
+      wheel.position.set(x, 0.06, z);
+      g.add(wheel);
     }
     this.scene.add(g);
   }
@@ -470,25 +748,60 @@ class Scene3D {
     this.patientGroup = g;
   }
 
-  _avatar(color, x, z, label, faceCenter = true) {
+  _avatar(color, x, z, label, faceCenter = true, skinTone = 0xe8c9a8) {
     const g = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6 });
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.6, 6, 12), mat);
-    body.position.y = 1.05;
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.0 });
+    const skin = new THREE.MeshStandardMaterial({ color: skinTone, roughness: 0.6 });
+
+    const bodyGroup = new THREE.Group();
+    // Torso (scrub top)
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.21, 0.5, 6, 14), mat);
+    body.position.y = 1.02;
     body.castShadow = true;
-    g.add(body);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 20, 20), new THREE.MeshStandardMaterial({ color: 0xe8c9a8 }));
-    head.position.y = 1.55;
-    g.add(head);
-    // simple scrub cap
-    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.19, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat);
-    cap.position.y = 1.58;
-    g.add(cap);
+    bodyGroup.add(body);
+    // Hips / scrub pants
+    const hips = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.17, 0.5, 14), new THREE.MeshStandardMaterial({ color: 0x46545a, roughness: 0.8 }));
+    hips.position.y = 0.55;
+    hips.castShadow = true;
+    bodyGroup.add(hips);
+    // Shoulders + arms (slightly forward, working posture)
+    for (const sx of [-1, 1]) {
+      const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.42, 4, 8), skin);
+      arm.position.set(sx * 0.26, 0.92, 0.08);
+      arm.rotation.x = -0.5;
+      arm.castShadow = true;
+      bodyGroup.add(arm);
+    }
+    // Head + face
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.165, 22, 22), skin);
+    head.position.y = 1.5;
+    head.castShadow = true;
+    bodyGroup.add(head);
+    // Surgical mask
+    const mask = new THREE.Mesh(new THREE.SphereGeometry(0.168, 18, 12, 0, Math.PI * 2, Math.PI * 0.55, Math.PI * 0.32), new THREE.MeshStandardMaterial({ color: 0xeaf2f4, roughness: 0.9 }));
+    mask.position.y = 1.5;
+    mask.rotation.x = 0.1;
+    bodyGroup.add(mask);
+    // Scrub cap (color-matched to role)
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.178, 18, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+    cap.position.y = 1.52;
+    bodyGroup.add(cap);
+    g.add(bodyGroup);
+
+    // Speaking glow ring at the feet
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.32, 0.03, 10, 28),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0, transparent: true, opacity: 0.0 })
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.05;
+    g.add(ring);
+
     g.position.set(x, 0, z);
-    if (faceCenter) g.lookAt(0, 1.05, 0.2);
+    if (faceCenter) g.lookAt(0, 1.05, -0.2);
     g.add(this._label(label, color));
     this.scene.add(g);
-    return { group: g, body, head };
+    return { group: g, bodyGroup, body, head, ring, baseY: 0, color: new THREE.Color(color) };
   }
 
   _label(text, color) {
@@ -517,33 +830,236 @@ class Scene3D {
 
   _team() {
     // Positions around bed. Head of bed = -Z, foot (camera) = +Z.
-    // Compressor on patient's right (screen-left from foot), at chest level.
-    this.compressor = this._avatar(0x2f80ed, -0.95, -0.5, "Compressor");
-    this._avatar(0x6fcf97, -1.7, 0.0, "CPR Coach");
-    this.airway = this._avatar(0xeb5757, 0.0, -1.8, "Airway", false);
-    this._avatar(0xf2994a, 0.8, -1.6, "RT");
-    this._avatar(0xbb6bd9, 1.5, -0.4, "Med Nurse");
-    this._avatar(0x9b51e0, 1.4, 0.5, "Bedside RN");
-    this._avatar(0x56ccf2, 1.9, 1.4, "Recorder");
-    // make airway face the patient head
+    // Each is keyed by its engine role so the engine's spoken events can
+    // light up the right person (highlightRole).
+    this.avatars.compressor = this._avatar(0x2f80ed, -0.95, -0.45, "Compressor", true, 0xe8c9a8);
+    this.avatars.coach = this._avatar(0x6fcf97, -1.75, 0.1, "CPR Coach", true, 0xd9b48f);
+    this.avatars.airway = this._avatar(0xeb5757, 0.0, -1.95, "Airway / MD", false, 0xc9a07a);
+    this.avatars.rt = this._avatar(0xf2994a, 0.85, -1.7, "Resp Therapist", true, 0xe8c9a8);
+    this.avatars.medNurse = this._avatar(0xbb6bd9, 1.6, -0.45, "Med Nurse", true, 0xb98a64);
+    this.avatars.bedsideNurse = this._avatar(0x9b51e0, 1.5, 0.55, "Bedside RN", true, 0xe8c9a8);
+    this.avatars.recorder = this._avatar(0x56ccf2, 1.95, 1.5, "Recorder", true, 0xd9b48f);
+
+    // keep legacy references used by the animation loop
+    this.compressor = this.avatars.compressor;
+    this.airway = this.avatars.airway;
+    // airway/MD stands at the head, facing down toward the patient's head
     this.airway.group.lookAt(0, 0.95, -0.95);
+    // compressor leans in over the chest
+    this.compressor.bodyGroup.rotation.x = 0.35;
+
+    this._bvm();
+  }
+
+  // Bag-valve-mask in the airway provider's hands; squeezes when ventilating.
+  _bvm() {
+    const g = new THREE.Group();
+    const bag = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12, 18, 14),
+      new THREE.MeshStandardMaterial({ color: 0x2c3e50, roughness: 0.6 })
+    );
+    bag.scale.set(1, 1.5, 1);
+    g.add(bag);
+    this._bvmBag = bag;
+    // mask cone toward the patient's face
+    const mask = new THREE.Mesh(
+      new THREE.ConeGeometry(0.07, 0.12, 16, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0x9fd6cc, transparent: true, opacity: 0.7, side: THREE.DoubleSide })
+    );
+    mask.position.set(0, 0, -0.18);
+    mask.rotation.x = -Math.PI / 2;
+    g.add(mask);
+    // reservoir tail
+    const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.2, 10), new THREE.MeshStandardMaterial({ color: 0x1c2833 }));
+    tail.position.set(0, 0, 0.18);
+    tail.rotation.x = Math.PI / 2;
+    g.add(tail);
+    g.position.set(0, 0.95, -0.92); // over the patient's face
+    this.scene.add(g);
+    this.bvm = g;
   }
 
   _crashCart() {
     const g = new THREE.Group();
-    const red = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.9, 0.5), red);
-    body.position.y = 0.45;
+    const red = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.55, metalness: 0.1 });
+    const steel = new THREE.MeshStandardMaterial({ color: 0xbfc9ca, metalness: 0.7, roughness: 0.35 });
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.92, 0.5), red);
+    body.position.y = 0.5;
+    body.castShadow = true;
     g.add(body);
-    for (let i = 0; i < 4; i++) {
-      const drawer = new THREE.Mesh(
-        new THREE.BoxGeometry(0.48, 0.16, 0.02),
-        new THREE.MeshStandardMaterial({ color: 0xe74c3c })
-      );
-      drawer.position.set(0, 0.2 + i * 0.18, 0.26);
+    // Drawers with handles + colored labels
+    const drawerColors = [0xe74c3c, 0xe67e22, 0xf1c40f, 0x27ae60, 0x2980b9];
+    for (let i = 0; i < 5; i++) {
+      const drawer = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.15, 0.03), new THREE.MeshStandardMaterial({ color: drawerColors[i], roughness: 0.5 }));
+      drawer.position.set(0, 0.18 + i * 0.165, 0.26);
       g.add(drawer);
+      const handle = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.02, 0.03), steel);
+      handle.position.set(0, 0.18 + i * 0.165, 0.29);
+      g.add(handle);
     }
-    g.position.set(2.1, 0, 0.0);
+    // Cart top
+    const top = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.04, 0.54), steel);
+    top.position.y = 0.98;
+    g.add(top);
+    // Push handle
+    const ph = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.5, 8), steel);
+    ph.rotation.z = Math.PI / 2;
+    ph.position.set(0, 1.2, -0.24);
+    g.add(ph);
+    for (const sx of [-0.24, 0.24]) {
+      const up = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.24, 8), steel);
+      up.position.set(sx, 1.1, -0.24);
+      g.add(up);
+    }
+    // O2 tank strapped to the side
+    const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.5, 16), new THREE.MeshStandardMaterial({ color: 0x2ecc71, metalness: 0.4, roughness: 0.4 }));
+    tank.position.set(-0.34, 0.5, -0.1);
+    g.add(tank);
+    // Casters
+    for (const [x, z] of [[-0.24, -0.2], [0.24, -0.2], [-0.24, 0.2], [0.24, 0.2]]) {
+      const w = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.02, 8, 14), new THREE.MeshStandardMaterial({ color: 0x222 }));
+      w.rotation.y = Math.PI / 2;
+      w.position.set(x, 0.05, z);
+      g.add(w);
+    }
+    // Defibrillator sitting on top of the cart
+    this._defib(g);
+
+    g.position.set(2.35, 0, 0.1);
+    g.rotation.y = -0.25;
+    this.scene.add(g);
+  }
+
+  // Manual defibrillator / monitor with a live charge indicator.
+  _defib(parent) {
+    const g = new THREE.Group();
+    const caseMat = new THREE.MeshStandardMaterial({ color: 0xf1c40f, roughness: 0.5 });
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.3, 0.34), caseMat);
+    box.position.y = 1.16;
+    box.castShadow = true;
+    g.add(box);
+    // Screen
+    const screenTex = makeDefibScreenTexture();
+    this._defibScreenTex = screenTex;
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.2), new THREE.MeshBasicMaterial({ map: screenTex }));
+    screen.position.set(-0.04, 1.18, 0.171);
+    g.add(screen);
+    // Charge-ready glow lamp
+    const glow = new THREE.Mesh(
+      new THREE.SphereGeometry(0.03, 12, 12),
+      new THREE.MeshStandardMaterial({ color: 0xff3b30, emissive: 0x000000, emissiveIntensity: 1 })
+    );
+    glow.position.set(0.16, 1.26, 0.18);
+    g.add(glow);
+    this._defibGlow = glow;
+    // Two paddles resting on top
+    for (const sx of [-0.1, 0.1]) {
+      const paddle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.04, 16), new THREE.MeshStandardMaterial({ color: 0x2b2b2b }));
+      paddle.position.set(sx, 1.33, -0.05);
+      g.add(paddle);
+    }
+    parent.add(g);
+  }
+
+  // IV pole carrying two infusion pumps + fluid bags.
+  _ivPole() {
+    const g = new THREE.Group();
+    const poleMat = new THREE.MeshStandardMaterial({ color: 0xc4d0d1, metalness: 0.75, roughness: 0.3 });
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 2.1, 12), poleMat);
+    pole.position.y = 1.05;
+    g.add(pole);
+    // hooks
+    const hookBar = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.02, 0.02), poleMat);
+    hookBar.position.y = 2.05;
+    g.add(hookBar);
+    // Fluid bags
+    const bagColors = [0xbfe9ff, 0xffe6a8];
+    bagColors.forEach((c, i) => {
+      const bag = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.22, 0.04), new THREE.MeshStandardMaterial({ color: c, transparent: true, opacity: 0.8 }));
+      bag.position.set(-0.18 + i * 0.36, 1.85, 0);
+      g.add(bag);
+    });
+    // Infusion pumps
+    for (let i = 0; i < 2; i++) {
+      const pump = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.12), new THREE.MeshStandardMaterial({ color: 0x34495e, roughness: 0.5 }));
+      pump.position.set(0, 1.2 - i * 0.18, 0.08);
+      g.add(pump);
+      const led = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.05), new THREE.MeshBasicMaterial({ color: 0x39ff88 }));
+      led.position.set(0, 1.2 - i * 0.18, 0.141);
+      g.add(led);
+    }
+    // base + casters
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.03, 16), poleMat);
+    base.position.y = 0.05;
+    g.add(base);
+    for (let i = 0; i < 5; i++) {
+      const a = (i / 5) * Math.PI * 2;
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 0.3), poleMat);
+      leg.position.set(Math.cos(a) * 0.13, 0.04, Math.sin(a) * 0.13);
+      leg.rotation.y = -a;
+      g.add(leg);
+    }
+    g.position.set(1.75, 0, -1.25);
+    this.scene.add(g);
+  }
+
+  // Mechanical ventilator beside the head of the bed.
+  _ventilator() {
+    const g = new THREE.Group();
+    const cabinet = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.6, 0.4), new THREE.MeshStandardMaterial({ color: 0xdfe7e7, roughness: 0.6 }));
+    cabinet.position.y = 1.25;
+    cabinet.castShadow = true;
+    g.add(cabinet);
+    // screen
+    this._ventScreenTex = makeVentScreenTexture();
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.26), new THREE.MeshBasicMaterial({ map: this._ventScreenTex }));
+    scr.position.set(0, 1.32, 0.201);
+    g.add(scr);
+    // pole
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.0, 12), new THREE.MeshStandardMaterial({ color: 0xb8c4c6, metalness: 0.6, roughness: 0.4 }));
+    pole.position.y = 0.5;
+    g.add(pole);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.05, 20), new THREE.MeshStandardMaterial({ color: 0x6d7b7d }));
+    base.position.y = 0.03;
+    g.add(base);
+    // breathing circuit tubing (suggested with a torus)
+    const tube = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.02, 8, 20, Math.PI), new THREE.MeshStandardMaterial({ color: 0xbfd8e0, transparent: true, opacity: 0.8 }));
+    tube.position.set(0, 1.0, 0.2);
+    g.add(tube);
+    g.position.set(-1.85, 0, -1.35);
+    g.rotation.y = 0.5;
+    this.scene.add(g);
+  }
+
+  // Mayo stand with airway equipment near the head.
+  _mayoStand() {
+    const g = new THREE.Group();
+    const steel = new THREE.MeshStandardMaterial({ color: 0xc4d0d1, metalness: 0.7, roughness: 0.3 });
+    const tray = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.02, 0.32), steel);
+    tray.position.y = 1.0;
+    g.add(tray);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.0, 10), steel);
+    post.position.set(-0.2, 0.5, 0);
+    g.add(post);
+    // laryngoscope (handle + blade)
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.12, 8), new THREE.MeshStandardMaterial({ color: 0x2b2b2b }));
+    handle.position.set(-0.1, 1.02, -0.05);
+    handle.rotation.z = 0.4;
+    g.add(handle);
+    // ET tubes (slim translucent cylinders)
+    for (let i = 0; i < 3; i++) {
+      const ett = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.22, 8), new THREE.MeshStandardMaterial({ color: 0xeaf6f8, transparent: true, opacity: 0.7 }));
+      ett.position.set(0.02 + i * 0.03, 1.02, 0.05);
+      ett.rotation.z = Math.PI / 2;
+      ett.rotation.y = 0.1 * i;
+      g.add(ett);
+    }
+    // syringe
+    const syr = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.1, 10), new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 }));
+    syr.position.set(0.16, 1.02, -0.04);
+    syr.rotation.z = Math.PI / 2;
+    g.add(syr);
+    g.position.set(-0.7, 0, -1.95);
     this.scene.add(g);
   }
 
@@ -582,6 +1098,27 @@ class Scene3D {
     this.ventilating = on;
   }
 
+  // Light up the avatar whose role is currently speaking.
+  highlightRole(role, ms = 2600) {
+    const a = this.avatars[role];
+    if (!a) return;
+    a.speakUntil = performance.now() + ms;
+  }
+
+  // Defibrillator just charged: turn on the ready lamp + screen.
+  defibCharge(joules) {
+    this._defibCharged = true;
+    this._defibJoules = joules || 0;
+    this._chargeFxUntil = performance.now() + 6000;
+    if (this._defibScreenTex) this._defibScreenTex.userData.update?.({ charged: true, joules });
+  }
+  // Shock delivered: brief flash, clear the charge.
+  defibShock() {
+    this._defibCharged = false;
+    this._shockFxUntil = performance.now() + 350;
+    if (this._defibScreenTex) this._defibScreenTex.userData.update?.({ charged: false, joules: 0 });
+  }
+
   _resize() {
     const w = this.canvas.clientWidth || window.innerWidth;
     const h = this.canvas.clientHeight || window.innerHeight;
@@ -592,16 +1129,60 @@ class Scene3D {
 
   _tick() {
     const t = this.clock.getElapsedTime();
-    // Compression animation: chest depresses, compressor's body bobs
+    const now = performance.now();
+
+    // Compression animation: chest depresses, compressor leans/bobs in time.
     if (this.compressionsActive) {
       const phase = (t * (110 / 60)) % 1; // 110/min
       const depth = Math.max(0, Math.sin(phase * Math.PI * 2)) * 0.05;
       if (this.chest) this.chest.position.y = this._chestY - depth;
-      if (this.compressor) this.compressor.body.position.y = 1.05 - depth * 1.5;
+      if (this.compressor) {
+        this.compressor.bodyGroup.position.y = -depth * 1.4;
+        this.compressor.bodyGroup.rotation.x = 0.35 + depth * 0.6;
+      }
     } else {
       if (this.chest) this.chest.position.y += (this._chestY - this.chest.position.y) * 0.2;
-      if (this.compressor) this.compressor.body.position.y += (1.05 - this.compressor.body.position.y) * 0.2;
+      if (this.compressor) {
+        this.compressor.bodyGroup.position.y += (0 - this.compressor.bodyGroup.position.y) * 0.2;
+        this.compressor.bodyGroup.rotation.x += (0.35 - this.compressor.bodyGroup.rotation.x) * 0.2;
+      }
     }
+
+    // BVM squeeze when ventilating (~20–30/min)
+    if (this._bvmBag) {
+      if (this.ventilating) {
+        const sq = 1 - Math.max(0, Math.sin(t * 2.6)) * 0.35;
+        this._bvmBag.scale.set(sq, 1.5 * sq, sq);
+      } else {
+        this._bvmBag.scale.set(1, 1.5, 1);
+      }
+    }
+
+    // Idle breathing bob + speaking glow rings for every team member
+    for (const key in this.avatars) {
+      const a = this.avatars[key];
+      const bob = Math.sin(t * 1.6 + a.group.position.x) * 0.012;
+      if (key !== "compressor") a.bodyGroup.position.y = bob;
+      const speaking = a.speakUntil && now < a.speakUntil;
+      const target = speaking ? 0.9 : 0.0;
+      const m = a.ring.material;
+      m.emissiveIntensity += (target - m.emissiveIntensity) * 0.18;
+      m.opacity += ((speaking ? 0.85 : 0.0) - m.opacity) * 0.18;
+      const s = speaking ? 1 + Math.sin(t * 8) * 0.06 : 1;
+      a.ring.scale.setScalar(s);
+    }
+
+    // Defibrillator ready lamp + screen pulse
+    if (this._defibGlow) {
+      const charged = this._defibCharged && now < this._chargeFxUntil;
+      const shockFlash = now < this._shockFxUntil;
+      const lit = shockFlash ? 1 : charged ? 0.6 + Math.sin(t * 10) * 0.4 : 0.0;
+      this._defibGlow.material.emissive.setRGB(lit, lit * 0.25, 0);
+      this._defibGlow.material.emissiveIntensity = lit;
+    }
+    if (this._defibScreenTex?.userData.tick) this._defibScreenTex.userData.tick(t);
+    if (this._ventScreenTex?.userData.tick) this._ventScreenTex.userData.tick(t, this.ventilating);
+
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
@@ -613,7 +1194,106 @@ class Scene3D {
     this._patient(sizeKey);
     this._team();
     this._crashCart();
+    this._ivPole();
+    this._ventilator();
+    this._mayoStand();
   }
+}
+
+/* --- Procedural textures / sprites for the bay --------------------------- */
+function makeTileTexture() {
+  const cv = document.createElement("canvas");
+  cv.width = cv.height = 128;
+  const c = cv.getContext("2d");
+  c.fillStyle = "#dfeae8";
+  c.fillRect(0, 0, 128, 128);
+  c.strokeStyle = "rgba(120,150,148,0.45)";
+  c.lineWidth = 2;
+  c.strokeRect(0, 0, 128, 128);
+  // subtle speckle
+  for (let i = 0; i < 120; i++) {
+    c.fillStyle = `rgba(150,170,168,${Math.random() * 0.18})`;
+    c.fillRect(Math.random() * 128, Math.random() * 128, 2, 2);
+  }
+  return new THREE.CanvasTexture(cv);
+}
+
+function makeSignSprite(text) {
+  const cv = document.createElement("canvas");
+  cv.width = 256; cv.height = 64;
+  const c = cv.getContext("2d");
+  c.fillStyle = "#0e3a36";
+  roundRect(c, 2, 2, 252, 60, 10); c.fill();
+  c.strokeStyle = "#39ffae"; c.lineWidth = 3;
+  roundRect(c, 2, 2, 252, 60, 10); c.stroke();
+  c.fillStyle = "#aef7e3";
+  c.font = "bold 26px Nunito, sans-serif";
+  c.textAlign = "center"; c.textBaseline = "middle";
+  c.fillText(text, 128, 34);
+  const tex = new THREE.CanvasTexture(cv);
+  return new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
+}
+
+function makeDefibScreenTexture() {
+  const cv = document.createElement("canvas");
+  cv.width = 256; cv.height = 170;
+  const c = cv.getContext("2d");
+  const tex = new THREE.CanvasTexture(cv);
+  let state = { charged: false, joules: 0 };
+  const draw = (t = 0) => {
+    c.fillStyle = "#05140f"; c.fillRect(0, 0, 256, 170);
+    // mini ECG trace
+    c.strokeStyle = "#39ff88"; c.lineWidth = 2; c.beginPath();
+    for (let x = 0; x < 256; x++) {
+      const p = ((x / 256) * 4 + t * 1.5) % 1;
+      let y = 120;
+      if (p > 0.2 && p < 0.23) y = 120 + 22;
+      else if (p >= 0.23 && p < 0.27) y = 120 - 55;
+      else if (p >= 0.27 && p < 0.3) y = 120 + 30;
+      x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.stroke();
+    c.fillStyle = state.charged ? "#ff3b30" : "#9fe8d8";
+    c.font = "bold 30px monospace"; c.textAlign = "left";
+    c.fillText(state.charged ? `${state.joules} J` : "DEFIB", 12, 34);
+    if (state.charged) {
+      c.fillStyle = "#ff3b30"; c.font = "bold 18px monospace";
+      c.fillText("CHARGED", 130, 34);
+    }
+    tex.needsUpdate = true;
+  };
+  draw(0);
+  tex.userData.update = (s) => { Object.assign(state, s); draw(0); };
+  tex.userData.tick = (t) => draw(t);
+  return tex;
+}
+
+function makeVentScreenTexture() {
+  const cv = document.createElement("canvas");
+  cv.width = 220; cv.height = 170;
+  const c = cv.getContext("2d");
+  const tex = new THREE.CanvasTexture(cv);
+  const draw = (t = 0, venting = false) => {
+    c.fillStyle = "#0a1622"; c.fillRect(0, 0, 220, 170);
+    c.fillStyle = "#7fd3ff"; c.font = "bold 16px monospace"; c.textAlign = "left";
+    c.fillText("VENT", 8, 22);
+    c.fillStyle = "#cfe9ff"; c.font = "12px monospace";
+    c.fillText("Vt 6 mL/kg", 8, 120);
+    c.fillText("RR 20  PEEP 5", 8, 138);
+    c.fillText("FiO2 100%", 8, 156);
+    // pressure waveform
+    c.strokeStyle = "#39ff88"; c.lineWidth = 2; c.beginPath();
+    for (let x = 0; x < 220; x++) {
+      const p = ((x / 220) * 3 + t * 0.8) % 1;
+      const y = 90 - (venting ? (p < 0.4 ? Math.sin((p / 0.4) * Math.PI) * 40 : 0) : 0);
+      x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.stroke();
+    tex.needsUpdate = true;
+  };
+  draw(0, false);
+  tex.userData.tick = (t, v) => draw(t, v);
+  return tex;
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -699,78 +1379,126 @@ class Monitor {
     }
   }
 
+  // SpO2 plethysmograph (0..1), pulse-synchronous
+  _plethSample(p) {
+    // sharp systolic upstroke + dicrotic notch
+    if (p < 0.12) return Math.sin((p / 0.12) * (Math.PI / 2));
+    if (p < 0.34) return Math.cos(((p - 0.12) / 0.22) * (Math.PI / 2)) * 0.55 + 0.45;
+    if (p < 0.42) return 0.45 + Math.sin(((p - 0.34) / 0.08) * Math.PI) * 0.12; // dicrotic
+    if (p < 0.85) return 0.45 * (1 - (p - 0.42) / 0.43);
+    return 0;
+  }
+
+  // EtCO2 capnograph (0..1), respiration-synchronous square-ish plateau
+  _capnoSample(p) {
+    if (p < 0.55) return 0;                                   // inspiratory baseline
+    if (p < 0.62) return ((p - 0.55) / 0.07);                 // rapid expiratory upstroke
+    if (p < 0.92) return 0.85 + ((p - 0.62) / 0.3) * 0.15;    // alveolar plateau (slight rise)
+    return Math.max(0, 1 - (p - 0.92) / 0.08);               // inspiratory downstroke
+  }
+
+  // Paint background + grid into a vertical strip of the waveform column.
+  _paintStrip(ctx, x, w, H, Wt) {
+    ctx.fillStyle = "#04110f";
+    ctx.fillRect(x, 0, w, H);
+    ctx.strokeStyle = "rgba(40,90,80,0.22)";
+    ctx.lineWidth = 1;
+    for (let gx = Math.floor(x / 32) * 32; gx <= x + w; gx += 32) {
+      ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+    }
+    for (let gy = 0; gy <= H; gy += 32) {
+      ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x + w, gy); ctx.stroke();
+    }
+    // lane dividers
+    const laneH = H / 3;
+    ctx.strokeStyle = "rgba(120,200,180,0.16)";
+    for (const ly of [laneH, laneH * 2]) {
+      ctx.beginPath(); ctx.moveTo(x, ly); ctx.lineTo(x + w, ly); ctx.stroke();
+    }
+  }
+
+  _drawSeg(ctx, key, color, sampleFn, lane, laneH, active) {
+    const x = this.x;
+    const base = lane + laneH * 0.78;
+    const amp = laneH * 0.62;
+    const last = this[key] ?? base;
+    const y = active ? base - sampleFn() * amp : base;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(x - 1, last);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    this[key] = y;
+  }
+
   _draw() {
     const ctx = this.ctx;
     const W = this.canvas.width;
     const H = this.canvas.height;
-    ctx.fillStyle = "#04110f";
-    ctx.fillRect(0, 0, W, H);
+    const Wt = Math.floor(W * 0.7);   // waveform column width
+    const laneH = H / 3;              // three stacked lanes
 
-    // grid
-    ctx.strokeStyle = "rgba(40,90,80,0.25)";
-    ctx.lineWidth = 1;
-    for (let gx = 0; gx < W; gx += 32) {
-      ctx.beginPath();
-      ctx.moveTo(gx, 0);
-      ctx.lineTo(gx, H);
-      ctx.stroke();
-    }
-    for (let gy = 0; gy < H; gy += 32) {
-      ctx.beginPath();
-      ctx.moveTo(0, gy);
-      ctx.lineTo(W, gy);
-      ctx.stroke();
+    // One-time: paint the persistent waveform background.
+    if (!this._mInit) {
+      this._paintStrip(ctx, 0, Wt, H, Wt);
+      this._mInit = true;
     }
 
-    // ECG trace region (top 55%)
-    const traceH = H * 0.5;
-    const baseY = traceH * 0.55;
-    // scrolling waveform
-    const speed = 5;
+    const perfusing = this.rhythm === "ROSC" || this.rhythm === "sinus";
     const beatHz = this.hr > 0 ? this.hr / 60 : 1;
-    for (let i = 0; i < speed; i++) {
-      this.x = (this.x + 1) % W;
-      this.tt += 1 / 60 / speed;
-      // erase ahead
-      ctx.fillStyle = "#04110f";
-      ctx.fillRect(this.x, 0, 14, traceH);
+    const speed = 5;
 
+    for (let i = 0; i < speed; i++) {
+      this.x = (this.x + 1) % Wt;
+      this.tt += 1 / 60 / speed;
+      // erase a strip just ahead of the cursor (keeps a persistent sweep)
+      this._paintStrip(ctx, this.x, 16, H, Wt);
+
+      // --- ECG lane ---
       let r = this.rhythm;
-      // If compressions active and underlying is non-perfusing, show CPR artifact blended
-      if (this.compressions && (r === "asystole" || r === "PEA" || r === "VF" || r === "pVT")) {
-        r = "cpr";
-      }
-      let p;
-      if (r === "VF" || r === "asystole") {
-        p = this.tt;
-      } else {
-        p = (this.tt * beatHz) % 1;
-      }
-      const amp = traceH * 0.32;
-      const y = baseY - this._ecgSample(r, p) * amp;
-      ctx.strokeStyle = "#39ff88";
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(this.x - 1, this.lastSample);
-      ctx.lineTo(this.x, y);
-      ctx.stroke();
-      this.lastSample = y;
+      if (this.compressions && (r === "asystole" || r === "PEA" || r === "VF" || r === "pVT")) r = "cpr";
+      const pE = (r === "VF" || r === "asystole") ? this.tt : (this.tt * beatHz) % 1;
+      this._drawSeg(ctx, "_lastE", "#39ff88", () => this._ecgSample(r, pE), 0, laneH, true);
+
+      // --- Pleth lane (only with a perfusing pulse) ---
+      const plethActive = this.spo2 > 0 && perfusing;
+      const pP = (this.tt * beatHz) % 1;
+      this._drawSeg(ctx, "_lastP", "#56ccf2", () => this._plethSample(pP), laneH, laneH, plethActive);
+
+      // --- Capnography lane (whenever there's exhaled CO2) ---
+      const capnoActive = this.etco2 > 0;
+      const respHz = this.compressions && !perfusing ? 0.18 : 0.33; // ~10–20/min
+      const pC = (this.tt * respHz) % 1;
+      this._drawSeg(ctx, "_lastC", "#f2c94c", () => this._capnoSample(pC), laneH * 2, laneH, capnoActive);
     }
 
-    // SpO2 pleth + EtCO2 capnograph regions (lower)
-    // dividers
-    ctx.strokeStyle = "rgba(120,200,180,0.18)";
-    ctx.beginPath();
-    ctx.moveTo(0, traceH);
-    ctx.lineTo(W * 0.7, traceH);
-    ctx.stroke();
+    // sweep cursor highlight
+    if (this.x + 17 < Wt) {
+      ctx.fillStyle = "rgba(180,255,220,0.25)";
+      ctx.fillRect(this.x + 16, 0, 2, H);
+    }
 
-    // Numeric panel (right column)
+    // lane labels (repainted each frame with a small backing so they persist)
+    ctx.textAlign = "left";
+    ctx.font = "bold 20px Nunito, monospace";
+    const label = (text, color, y) => {
+      const w = ctx.measureText(text).width + 12;
+      ctx.fillStyle = "rgba(4,17,15,0.85)";
+      ctx.fillRect(6, y - 18, w, 24);
+      ctx.fillStyle = color; ctx.fillText(text, 12, y);
+    };
+    label("ECG · Lead " + this.lead, "#39ff88", 26);
+    label("SpO₂ Pleth", "#56ccf2", laneH + 26);
+    label("EtCO₂ Capnography", "#f2c94c", laneH * 2 + 26);
+
+    // Numeric panel (right column) — repainted every frame
     const px = W * 0.72;
     ctx.fillStyle = "#071a17";
     ctx.fillRect(px, 0, W - px, H);
-    const drawNum = (label, val, unit, color, y) => {
-      ctx.fillStyle = color;
+    const alarm = (cond) => (cond ? "#eb5757" : null);
+    const drawNum = (label, val, unit, color, y, alarmColor) => {
+      ctx.fillStyle = alarmColor || color;
       ctx.font = "bold 26px Nunito, monospace";
       ctx.textAlign = "left";
       ctx.fillText(label, px + 18, y);
@@ -779,20 +1507,18 @@ class Monitor {
       ctx.font = "bold 22px Nunito, monospace";
       ctx.fillText(unit, px + 18 + ctx.measureText(String(val)).width + 8, y + 64);
     };
-    drawNum("HR", this.hr > 0 ? this.hr : "--", "bpm", "#39ff88", 40);
-    drawNum("SpO₂", this.spo2 > 0 ? this.spo2 : "--", "%", "#56ccf2", 175);
-    drawNum("EtCO₂", this.etco2 > 0 ? this.etco2 : "--", "", "#f2c94c", 310);
+    const blink = Math.floor(this.tt * 2) % 2 === 0;
+    drawNum("HR", this.hr > 0 ? this.hr : "--", "bpm", "#39ff88", 40,
+      alarm((this.hr === 0 || this.hr > 200) && blink));
+    drawNum("SpO₂", this.spo2 > 0 ? this.spo2 : "--", "%", "#56ccf2", 175,
+      alarm(this.spo2 > 0 && this.spo2 < 90 && blink));
+    drawNum("EtCO₂", this.etco2 > 0 ? this.etco2 : "--", "mmHg", "#f2c94c", 310,
+      alarm(this.etco2 > 0 && this.etco2 < 10 && blink));
     ctx.fillStyle = "#eb5757";
     ctx.font = "bold 26px Nunito, monospace";
     ctx.fillText("NIBP", px + 18, 470);
     ctx.font = "bold 46px Nunito, monospace";
     ctx.fillText(this.bp, px + 18, 520);
-
-    // Lead label + rhythm
-    ctx.fillStyle = "#9fe8d8";
-    ctx.font = "bold 22px Nunito, monospace";
-    ctx.textAlign = "left";
-    ctx.fillText("Lead " + this.lead, 16, 28);
 
     this.texture.needsUpdate = true;
 
@@ -1173,7 +1899,7 @@ class Engine {
       `Charging to ${this.chargedJoules} joules${joules ? "" : ` (${energyLabel(idx)} dose)`}. Continue compressions while I charge.`,
       true
     );
-    this.ui.charge();
+    this.ui.charge(this.chargedJoules);
   }
 
   cmdShock() {
@@ -1472,7 +2198,55 @@ class App {
       (state) => this.onVoiceState(state)
     );
     this.voice.loadVoices();
+    this.mic = new Mic(
+      (level) => this.onMicLevel(level),
+      (status) => this.onMicStatus(status)
+    );
     this.bindSetup();
+    this.bindMicSetup();
+  }
+
+  /* ---- microphone permission flow (setup screen) ---- */
+  bindMicSetup() {
+    const btn = document.getElementById("enableMic");
+    if (!btn) return;
+    if (!this.mic.supported) {
+      this.onMicStatus("unsupported");
+      return;
+    }
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      await this.mic.enable();
+      btn.disabled = false;
+    });
+  }
+
+  onMicStatus(status) {
+    const el = document.getElementById("micSetupState");
+    const btn = document.getElementById("enableMic");
+    const map = {
+      idle: ["Microphone not yet enabled", ""],
+      requesting: ["Requesting microphone access…", ""],
+      granted: ["✓ Microphone live — you're ready to run the code", "ok"],
+      denied: ["Microphone blocked. Allow it in your browser's site settings, then retry.", "bad"],
+      error: ["Couldn't open the microphone. Check your device and retry.", "bad"],
+      unsupported: ["This browser can't capture the microphone — you can still type orders.", "bad"],
+    };
+    const [text, cls] = map[status] || map.idle;
+    if (el) {
+      el.textContent = text;
+      el.className = "mic-setup-state " + cls;
+    }
+    if (btn && status === "granted") btn.textContent = "Microphone enabled ✓";
+    if (btn && (status === "unsupported")) btn.disabled = true;
+    // reflect in the in-sim meter label too
+    const live = document.getElementById("micMeterWrap");
+    if (live) live.classList.toggle("hidden", status !== "granted");
+  }
+
+  onMicLevel(level) {
+    const bar = document.getElementById("micMeterBar");
+    if (bar) bar.style.transform = `scaleX(${level.toFixed(3)})`;
   }
 
   /* ---- setup screen ---- */
@@ -1502,6 +2276,9 @@ class App {
 
   launch(scenario) {
     this.scenario = scenario;
+    // The card click is a valid user gesture — request the mic now if the
+    // user didn't already enable it on the briefing screen.
+    if (this.mic.supported && !this.mic.enabled) this.mic.enable();
     document.getElementById("setup").classList.add("hidden");
     document.getElementById("sim").classList.remove("hidden");
 
@@ -1610,6 +2387,8 @@ class App {
   /* ---- engine callbacks ---- */
   speak(role, text) {
     this.voice.say(text, ROLE_VOICE[role] || {});
+    // light up whoever is talking, scaled to utterance length
+    if (this.scene) this.scene.highlightRole(role, Math.min(7000, 1400 + text.length * 45));
   }
   appendLog(ts, role, text) {
     const feed = document.getElementById("logFeed");
@@ -1636,11 +2415,13 @@ class App {
   setVentilating(on) {
     this.scene && this.scene.setVentilating(on);
   }
-  charge() {
+  charge(joules) {
     this.audio.charge();
+    if (this.scene) this.scene.defibCharge(joules);
   }
   shock() {
     this.audio.shock();
+    if (this.scene) this.scene.defibShock();
     const sc = document.getElementById("scene");
     sc.classList.add("shock-flash");
     setTimeout(() => sc.classList.remove("shock-flash"), 250);
