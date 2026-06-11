@@ -1,3 +1,11 @@
+# macOS junk
+.DS_Store
+Icon
+Icon?
+
+# Editor / OS noise
+*~
+
+# Generated logo variants (produced at runtime)
 images/acetaminophen-tylenol.svg
 images/acetaminophen-generic.svg
-images/acetaminophen-tylenol.svg

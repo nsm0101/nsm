@@ -7,10 +7,8 @@
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="2400" />
   <meta property="og:image:height" content="1260" />
-  <meta property="og:title" content="CloseDose for Providers — Pediatric Clinical Tools" />
-  <meta property="og:description" content="Free, open pediatric clinical tools built by a physician — a weight-based dosing calculator and a voice-driven PALS code simulator — shared as an outlet for fellow clinicians." />
-  <meta name="description" content="CloseDose for Providers — free pediatric clinical tools built by a physician, including a weight-based dosing calculator and a voice-driven PALS code simulator." />
-  <title>CloseDose for Providers — Pediatric Clinical Tools</title>
+  <meta name="description" content="CloseDose pediatric dosing calculator — calculate safe acetaminophen, ibuprofen, and antihistamine doses for infants and children by weight." />
+  <title>CloseDose – Pediatric Medication Dosing Calculator</title>
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png" />
@@ -537,134 +535,6 @@
       line-height: 1.55;
     }
 
-    /* Provider hub */
-    .hub-eyebrow {
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: clamp(0.8rem, 1.8vw, 0.95rem);
-      color: var(--theme-bright-strong);
-    }
-
-    .tool-hub {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: clamp(18px, 3vw, 26px);
-    }
-
-    .tool-card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      background: var(--surface);
-      border: var(--border-width) solid var(--theme-dark);
-      border-radius: var(--inner-radius);
-      padding: clamp(22px, 3.4vw, 30px);
-      box-shadow: var(--shadow-card);
-      text-align: left;
-    }
-
-    .tool-card__badge {
-      align-self: flex-start;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-size: 0.72rem;
-      padding: 6px 14px;
-      border-radius: var(--pill-radius);
-      border: 2px solid var(--theme-dark);
-      background: var(--theme-bright-soft);
-      color: var(--theme-dark);
-    }
-
-    .tool-card h2 {
-      margin: 0;
-      font-size: clamp(1.4rem, 3vw, 1.7rem);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .tool-card p {
-      margin: 0;
-      line-height: 1.6;
-      flex: 1;
-    }
-
-    .tool-card .pill-link {
-      align-self: flex-start;
-      margin-top: 6px;
-    }
-
-    .hub-block {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(16px, 3vw, 22px);
-    }
-
-    .hub-section-title {
-      text-align: center;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-size: clamp(1.1rem, 2.6vw, 1.4rem);
-      margin: 0;
-    }
-
-    .about-card .hub-section-title {
-      text-align: left;
-      margin-bottom: 6px;
-    }
-
-    .resource-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      justify-content: center;
-    }
-
-    .resource-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      color: var(--theme-dark);
-      background: var(--theme-bright-lighter);
-      border: var(--border-width) solid var(--theme-dark);
-      border-radius: var(--pill-radius);
-      padding: 0.6em 1.5em;
-      box-shadow: var(--shadow-btn);
-      transition: background 0.12s ease, transform 0.05s ease;
-    }
-
-    .resource-link:hover,
-    .resource-link:focus-visible {
-      background: var(--theme-bright-soft);
-      outline: none;
-    }
-
-    .resource-link:active {
-      transform: translateY(2px);
-      box-shadow: none;
-    }
-
-    .about-card {
-      background: var(--theme-bright-soft);
-      border: var(--border-width) solid var(--theme-dark);
-      border-radius: var(--inner-radius);
-      padding: clamp(20px, 3.4vw, 28px);
-      line-height: 1.65;
-    }
-
-    .about-card p {
-      margin: 0 0 12px;
-    }
-
-    .about-card p:last-child {
-      margin-bottom: 0;
-    }
-
     .form-card {
       background: var(--surface);
       border-radius: var(--inner-radius);
@@ -1068,7 +938,7 @@
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#tools-heading">Skip to tools</a>
+  <a class="skip-link" href="#calculator">Skip to calculator</a>
   <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="siteMenu" aria-label="Open menu">
     <span class="label">Menu</span>
     <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -1078,8 +948,8 @@
     <div class="menu-panel" role="dialog" aria-modal="true" aria-labelledby="menuHeading">
       <h2 id="menuHeading" class="sr-only">Site menu</h2>
       <nav class="menu-links">
-        <a href="index.html" aria-current="page">Home</a>
-        <a href="calculator.html">Calculator</a>
+        <a href="index.html">Home</a>
+        <a href="calculator.html" aria-current="page">Calculator</a>
         <a href="medication-guides.html">Medication Guides</a>
         <a href="code-simulator.html">PALS Code Simulator</a>
         <a href="pocus-presentation.html">POCUS Deck</a>
@@ -1112,65 +982,76 @@
 
       <main class="main-card" role="main">
         <section class="hero-intro">
-          <p class="hub-eyebrow">For Clinicians &amp; Caregivers</p>
-          <h1>Pediatric tools, built to share</h1>
+          <h1>Pediatric dosing made simple</h1>
           <p>
-            CloseDose is a small collection of free, open pediatric clinical tools built by a practicing
-            physician. Each one is designed to be fast, accurate, and genuinely useful at the bedside — and
-            shared as an outlet for fellow providers and caregivers to use.
+            CloseDose helps caregivers calculate safe acetaminophen, ibuprofen, diphenhydramine, and cetirizine doses for infants and children. Select an age range, enter a weight, and receive easy-to-follow guidance backed by pediatric expertise.
           </p>
           <div class="pill-row">
-            <a class="pill-link" href="calculator.html">Open the Calculator</a>
-            <a class="pill-link pill-link--secondary" href="code-simulator.html">Launch PALS Simulator</a>
+            <a class="pill-link" href="#calculator">Open Calculator</a>
+            <a class="pill-link pill-link--secondary" href="medication-guides.html">Medication Guides</a>
+            <a class="pill-link pill-link--secondary" href="code-simulator.html">PALS Code Simulator</a>
           </div>
-        </section>
-
-        <section class="hub-block" aria-labelledby="tools-heading">
-          <h2 class="hub-section-title" id="tools-heading">The Tools</h2>
-          <div class="tool-hub">
-            <article class="tool-card">
-              <span class="tool-card__badge">Dosing</span>
-              <h2>Dosing Calculator</h2>
-              <p>
-                Weight-based acetaminophen, ibuprofen, and antihistamine dosing for infants and children.
-                Choose an age range, enter a weight in lbs or kg, and get clear, dose-capped guidance that is
-                ready to read at the bedside.
-              </p>
-              <a class="pill-link" href="calculator.html">Open Calculator</a>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <h2>Quick Age Cards</h2>
+              <p>Tap an age group to unlock dosing instructions, warnings, and next steps tailored for the patient.</p>
             </article>
-            <article class="tool-card">
-              <span class="tool-card__badge">Simulation</span>
-              <h2>PALS Code Simulator</h2>
-              <p>
-                A first-person, voice-driven 3D pediatric resuscitation simulator. Run a code, call your
-                interventions out loud, and rehearse the PALS algorithms in real time — solo or as a team.
-              </p>
-              <a class="pill-link" href="code-simulator.html">Launch Simulator</a>
+            <article class="feature-card">
+              <h2>Weight-Based</h2>
+              <p>Enter pounds or kilograms—CloseDose converts automatically and applies safe maximum dose caps.</p>
+            </article>
+            <article class="feature-card">
+              <h2>Caregiver Tips</h2>
+              <p>Review practical reminders on alternating medications, logging doses, and warning signs to watch.</p>
             </article>
           </div>
         </section>
 
-        <section class="about-card" aria-labelledby="about-heading">
-          <h2 class="hub-section-title" id="about-heading">About</h2>
-          <p>
-            These tools are created and maintained by <strong>Nickolas Mancini, MD, MBA</strong>, and offered
-            free of charge for educational use. If something here saves you time or helps a patient, that is
-            exactly the point.
-          </p>
-          <p>
-            They are works in progress and not a substitute for clinical judgment — always confirm dosing and
-            management with your own institution's resources. More about the broader project lives at
-            <a href="https://www.closedose.com" target="_blank" rel="noopener">closedose.com</a>.
-          </p>
-        </section>
+        <section class="form-card" aria-labelledby="calculator-title">
+          <div class="form-title" id="calculator-title">Dose Calculator</div>
+          <form id="calculator" novalidate>
+            <div class="form-group" aria-live="polite">
+              <div class="form-title">Patient Age</div>
+              <div class="segmented">
+                <div class="segmented-buttons" role="group" aria-label="Select patient age">
+                  <button type="button" class="age-option" data-age="0-2" aria-pressed="false">0-2 Months</button>
+                  <button type="button" class="age-option" data-age="2-6" aria-pressed="false">2-6 Months</button>
+                  <button type="button" class="age-option" data-age="6+" aria-pressed="false">6+ Months</button>
+                </div>
+                <p class="hello-box">Welcome! Choose an age group to begin.</p>
+              </div>
+              <select id="age" name="age" aria-hidden="true" tabindex="-1" hidden>
+                <option value="">Select age</option>
+                <option value="0-2">0-2 Months</option>
+                <option value="2-6">2-6 Months</option>
+                <option value="6+">6+ Months</option>
+              </select>
+              <p id="message" hidden></p>
+            </div>
 
-        <section class="hub-block" aria-labelledby="more-heading">
-          <h2 class="hub-section-title" id="more-heading">More Resources</h2>
-          <div class="resource-strip">
-            <a class="resource-link" href="medication-guides.html">Medication Guides</a>
-            <a class="resource-link" href="pocus-presentation.html">Pediatric POCUS Deck</a>
-            <a class="resource-link" href="donation.html">Support CloseDose</a>
-          </div>
+            <div class="form-group">
+              <div class="form-title">Patient Weight</div>
+              <div class="weight-row">
+                <div class="weight-input">
+                  <label class="sr-only" for="weight">Enter weight</label>
+                  <input type="number" id="weight" name="weight" inputmode="decimal" placeholder="Enter weight" min="0" step="0.1" />
+                </div>
+                <div class="unit-toggle" role="group" aria-label="Select weight unit">
+                  <button type="button" class="unit-option" data-unit="lbs" aria-pressed="true">lbs</button>
+                  <button type="button" class="unit-option" data-unit="kg" aria-pressed="false">kg</button>
+                </div>
+              </div>
+              <select id="weight-unit" name="weight-unit" aria-hidden="true" tabindex="-1" hidden>
+                <option value="lbs" selected>lbs</option>
+                <option value="kg">kg</option>
+              </select>
+            </div>
+
+            <div class="action">
+              <button type="submit">Calculate</button>
+            </div>
+            <div id="results" aria-live="polite"></div>
+          </form>
         </section>
       </main>
     </div>
