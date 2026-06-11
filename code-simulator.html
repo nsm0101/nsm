@@ -37,7 +37,10 @@
 
     <div class="setup-grid">
       <div class="setup-main">
-        <h2>Choose your patient</h2>
+        <div class="setup-main-head">
+          <h2>Choose your patient</h2>
+          <button id="randomScenario" type="button" class="random-btn">🎲 Surprise me — random patient</button>
+        </div>
         <div id="scenarioGrid" class="scn-grid"></div>
       </div>
       <aside class="setup-aside">
@@ -117,6 +120,13 @@
       <button data-cmd="switch">Switch Compressor</button>
       <button data-cmd="reversible">H's &amp; T's</button>
       <button data-cmd="status">Status Recap</button>
+    </div>
+
+    <!-- mobile-only panel toggles (these panels are docked/hidden on phones) -->
+    <div class="hud panel-tabs">
+      <button type="button" data-panel="dose">💊 Doses</button>
+      <button type="button" data-panel="log">📋 Record</button>
+      <button type="button" data-panel="actions">⚡ Actions</button>
     </div>
 
     <!-- bottom command bar -->

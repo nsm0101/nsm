@@ -406,10 +406,18 @@ class Mic {
 class Scene3D {
   constructor(canvas) {
     this.canvas = canvas;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
+    // Phones / touch devices get the lighter path: no shadow maps, capped pixel
+    // ratio. The cel-shaded look (below) carries the scene without them.
+    this.lowPower =
+      window.matchMedia("(max-width: 820px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !this.lowPower });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.lowPower ? 1.5 : 2));
+    this.renderer.shadowMap.enabled = !this.lowPower;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // Cel-shading ramp: a few hard tone steps give the clean medical-illustration
+    // banding instead of soft photoreal gradients.
+    this.toonRamp = makeToonGradient();
     if ("outputColorSpace" in this.renderer) this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x0e1c22);
@@ -1197,10 +1205,56 @@ class Scene3D {
     this._ivPole();
     this._ventilator();
     this._mayoStand();
+    this._toonify();
+  }
+
+  /* Convert the standard PBR materials to cel-shaded (toon) ones in a single
+     post-build pass. Keeps the model geometry, role colors, and emissive cues
+     intact while swapping soft realism for a clean illustrated look that reads
+     better at small sizes and renders far cheaper on phones. Emissive/basic
+     materials (monitor screens, light lenses, sprites) are left untouched. */
+  _toonify() {
+    const seen = new Map();
+    this.scene.traverse((obj) => {
+      if (!obj.isMesh || !obj.material) return;
+      const swap = (mat) => {
+        if (!mat || !mat.isMeshStandardMaterial) return mat;
+        if (seen.has(mat)) return seen.get(mat);
+        const toon = new THREE.MeshToonMaterial({
+          color: mat.color.clone(),
+          map: mat.map || null,
+          gradientMap: this.toonRamp,
+          transparent: mat.transparent,
+          opacity: mat.opacity,
+          side: mat.side,
+          emissive: mat.emissive ? mat.emissive.clone() : new THREE.Color(0x000000),
+          emissiveIntensity: mat.emissiveIntensity ?? 1,
+        });
+        seen.set(mat, toon);
+        return toon;
+      };
+      obj.material = Array.isArray(obj.material)
+        ? obj.material.map(swap)
+        : swap(obj.material);
+    });
   }
 }
 
 /* --- Procedural textures / sprites for the bay --------------------------- */
+
+/* Cel-shading ramp for MeshToonMaterial. A handful of tone steps (not a smooth
+   gradient) is what gives the flat, illustrated medical look. The floor tone is
+   kept fairly light so shaded sides stay legible rather than going muddy. */
+function makeToonGradient() {
+  const steps = new Uint8Array([110, 165, 210, 245, 255]);
+  const tex = new THREE.DataTexture(steps, steps.length, 1, THREE.RedFormat);
+  tex.minFilter = THREE.NearestFilter;
+  tex.magFilter = THREE.NearestFilter;
+  tex.generateMipmaps = false;
+  tex.needsUpdate = true;
+  return tex;
+}
+
 function makeTileTexture() {
   const cv = document.createElement("canvas");
   cv.width = cv.height = 128;
@@ -2272,6 +2326,24 @@ class App {
       card.addEventListener("click", () => this.launch(sc));
       grid.appendChild(card);
     });
+
+    // "Surprise me" — pick a random scenario so learners can't pre-plan to a
+    // known rhythm/cause (closer to a real unannounced code).
+    const randBtn = document.getElementById("randomScenario");
+    if (randBtn) {
+      randBtn.addEventListener("click", () => {
+        const pick = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+        // brief visual cue on the chosen card before launching
+        const cards = grid.querySelectorAll(".scn-card");
+        const idx = SCENARIOS.indexOf(pick);
+        const chosen = cards[idx];
+        if (chosen) {
+          chosen.classList.add("scn-chosen");
+          chosen.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+        setTimeout(() => this.launch(pick), chosen ? 420 : 0);
+      });
+    }
   }
 
   launch(scenario) {
@@ -2348,6 +2420,23 @@ class App {
     document.querySelectorAll("[data-cmd]").forEach((b) =>
       b.addEventListener("click", () => this.engine.handle({ id: b.dataset.cmd, raw: b.textContent }))
     );
+
+    // mobile panel toggles — on phones the dose card / record / action rail
+    // are hidden by default and surfaced one at a time as bottom sheets.
+    document.querySelectorAll(".panel-tabs [data-panel]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.panel;
+        const cls = `show-${name}`;
+        const wasOpen = document.body.classList.contains(cls);
+        // close any other open panel, then toggle this one
+        document.body.classList.remove("show-dose", "show-log", "show-actions");
+        document.querySelectorAll(".panel-tabs [data-panel]").forEach((b) => b.classList.remove("active"));
+        if (!wasOpen) {
+          document.body.classList.add(cls);
+          btn.classList.add("active");
+        }
+      });
+    });
 
     document.getElementById("helpBtn").addEventListener("click", () => this.toggleHelp());
     document.getElementById("endBtn").addEventListener("click", () => this.engine.cmdCallIt());
