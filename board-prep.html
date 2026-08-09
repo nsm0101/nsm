@@ -233,6 +233,51 @@
     .stat span { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: var(--theme-dark-soft); }
 
     .muted { color: var(--theme-dark-soft); font-size: 0.88rem; font-weight: 600; }
+
+    /* ---------- Cram / discriminators ---------- */
+    input[type="search"] {
+      font-family: inherit; font-weight: 700; font-size: 0.92rem; max-width: 100%;
+      border: 2px solid var(--theme-dark); border-radius: var(--inner-radius);
+      padding: 9px 14px; background: var(--surface); color: var(--theme-dark); min-width: 200px;
+    }
+    input[type="search"]:focus { outline: 3px solid var(--theme-bright); outline-offset: 1px; }
+
+    details.sec {
+      border: var(--border-width) solid var(--theme-dark); border-radius: var(--card-radius);
+      box-shadow: var(--shadow-card); margin-bottom: clamp(14px, 3vw, 22px);
+      overflow: hidden; background: var(--surface);
+    }
+    details.sec > summary {
+      cursor: pointer; padding: 14px 20px; font-weight: 900; list-style: none;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      font-size: clamp(1rem, 2.6vw, 1.15rem); background: var(--theme-bright-lighter);
+    }
+    details.sec > summary::-webkit-details-marker { display: none; }
+    details.sec > summary:hover { background: var(--theme-bright-soft); }
+    details.sec[open] > summary { border-bottom: 2px solid var(--theme-bright-soft); }
+    .sec-body { padding: 16px 20px 6px; }
+    .sec-note { font-style: italic; color: var(--theme-dark-soft); font-weight: 600; margin: 0 0 16px; font-size: 0.94rem; }
+    .blk-title { margin: 18px 0 8px; font-size: 0.98rem; font-weight: 900; color: var(--theme-bright-strong); }
+    .sec-body ul { margin: 0 0 14px; padding-left: 20px; font-size: 0.93rem; }
+    .sec-body li { margin-bottom: 7px; }
+    .sec-body table { font-size: 0.88rem; min-width: 520px; }
+    .sec-body td:first-child { font-weight: 700; }
+
+    .tell {
+      background: var(--good-bg); border-left: 5px solid var(--theme-bright);
+      border-radius: 0 var(--inner-radius) var(--inner-radius) 0;
+      padding: 12px 16px; margin: 4px 0 14px; font-size: 0.93rem;
+    }
+    .tell b.lab {
+      display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--theme-bright-strong); margin-bottom: 4px;
+    }
+    .diff-tag {
+      background: var(--theme-bright-soft); color: var(--theme-dark); border-radius: var(--pill-radius);
+      padding: 2px 10px; font-size: 0.72rem; font-weight: 900; white-space: nowrap; margin-left: auto;
+    }
+    .hidden { display: none !important; }
+    mark { background: #ffe9a8; color: inherit; padding: 0 2px; border-radius: 3px; }
     .kbd { background: var(--theme-dark); color: #fff; border-radius: 5px; padding: 1px 7px; font-size: 0.8rem; font-weight: 800; }
 
     footer.site {
@@ -247,11 +292,20 @@
       table { min-width: 480px; }
     }
     @media print {
-      .tabs, .top .countdown { display: none; }
-      .panel { display: block !important; }
-      .card { box-shadow: none; page-break-inside: avoid; }
-      details.dom { break-inside: avoid; }
-      details.dom > summary { background: #eee; }
+      /* Print only the tab you are looking at, fully expanded. */
+      .tabs, .top .countdown, footer.site, .quiz-setup, .no-print-card { display: none; }
+      .panel { display: none; }
+      .panel.active { display: block; }
+      .top { background: none; color: #000; border: none; }
+      .top .home-link, .sub { display: none; }
+      .wrap { max-width: none; padding: 0; }
+      .card, details.sec, details.dom { box-shadow: none; border-width: 1px; break-inside: avoid; }
+      details.sec > summary, details.dom > summary { background: #eee; }
+      details.sec[open] .sec-body { display: block; }
+      .callout, .tell, .traps { break-inside: avoid; }
+      table { min-width: 0 !important; font-size: 8.5pt; }
+      .table-scroll { overflow: visible; }
+      body { background: #fff; }
     }
   </style>
 </head>
@@ -271,6 +325,8 @@
     <button class="tab" role="tab" aria-selected="true" data-panel="p-plan">The Plan</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="p-domains">Where the Points Are</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="p-highyield">High-Yield</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-cram">Cram Sheet</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-diff">Discriminators</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="p-drill">Drill</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="p-technique">Question Technique</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="p-testday">Test Day</button>
@@ -404,6 +460,50 @@
       </div>
       <div id="hyList"></div>
     </div>
+  </section>
+
+  <!-- ============================ CRAM ============================ -->
+  <section class="panel" id="p-cram" role="tabpanel">
+    <div class="card no-print-card">
+      <h2>Cram sheet</h2>
+      <p class="lede">Pure recall — the numbers, ages, criteria, windows, and first-line drugs that are answers rather than reasoning. Built for the last two weeks and the morning of.</p>
+      <div class="callout">
+        <p>Nothing here requires thinking on test day; it either surfaces instantly or it costs you a question. Work through it with the sections collapsed, expanding only to check yourself — that is retrieval. Reading it top to bottom is not.</p>
+      </div>
+      <div class="quiz-setup">
+        <label for="cramFind" style="font-weight:800;font-size:.9rem;">Find</label>
+        <input type="search" id="cramFind" placeholder="e.g. amoxicillin, Kawasaki, 60 days" />
+        <button class="btn" id="cramExpand" type="button">Expand all</button>
+        <button class="btn" id="cramCollapse" type="button">Collapse all</button>
+        <button class="btn" id="cramPrint" type="button">Print</button>
+      </div>
+      <p class="muted" id="cramCount"></p>
+    </div>
+    <div id="cramList"></div>
+  </section>
+
+  <!-- ======================== DISCRIMINATORS ======================== -->
+  <section class="panel" id="p-diff" role="tabpanel">
+    <div class="card no-print-card">
+      <h2>Discriminators — the tables that win questions</h2>
+      <p class="lede">Confusable pairs and triads, side by side, each with the single feature that decides the stem.</p>
+      <div class="callout warn">
+        <p><strong>This is where the easy points live.</strong> ABP rarely asks whether you have heard of a diagnosis — it puts two plausible diagnoses in front of you and checks whether you know the one feature that separates them. Every table below ends with a <strong>THE TELL</strong> line. If you learn nothing else in the final week, learn those lines: they convert a coin flip into a certainty.</p>
+      </div>
+      <div class="quiz-setup">
+        <label for="diffFind" style="font-weight:800;font-size:.9rem;">Find</label>
+        <input type="search" id="diffFind" placeholder="e.g. torsion, jaundice, purpura, ammonia" />
+        <select id="diffSort">
+          <option value="weight">Order by exam weight</option>
+          <option value="az">Order A–Z</option>
+        </select>
+        <button class="btn" id="diffExpand" type="button">Expand all</button>
+        <button class="btn" id="diffCollapse" type="button">Collapse all</button>
+        <button class="btn" id="diffTells" type="button">Tells only</button>
+      </div>
+      <p class="muted" id="diffCount"></p>
+    </div>
+    <div id="diffList"></div>
   </section>
 
   <!-- ============================ DRILL ============================ -->
@@ -573,6 +673,7 @@
 
 <script src="board-prep-data.js"></script>
 <script src="board-prep-data-b.js"></script>
+<script src="board-prep-cram.js"></script>
 <script src="board-prep-questions.js"></script>
 <script src="board-prep.js"></script>
 </body>

@@ -13,6 +13,8 @@
   var EXAM = PREP.EXAM;
   var DOMAINS = PREP.DOMAINS || [];
   var QUESTIONS = PREP.QUESTIONS || [];
+  var CRAM = PREP.CRAM || [];
+  var DIFFS = PREP.DIFFS || [];
 
   var TOTAL_QS = 340; // midpoint of the ABP's stated 330–350
   var STORE = 'cd-prep-v1';
@@ -382,6 +384,145 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * Cram sheet
+   * ------------------------------------------------------------------ */
+  function renderCram() {
+    var host = el('cramList');
+    if (!host) return;
+
+    host.innerHTML = CRAM.map(function (s) {
+      var body = (s.note ? '<p class="sec-note">' + s.note + '</p>' : '') +
+        s.blocks.map(function (b) {
+          var title = b.t ? '<h4 class="blk-title">' + esc(b.t) + '</h4>' : '';
+          if (b.k === 'list') {
+            return title + '<ul>' + b.items.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
+          }
+          return title + '<div class="table-scroll"><table><thead><tr>' +
+            b.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') +
+            '</tr></thead><tbody>' +
+            b.rows.map(function (r) {
+              return '<tr>' + r.map(function (cell) { return '<td>' + cell + '</td>'; }).join('') + '</tr>';
+            }).join('') +
+            '</tbody></table></div>';
+        }).join('');
+
+      return '<details class="sec" data-cram="' + s.id + '">' +
+        '<summary>' + esc(s.t) + '</summary>' +
+        '<div class="sec-body">' + body + '</div>' +
+      '</details>';
+    }).join('');
+
+    updateCramCount();
+  }
+
+  function updateCramCount() {
+    var p = el('cramCount');
+    if (!p) return;
+    var shown = document.querySelectorAll('#cramList details.sec:not(.hidden)').length;
+    p.textContent = shown + ' of ' + CRAM.length + ' sections shown.';
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Discriminator tables
+   * ------------------------------------------------------------------ */
+  function sortedDiffs(mode) {
+    var list = DIFFS.slice();
+    if (mode === 'az') {
+      list.sort(function (a, b) { return a.t.localeCompare(b.t); });
+    } else {
+      list.sort(function (a, b) {
+        var da = domainById(a.d), db = domainById(b.d);
+        var wa = da ? da.weight : 0, wb = db ? db.weight : 0;
+        return wb - wa || a.d - b.d || a.t.localeCompare(b.t);
+      });
+    }
+    return list;
+  }
+
+  function renderDiffs() {
+    var host = el('diffList');
+    if (!host) return;
+    var mode = el('diffSort') ? el('diffSort').value : 'weight';
+
+    host.innerHTML = sortedDiffs(mode).map(function (x) {
+      var d = domainById(x.d);
+      // Default shape: each row starts with a feature label, so the header gets a
+      // leading blank cell. `noLabel` tables are plain lookups with no label column.
+      var head = '<tr>' + (x.noLabel ? '' : '<th></th>') +
+        x.cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr>';
+      var body = x.rows.map(function (r) {
+        return '<tr>' + r.map(function (cell, i) {
+          return i === 0 ? '<td>' + cell + '</td>' : '<td>' + cell + '</td>';
+        }).join('') + '</tr>';
+      }).join('');
+
+      return '<details class="sec" data-diff="' + x.id + '">' +
+        '<summary>' + esc(x.t) +
+          '<span class="diff-tag">' + esc(d ? d.name : '') + ' &middot; ' + (d ? d.weight : '?') + '%</span>' +
+        '</summary>' +
+        '<div class="sec-body">' +
+          '<div class="table-scroll"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' +
+          '<div class="tell"><b class="lab">The tell</b>' + x.tell + '</div>' +
+        '</div>' +
+      '</details>';
+    }).join('');
+
+    updateDiffCount();
+  }
+
+  function updateDiffCount() {
+    var p = el('diffCount');
+    if (!p) return;
+    var shown = document.querySelectorAll('#diffList details.sec:not(.hidden)').length;
+    p.textContent = shown + ' of ' + DIFFS.length + ' tables shown.';
+  }
+
+  /* Condensed view: every "tell" as a single scannable list — the final-week read. */
+  var tellsOnly = false;
+  function showTellsOnly() {
+    var host = el('diffList');
+    var btn = el('diffTells');
+    if (!host) return;
+    tellsOnly = !tellsOnly;
+
+    if (!tellsOnly) {
+      if (btn) btn.textContent = 'Tells only';
+      renderDiffs();
+      return;
+    }
+
+    if (btn) btn.textContent = 'Back to tables';
+    var mode = el('diffSort') ? el('diffSort').value : 'weight';
+    host.innerHTML = '<div class="card"><h2>Every tell, in one list</h2>' +
+      '<p class="lede">' + DIFFS.length + ' discriminators, condensed. If you read one thing the morning of the exam, read this.</p>' +
+      sortedDiffs(mode).map(function (x) {
+        var d = domainById(x.d);
+        return '<div class="tell"><b class="lab">' + esc(x.t) +
+          ' &middot; ' + esc(d ? d.name : '') + '</b>' + x.tell + '</div>';
+      }).join('') +
+    '</div>';
+    var p = el('diffCount');
+    if (p) p.textContent = DIFFS.length + ' tells shown.';
+  }
+
+  /* Filter <details> blocks by a plain-text query over their rendered text. */
+  function filterSections(listId, query, after) {
+    var q = (query || '').trim().toLowerCase();
+    var nodes = document.querySelectorAll('#' + listId + ' details.sec');
+    Array.prototype.forEach.call(nodes, function (n) {
+      if (!q) {
+        n.classList.remove('hidden');
+        n.open = false;
+        return;
+      }
+      var match = n.textContent.toLowerCase().indexOf(q) !== -1;
+      n.classList.toggle('hidden', !match);
+      n.open = match;
+    });
+    if (after) after();
+  }
+
+  /* ------------------------------------------------------------------ *
    * One-line summaries (Test Day tab)
    * ------------------------------------------------------------------ */
   var ONE_LINERS = {
@@ -708,6 +849,34 @@
       Array.prototype.forEach.call(document.querySelectorAll('details.dom'), function (d) { d.open = false; });
     });
 
+    /* --- Cram sheet --- */
+    if (el('cramFind')) el('cramFind').addEventListener('input', function () {
+      filterSections('cramList', this.value, updateCramCount);
+    });
+    if (el('cramExpand')) el('cramExpand').addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#cramList details.sec'), function (d) { d.open = true; });
+    });
+    if (el('cramCollapse')) el('cramCollapse').addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#cramList details.sec'), function (d) { d.open = false; });
+    });
+    if (el('cramPrint')) el('cramPrint').addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#cramList details.sec'), function (d) { d.open = true; });
+      window.print();
+    });
+
+    /* --- Discriminators --- */
+    if (el('diffFind')) el('diffFind').addEventListener('input', function () {
+      filterSections('diffList', this.value, updateDiffCount);
+    });
+    if (el('diffSort')) el('diffSort').addEventListener('change', renderDiffs);
+    if (el('diffExpand')) el('diffExpand').addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#diffList details.sec'), function (d) { d.open = true; });
+    });
+    if (el('diffCollapse')) el('diffCollapse').addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#diffList details.sec'), function (d) { d.open = false; });
+    });
+    if (el('diffTells')) el('diffTells').addEventListener('click', showTellsOnly);
+
     var sel = el('quizDomain');
     if (sel) {
       sel.innerHTML = DOMAINS.slice().sort(function (a, b) { return a.id - b.id; })
@@ -734,6 +903,8 @@
     renderDomTable();
     renderRiskStats();
     renderHighYield();
+    renderCram();
+    renderDiffs();
     renderOneLiners();
     renderQuizStats();
     renderPerf();

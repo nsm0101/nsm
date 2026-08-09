@@ -28,8 +28,9 @@ markup stays readable:
 |------|----------|
 | `board-prep-data.js` | Exam metadata and content domains 1–12 (weights, high-yield pearls, traps) |
 | `board-prep-data-b.js` | Content domains 13–24, appended to the same array |
+| `board-prep-cram.js` | Cram sheet sections and the differentiation ("discriminator") tables |
 | `board-prep-questions.js` | Retrieval-practice question bank |
-| `board-prep.js` | Countdown, domain tracker, study plan, and quiz engine |
+| `board-prep.js` | Countdown, domain tracker, study plan, cram/discriminator rendering, and quiz engine |
 
 Domain weights are quoted from the publicly available ABP General Pediatrics
 Content Outline (effective for exams administered on or after October 15, 2024).
