@@ -16,7 +16,25 @@ via GitHub Pages.
 | Medication Guides | `medication-guides.html` | Concentration / product reference guides |
 | PALS Code Simulator | `code-simulator.html` | First-person, voice-driven 3D pediatric resuscitation simulator |
 | POCUS Deck | `pocus-presentation.html` | Pass the Pointer pediatric POCUS teaching slides |
+| ABP Board Prep | `board-prep.html` | Blueprint-weighted study system for the ABP General Pediatrics certifying exam |
 | Donate | `donation.html` | Ways to support the project |
+
+### Board Prep data files
+
+`board-prep.html` loads its content from three plain-JS data files so the page
+markup stays readable:
+
+| File | Contents |
+|------|----------|
+| `board-prep-data.js` | Exam metadata and content domains 1–12 (weights, high-yield pearls, traps) |
+| `board-prep-data-b.js` | Content domains 13–24, appended to the same array |
+| `board-prep-cram.js` | Cram sheet sections and the differentiation ("discriminator") tables |
+| `board-prep-questions.js` | Retrieval-practice question bank |
+| `board-prep.js` | Countdown, domain tracker, study plan, cram/discriminator rendering, and quiz engine |
+
+Domain weights are quoted from the publicly available ABP General Pediatrics
+Content Outline (effective for exams administered on or after October 15, 2024).
+Progress is stored per-device in `localStorage` and never leaves the browser.
 
 ## Styling
 

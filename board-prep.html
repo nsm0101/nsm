@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A weighted study system for the ABP General Pediatrics Certifying Exam — blueprint-driven priorities, a 9-week plan, high-yield content by domain, timed retrieval practice, and test-day pacing." />
+  <title>Board Prep — ABP General Pediatrics | CloseDose</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="images/logo-teal.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --theme-dark: #0f2c2a;
+      --theme-dark-strong: #0c1f1d;
+      --theme-dark-soft: #4a6260;
+      --theme-bright: #24a687;
+      --theme-bright-strong: #1f8f7b;
+      --theme-bright-soft: #d6eeea;
+      --theme-bright-lighter: #f1faf8;
+      --theme-shadow: rgba(15, 44, 42, 0.32);
+      --background: #f5f9f9;
+      --surface: #ffffff;
+      --text-color: var(--theme-dark);
+      --card-radius: 18px;
+      --inner-radius: 14px;
+      --pill-radius: 32px;
+      --border-width: 3px;
+      --shadow-card: 0 6px 0 var(--theme-shadow);
+      --shadow-btn: 0 3px 0 var(--theme-shadow);
+      --warn-bg: #fff3e0;
+      --warn-text: #c25a00;
+      --danger-bg: #fdecea;
+      --danger-text: #c62828;
+      --good-bg: #e6f6f1;
+      --good-text: #1f8f7b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--background);
+      color: var(--text-color);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: clamp(16px, 4vw, 32px); }
+
+    a { color: var(--theme-bright-strong); }
+
+    /* ---------- Header ---------- */
+    .top {
+      background: var(--theme-dark);
+      color: #fff;
+      border-bottom: var(--border-width) solid var(--theme-dark-strong);
+    }
+    .top .wrap { padding-top: clamp(20px, 5vw, 36px); padding-bottom: clamp(20px, 5vw, 36px); }
+    .home-link {
+      display: inline-block; color: var(--theme-bright-soft); font-weight: 800;
+      text-decoration: none; font-size: 0.9rem; letter-spacing: 0.06em;
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+    .home-link:hover { color: #fff; }
+    h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 900; line-height: 1.15; }
+    .sub { margin: 0; color: var(--theme-bright-soft); font-weight: 600; font-size: clamp(0.95rem, 2.4vw, 1.05rem); }
+
+    .countdown {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;
+    }
+    .cd-box {
+      background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.22);
+      border-radius: var(--inner-radius); padding: 10px 16px; min-width: 92px; text-align: center;
+    }
+    .cd-num { display: block; font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 900; line-height: 1.1; }
+    .cd-lab { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--theme-bright-soft); font-weight: 800; }
+
+    /* ---------- Tabs ---------- */
+    .tabs {
+      position: sticky; top: 0; z-index: 50; background: var(--background);
+      border-bottom: var(--border-width) solid var(--theme-dark);
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .tabs-inner { display: flex; gap: 6px; max-width: 1080px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 32px); }
+    .tab {
+      flex: 0 0 auto; background: var(--surface); color: var(--theme-dark);
+      border: 2px solid var(--theme-dark); border-radius: var(--pill-radius);
+      padding: 8px 16px; font-weight: 800; font-size: 0.9rem; cursor: pointer;
+      font-family: inherit; white-space: nowrap; transition: background .12s, color .12s;
+    }
+    .tab:hover { background: var(--theme-bright-soft); }
+    .tab[aria-selected="true"] { background: var(--theme-bright); color: #fff; border-color: var(--theme-bright-strong); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ---------- Cards ---------- */
+    .card {
+      background: var(--surface); border: var(--border-width) solid var(--theme-dark);
+      border-radius: var(--card-radius); box-shadow: var(--shadow-card);
+      padding: clamp(16px, 3.5vw, 26px); margin-bottom: clamp(18px, 3.5vw, 28px);
+    }
+    .card h2 { margin: 0 0 4px; font-size: clamp(1.15rem, 3vw, 1.45rem); font-weight: 900; }
+    .card h3 { margin: 22px 0 8px; font-size: 1.05rem; font-weight: 800; }
+    .card .lede { margin: 0 0 18px; color: var(--theme-dark-soft); font-weight: 600; }
+    .card p { margin: 0 0 12px; }
+    .card ul, .card ol { margin: 0 0 14px; padding-left: 22px; }
+    .card li { margin-bottom: 7px; }
+
+    .callout {
+      background: var(--theme-bright-lighter); border-left: 5px solid var(--theme-bright);
+      border-radius: 0 var(--inner-radius) var(--inner-radius) 0; padding: 14px 18px; margin: 0 0 18px;
+    }
+    .callout.warn { background: var(--warn-bg); border-left-color: var(--warn-text); }
+    .callout.danger { background: var(--danger-bg); border-left-color: var(--danger-text); }
+    .callout p:last-child { margin-bottom: 0; }
+
+    /* ---------- Tables ---------- */
+    .table-scroll { overflow-x: auto; margin-bottom: 16px; }
+    table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.93rem; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 2px solid var(--theme-bright-soft); vertical-align: top; }
+    th { font-weight: 900; background: var(--theme-bright-lighter); position: sticky; top: 0; }
+    tbody tr:hover { background: var(--theme-bright-lighter); }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+
+    .bar { display: block; height: 9px; background: var(--theme-bright-soft); border-radius: 6px; overflow: hidden; min-width: 60px; }
+    .bar > span { display: block; height: 100%; background: var(--theme-bright); }
+
+    /* ---------- Confidence control ---------- */
+    .conf { display: flex; gap: 3px; }
+    .conf button {
+      width: 26px; height: 26px; border-radius: 7px; border: 2px solid var(--theme-dark-soft);
+      background: var(--surface); cursor: pointer; font-family: inherit; font-weight: 800;
+      font-size: 0.75rem; color: var(--theme-dark-soft); padding: 0; line-height: 1;
+    }
+    .conf button[aria-pressed="true"] { background: var(--theme-bright); border-color: var(--theme-bright-strong); color: #fff; }
+    .conf button:hover { border-color: var(--theme-bright); }
+
+    .risk-hi { color: var(--danger-text); font-weight: 900; }
+    .risk-md { color: var(--warn-text); font-weight: 800; }
+    .risk-lo { color: var(--good-text); font-weight: 700; }
+
+    /* ---------- Week plan ---------- */
+    .week {
+      border: 2px solid var(--theme-bright-soft); border-radius: var(--inner-radius);
+      padding: 14px 16px; margin-bottom: 14px; background: var(--surface);
+    }
+    .week.done { background: var(--good-bg); border-color: var(--theme-bright); }
+    .week-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+    .week-num { font-weight: 900; font-size: 1.05rem; }
+    .week-dates { color: var(--theme-dark-soft); font-weight: 700; font-size: 0.88rem; }
+    .week-focus { font-weight: 800; color: var(--theme-bright-strong); font-size: 0.92rem; }
+    .week ul { margin: 8px 0 0; padding-left: 20px; font-size: 0.93rem; }
+    .chk { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.85rem; cursor: pointer; margin-top: 10px; }
+    .chk input { width: 18px; height: 18px; accent-color: var(--theme-bright); cursor: pointer; }
+
+    /* ---------- High-yield accordion ---------- */
+    details.dom {
+      border: 2px solid var(--theme-bright-soft); border-radius: var(--inner-radius);
+      margin-bottom: 12px; overflow: hidden; background: var(--surface);
+    }
+    details.dom[open] { border-color: var(--theme-bright); }
+    details.dom > summary {
+      cursor: pointer; padding: 12px 16px; font-weight: 900; list-style: none;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      background: var(--theme-bright-lighter);
+    }
+    details.dom > summary::-webkit-details-marker { display: none; }
+    details.dom > summary:hover { background: var(--theme-bright-soft); }
+    .wt {
+      background: var(--theme-bright); color: #fff; border-radius: var(--pill-radius);
+      padding: 2px 11px; font-size: 0.78rem; font-weight: 900; white-space: nowrap;
+    }
+    .qcount { color: var(--theme-dark-soft); font-size: 0.8rem; font-weight: 800; margin-left: auto; white-space: nowrap; }
+    .dom-body { padding: 14px 18px 6px; }
+    .why { font-style: italic; color: var(--theme-dark-soft); font-weight: 600; margin: 0 0 16px; font-size: 0.94rem; }
+    .pearl-group { margin-bottom: 18px; }
+    .pearl-group h4 { margin: 0 0 8px; font-size: 0.98rem; font-weight: 900; color: var(--theme-bright-strong); }
+    .pearl-group ul { margin: 0; padding-left: 20px; font-size: 0.93rem; }
+    .pearl-group li { margin-bottom: 8px; }
+    .traps { background: var(--warn-bg); border-radius: var(--inner-radius); padding: 12px 16px; margin-bottom: 12px; }
+    .traps h4 { margin: 0 0 8px; font-size: 0.95rem; font-weight: 900; color: var(--warn-text); }
+    .traps ul { margin: 0; padding-left: 20px; font-size: 0.9rem; }
+
+    /* ---------- Quiz ---------- */
+    .quiz-setup { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+    select, .btn {
+      font-family: inherit; font-weight: 800; font-size: 0.92rem;
+      border: 2px solid var(--theme-dark); border-radius: var(--pill-radius);
+      padding: 9px 18px; background: var(--surface); color: var(--theme-dark); cursor: pointer;
+    }
+    select { border-radius: var(--inner-radius); max-width: 100%; }
+    .quiz-setup > * { min-width: 0; }
+    .btn.primary { background: var(--theme-bright); color: #fff; border-color: var(--theme-bright-strong); box-shadow: var(--shadow-btn); }
+    .btn.primary:hover { background: var(--theme-bright-strong); }
+    .btn:hover { background: var(--theme-bright-soft); }
+    .btn.primary:hover { background: var(--theme-bright-strong); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .q-meta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; font-size: 0.82rem; font-weight: 800; color: var(--theme-dark-soft); }
+    .q-timer { margin-left: auto; font-variant-numeric: tabular-nums; }
+    .q-timer.over { color: var(--danger-text); }
+    .q-stem { font-size: 1rem; margin-bottom: 16px; }
+    .opts { list-style: none; margin: 0 0 16px; padding: 0; }
+    .opts li { margin-bottom: 9px; }
+    .opt {
+      display: flex; gap: 11px; width: 100%; text-align: left; font-family: inherit;
+      font-size: 0.95rem; font-weight: 600; padding: 12px 15px; cursor: pointer;
+      border: 2px solid var(--theme-bright-soft); border-radius: var(--inner-radius);
+      background: var(--surface); color: var(--text-color); line-height: 1.45;
+    }
+    .opt:hover:not(:disabled) { border-color: var(--theme-bright); background: var(--theme-bright-lighter); }
+    .opt .letter { font-weight: 900; color: var(--theme-bright-strong); flex: 0 0 auto; }
+    .opt.correct { background: var(--good-bg); border-color: var(--theme-bright); }
+    .opt.wrong { background: var(--danger-bg); border-color: var(--danger-text); }
+    .opt:disabled { cursor: default; }
+    .expl { background: var(--theme-bright-lighter); border-left: 5px solid var(--theme-bright); border-radius: 0 var(--inner-radius) var(--inner-radius) 0; padding: 14px 18px; margin-bottom: 16px; font-size: 0.94rem; }
+    .expl strong.verdict { display: block; margin-bottom: 6px; font-size: 1rem; }
+    .verdict.ok { color: var(--good-text); }
+    .verdict.no { color: var(--danger-text); }
+
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .stat {
+      flex: 1 1 130px; background: var(--theme-bright-lighter); border: 2px solid var(--theme-bright-soft);
+      border-radius: var(--inner-radius); padding: 11px 14px;
+    }
+    .stat b { display: block; font-size: 1.5rem; font-weight: 900; line-height: 1.15; }
+    .stat span { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: var(--theme-dark-soft); }
+
+    .muted { color: var(--theme-dark-soft); font-size: 0.88rem; font-weight: 600; }
+
+    /* ---------- Cram / discriminators ---------- */
+    input[type="search"] {
+      font-family: inherit; font-weight: 700; font-size: 0.92rem; max-width: 100%;
+      border: 2px solid var(--theme-dark); border-radius: var(--inner-radius);
+      padding: 9px 14px; background: var(--surface); color: var(--theme-dark); min-width: 200px;
+    }
+    input[type="search"]:focus { outline: 3px solid var(--theme-bright); outline-offset: 1px; }
+
+    details.sec {
+      border: var(--border-width) solid var(--theme-dark); border-radius: var(--card-radius);
+      box-shadow: var(--shadow-card); margin-bottom: clamp(14px, 3vw, 22px);
+      overflow: hidden; background: var(--surface);
+    }
+    details.sec > summary {
+      cursor: pointer; padding: 14px 20px; font-weight: 900; list-style: none;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      font-size: clamp(1rem, 2.6vw, 1.15rem); background: var(--theme-bright-lighter);
+    }
+    details.sec > summary::-webkit-details-marker { display: none; }
+    details.sec > summary:hover { background: var(--theme-bright-soft); }
+    details.sec[open] > summary { border-bottom: 2px solid var(--theme-bright-soft); }
+    .sec-body { padding: 16px 20px 6px; }
+    .sec-note { font-style: italic; color: var(--theme-dark-soft); font-weight: 600; margin: 0 0 16px; font-size: 0.94rem; }
+    .blk-title { margin: 18px 0 8px; font-size: 0.98rem; font-weight: 900; color: var(--theme-bright-strong); }
+    .sec-body ul { margin: 0 0 14px; padding-left: 20px; font-size: 0.93rem; }
+    .sec-body li { margin-bottom: 7px; }
+    .sec-body table { font-size: 0.88rem; min-width: 520px; }
+    .sec-body td:first-child { font-weight: 700; }
+
+    .tell {
+      background: var(--good-bg); border-left: 5px solid var(--theme-bright);
+      border-radius: 0 var(--inner-radius) var(--inner-radius) 0;
+      padding: 12px 16px; margin: 4px 0 14px; font-size: 0.93rem;
+    }
+    .tell b.lab {
+      display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--theme-bright-strong); margin-bottom: 4px;
+    }
+    .diff-tag {
+      background: var(--theme-bright-soft); color: var(--theme-dark); border-radius: var(--pill-radius);
+      padding: 2px 10px; font-size: 0.72rem; font-weight: 900; white-space: nowrap; margin-left: auto;
+    }
+    .hidden { display: none !important; }
+    mark { background: #ffe9a8; color: inherit; padding: 0 2px; border-radius: 3px; }
+    .kbd { background: var(--theme-dark); color: #fff; border-radius: 5px; padding: 1px 7px; font-size: 0.8rem; font-weight: 800; }
+
+    footer.site {
+      background: var(--theme-dark); color: var(--theme-bright-soft);
+      padding: 26px clamp(16px, 4vw, 32px); font-size: 0.85rem; font-weight: 600; margin-top: 30px;
+    }
+    footer.site .wrap { padding: 0; }
+    footer.site a { color: #fff; }
+
+    @media (max-width: 640px) {
+      .qcount { margin-left: 0; width: 100%; }
+      table { min-width: 480px; }
+    }
+    @media print {
+      /* Print only the tab you are looking at, fully expanded. */
+      .tabs, .top .countdown, footer.site, .quiz-setup, .no-print-card { display: none; }
+      .panel { display: none; }
+      .panel.active { display: block; }
+      .top { background: none; color: #000; border: none; }
+      .top .home-link, .sub { display: none; }
+      .wrap { max-width: none; padding: 0; }
+      .card, details.sec, details.dom { box-shadow: none; border-width: 1px; break-inside: avoid; }
+      details.sec > summary, details.dom > summary { background: #eee; }
+      details.sec[open] .sec-body { display: block; }
+      .callout, .tell, .traps { break-inside: avoid; }
+      table { min-width: 0 !important; font-size: 8.5pt; }
+      .table-scroll { overflow: visible; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="home-link" href="index.html">&larr; CloseDose for Providers</a>
+    <h1>ABP General Pediatrics — Board Prep</h1>
+    <p class="sub">A blueprint-weighted study system for the certifying exam on <strong>October 14, 2026</strong>.</p>
+    <div class="countdown" id="countdown" aria-label="Time remaining until the exam"></div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Study sections">
+  <div class="tabs-inner" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-panel="p-plan">The Plan</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-domains">Where the Points Are</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-highyield">High-Yield</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-cram">Cram Sheet</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-diff">Discriminators</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-drill">Drill</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-technique">Question Technique</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-testday">Test Day</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ============================ PLAN ============================ -->
+  <section class="panel active" id="p-plan" role="tabpanel">
+
+    <div class="card">
+      <h2>Read this first</h2>
+      <p class="lede">The strategy, in four sentences.</p>
+
+      <div class="callout danger">
+        <p><strong>The thing that has to change on a retake.</strong> If a previous attempt was built on reading, watching, and reviewing, repeating that at higher volume is the most common way to fail again. The single largest evidence-based gain available in nine weeks is switching from <em>recognition</em> (reading, watching, highlighting — all of which feel productive) to <em>retrieval</em> (answering questions cold, then studying only what you missed). A video curriculum such as Hippo is a remediation resource, not the primary activity. Questions come first; content review is what you do <em>in response to</em> a missed question.</p>
+      </div>
+
+      <p>Three more principles this plan is built on:</p>
+      <ol>
+        <li><strong>Study proportional to the blueprint, not to your interest.</strong> Preventive Pediatrics and Well-Child Care is 12% of the exam — more than cardiology and pulmonology combined. EENT is 6%, more than cardiology alone. Most repeat test-takers over-study subspecialty content and under-study the outpatient bread-and-butter that carries the most questions. The <em>Where the Points Are</em> tab quantifies this.</li>
+        <li><strong>Space it and interleave it.</strong> Every week in this plan revisits earlier material. Blocked practice (all cardiology on Tuesday) feels better and performs worse than interleaved practice on exam day, because the exam does not tell you which domain a question comes from.</li>
+        <li><strong>Train the conditions, not just the content.</strong> Pacing and test anxiety are trainable, but only by rehearsal under real conditions — timed blocks, no pausing, no looking things up mid-block. That starts in Week 3, not the week before the exam.</li>
+      </ol>
+
+      <h3>Weekly time budget (10–15 hours)</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Activity</th><th class="num">Share</th><th class="num">Hours/wk</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Timed questions</strong></td><td class="num">40%</td><td class="num">4–6</td><td>Blocks of 30–40, timed at 70 sec/question, no pausing.</td></tr>
+            <tr><td><strong>Reviewing what you missed</strong></td><td class="num">30%</td><td class="num">3–4.5</td><td>Every miss gets a written one-line reason. This is where learning happens — do not skim it.</td></tr>
+            <tr><td><strong>Targeted content (Hippo)</strong></td><td class="num">20%</td><td class="num">2–3</td><td>Only the topics your misses identified, plus that week's scheduled domain.</td></tr>
+            <tr><td><strong>Spaced recall of old material</strong></td><td class="num">10%</td><td class="num">1–1.5</td><td>The <em>Drill</em> tab in mixed mode, or re-reading only your own error log.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">If a week goes badly and you only get 6 hours, protect the timed questions and the miss review. Drop the content review, never the reverse.</p>
+
+      <h3>The error log — the highest-value thing you will build</h3>
+      <p>Keep one running document. For every question you miss, write one line with three parts: <strong>(1)</strong> the fact you didn't know or misapplied, <strong>(2)</strong> <em>why</em> you got it wrong, and <strong>(3)</strong> the one-sentence correction. The "why" is the part people skip, and it is the part that matters — categorize it as one of:</p>
+      <ul>
+        <li><strong>Knowledge gap</strong> — I did not know this fact. (Content review fixes this.)</li>
+        <li><strong>Misread the stem</strong> — I missed the age, the timing, the vaccination status, the word "except." (Technique fixes this.)</li>
+        <li><strong>Answered a different question</strong> — I gave the diagnosis when it asked for the next step. (Technique.)</li>
+        <li><strong>Knew it, second-guessed it</strong> — I changed a correct answer. (Track this rate. If it's high, the fix is a rule, not more studying.)</li>
+        <li><strong>Rushed</strong> — pacing pressure. (Pacing drills.)</li>
+      </ul>
+      <p>By Week 6 the distribution of these five categories tells you exactly where the remaining nine weeks should go. Most repeat test-takers discover that fewer than half their misses are true knowledge gaps — which is good news, because the other categories are faster to fix.</p>
+    </div>
+
+    <div class="card">
+      <h2>The 9-week plan</h2>
+      <p class="lede">Domains are sequenced so the heaviest ones come early and get revisited most. Check off each week as you finish it — progress is saved in this browser.</p>
+      <div id="weeks"></div>
+      <p class="muted" id="weekProgress"></p>
+    </div>
+  </section>
+
+  <!-- ============================ DOMAINS ============================ -->
+  <section class="panel" id="p-domains" role="tabpanel">
+    <div class="card">
+      <h2>Where the points actually are</h2>
+      <p class="lede">Official ABP exam weights, converted into the number of questions each domain is worth on a 340-question exam.</p>
+
+      <div class="callout">
+        <p>Rate your confidence in each domain from <strong>0 (no idea)</strong> to <strong>4 (solid)</strong>. The <strong>Risk</strong> column multiplies the domain's question count by your uncertainty, giving you the estimated number of questions you are currently likely to lose in that domain. <strong>Sort by risk and study from the top.</strong> That ordering, not your comfort level, is where your remaining hours should go.</p>
+      </div>
+
+      <div class="stats" id="riskStats"></div>
+
+      <div class="quiz-setup">
+        <label for="sortBy" style="font-weight:800;font-size:.9rem;">Sort by</label>
+        <select id="sortBy">
+          <option value="risk">Estimated questions at risk (recommended)</option>
+          <option value="weight">Exam weight</option>
+          <option value="id">Blueprint order</option>
+          <option value="conf">My confidence (lowest first)</option>
+        </select>
+        <button class="btn" id="resetConf" type="button">Reset ratings</button>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th class="num">Weight</th>
+              <th class="num">Qs</th>
+              <th>Share of exam</th>
+              <th>My confidence</th>
+              <th class="num">Risk</th>
+            </tr>
+          </thead>
+          <tbody id="domTable"></tbody>
+        </table>
+      </div>
+      <p class="muted">Weights are from the ABP General Pediatrics Content Outline effective for exams administered on or after October 15, 2024. Question counts assume a 340-question exam (the ABP states approximately 330–350) and are rounded, so they total slightly differently than 340.</p>
+    </div>
+
+    <div class="card">
+      <h2>What this table usually reveals</h2>
+      <p>Four observations that catch most candidates by surprise, and are worth checking against your own ratings:</p>
+      <ul>
+        <li><strong>Preventive Pediatrics / Well-Child Care is 12%</strong> — about 41 questions, the largest domain by a wide margin, and larger than cardiology, pulmonology, and gastroenterology <em>combined</em> (15% together). Milestones, immunization rules, and screening ages are protocolized and completely knowable. If your confidence here is not a 4, this is the cheapest block of points on the exam.</li>
+        <li><strong>EENT is 6%</strong> — roughly 20 questions, more than cardiology (5%) and more than neurology (4%). Almost nobody studies otitis media, sinusitis criteria, and the orbital-versus-preseptal distinction proportional to that. This is the most common weighting blind spot.</li>
+        <li><strong>Mental and Behavioral Health is 6%</strong> — the blueprint moved it up, and it is now larger than cardiology or GI. Older review books under-cover it. ADHD treatment by age, autism screening, eating disorder admission criteria, and SSRI facts are reliably tested.</li>
+        <li><strong>The bottom eight domains together are only 20%</strong> — genetics, rheumatology, ethics, and QI/statistics are 2% each. Do not spend a whole week on inborn errors of metabolism. Ethics and QI/statistics in particular are worth ~7 questions each and are <em>formulaic</em> — a couple of hours on each returns more than a couple of hours on any subspecialty.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================ HIGH-YIELD ============================ -->
+  <section class="panel" id="p-highyield" role="tabpanel">
+    <div class="card">
+      <h2>High-yield content by domain</h2>
+      <p class="lede">Ordered by exam weight — heaviest first. Each domain has the facts most reliably tested, plus the specific traps used to disguise them.</p>
+      <div class="callout warn">
+        <p><strong>Use this as a checklist, not a textbook.</strong> Read a domain's pearls and mark every item you could not have produced from memory. Those items — and only those — are what you look up in Hippo. Reading this straight through cover to cover is exactly the passive-review pattern that has to change.</p>
+      </div>
+      <div class="quiz-setup">
+        <label for="hySort" style="font-weight:800;font-size:.9rem;">Order</label>
+        <select id="hySort">
+          <option value="weight">By exam weight (heaviest first)</option>
+          <option value="risk">By my estimated risk</option>
+          <option value="id">Blueprint order</option>
+        </select>
+        <button class="btn" id="expandAll" type="button">Expand all</button>
+        <button class="btn" id="collapseAll" type="button">Collapse all</button>
+      </div>
+      <div id="hyList"></div>
+    </div>
+  </section>
+
+  <!-- ============================ CRAM ============================ -->
+  <section class="panel" id="p-cram" role="tabpanel">
+    <div class="card no-print-card">
+      <h2>Cram sheet</h2>
+      <p class="lede">Pure recall — the numbers, ages, criteria, windows, and first-line drugs that are answers rather than reasoning. Built for the last two weeks and the morning of.</p>
+      <div class="callout">
+        <p>Nothing here requires thinking on test day; it either surfaces instantly or it costs you a question. Work through it with the sections collapsed, expanding only to check yourself — that is retrieval. Reading it top to bottom is not.</p>
+      </div>
+      <div class="quiz-setup">
+        <label for="cramFind" style="font-weight:800;font-size:.9rem;">Find</label>
+        <input type="search" id="cramFind" placeholder="e.g. amoxicillin, Kawasaki, 60 days" />
+        <button class="btn" id="cramExpand" type="button">Expand all</button>
+        <button class="btn" id="cramCollapse" type="button">Collapse all</button>
+        <button class="btn" id="cramPrint" type="button">Print</button>
+      </div>
+      <p class="muted" id="cramCount"></p>
+    </div>
+    <div id="cramList"></div>
+  </section>
+
+  <!-- ======================== DISCRIMINATORS ======================== -->
+  <section class="panel" id="p-diff" role="tabpanel">
+    <div class="card no-print-card">
+      <h2>Discriminators — the tables that win questions</h2>
+      <p class="lede">Confusable pairs and triads, side by side, each with the single feature that decides the stem.</p>
+      <div class="callout warn">
+        <p><strong>This is where the easy points live.</strong> ABP rarely asks whether you have heard of a diagnosis — it puts two plausible diagnoses in front of you and checks whether you know the one feature that separates them. Every table below ends with a <strong>THE TELL</strong> line. If you learn nothing else in the final week, learn those lines: they convert a coin flip into a certainty.</p>
+      </div>
+      <div class="quiz-setup">
+        <label for="diffFind" style="font-weight:800;font-size:.9rem;">Find</label>
+        <input type="search" id="diffFind" placeholder="e.g. torsion, jaundice, purpura, ammonia" />
+        <select id="diffSort">
+          <option value="weight">Order by exam weight</option>
+          <option value="az">Order A–Z</option>
+        </select>
+        <button class="btn" id="diffExpand" type="button">Expand all</button>
+        <button class="btn" id="diffCollapse" type="button">Collapse all</button>
+        <button class="btn" id="diffTells" type="button">Tells only</button>
+      </div>
+      <p class="muted" id="diffCount"></p>
+    </div>
+    <div id="diffList"></div>
+  </section>
+
+  <!-- ============================ DRILL ============================ -->
+  <section class="panel" id="p-drill" role="tabpanel">
+    <div class="card">
+      <h2>Retrieval practice</h2>
+      <p class="lede">Timed, blueprint-weighted questions with the reasoning spelled out. Answer before you look anything up — a question you get wrong teaches more than one you get right.</p>
+
+      <div class="stats" id="quizStats"></div>
+
+      <div class="quiz-setup">
+        <label for="quizMode" style="font-weight:800;font-size:.9rem;">Mode</label>
+        <select id="quizMode">
+          <option value="weighted">Mixed — blueprint-weighted (most exam-like)</option>
+          <option value="weak">My weakest domains first</option>
+          <option value="missed">Only questions I've missed</option>
+          <option value="unseen">Only questions I haven't seen</option>
+          <option value="single">A single domain…</option>
+        </select>
+        <select id="quizDomain" style="display:none"></select>
+        <label class="chk" style="margin-top:0"><input type="checkbox" id="timerOn" checked> Timer on (70s target)</label>
+        <button class="btn primary" id="startQuiz" type="button">Start</button>
+        <button class="btn" id="resetQuiz" type="button">Reset history</button>
+      </div>
+
+      <div id="quizArea"></div>
+    </div>
+
+    <div class="card">
+      <h2>Performance by domain</h2>
+      <p class="lede">Only domains you've attempted appear here. Compare this against your self-rating — where they disagree, trust this one.</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Domain</th><th class="num">Attempted</th><th class="num">Correct</th><th class="num">%</th><th>Accuracy</th></tr></thead>
+          <tbody id="perfTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TECHNIQUE ============================ -->
+  <section class="panel" id="p-technique" role="tabpanel">
+    <div class="card">
+      <h2>How to attack an ABP question</h2>
+      <p class="lede">Misreading a stem costs the same point as not knowing the answer, and it is far easier to fix. This is a procedure — run it the same way every time until it's automatic, at which point it costs no extra seconds.</p>
+
+      <h3>The five-step read</h3>
+      <ol>
+        <li><strong>Read the last line first.</strong> Before the vignette, read the actual question. "Most likely diagnosis," "most appropriate next step," "most likely causative organism," and "most appropriate initial test" send you through completely different reasoning. Knowing which one you're answering changes what you extract from the stem.</li>
+        <li><strong>Extract the discriminators as you read.</strong> Age is a discriminator in the majority of pediatric questions and is placed in the first six words on purpose. So are: exact duration, immunization status, gestational age and corrected age, travel and animal exposure, medications, family history, and the specific number in a vital sign. If a detail is in the stem, it is there for a reason — ABP items are edited to remove irrelevant content.</li>
+        <li><strong>Commit to an answer before reading the options.</strong> This is the single most protective habit against well-written distractors. If you have an answer in mind and it's in the list, your agreement is meaningful. If you read the options first, plausible distractors will pull you.</li>
+        <li><strong>Eliminate on a stated reason.</strong> For each option you rule out, be able to finish the sentence "this is wrong because…" If you can't, you're eliminating on gut feeling, which is where second-guessing starts.</li>
+        <li><strong>Answer, flag if unsure, and move.</strong> Do not re-derive. Flag it and go — you will have time at the end of the section, and you'll see it with fresher eyes.</li>
+      </ol>
+
+      <div class="callout">
+        <p><strong>The rule on changing answers.</strong> The evidence is clear that answer changes are net positive — but only when driven by a <em>specific</em> reason: you re-read the stem and caught a detail you missed, or a later question reminded you of a fact. Changes driven by free-floating anxiety ("this feels too easy") are net negative. Make this an explicit rule for yourself: <strong>I change an answer only if I can name the new piece of information that changed my mind.</strong> If you can't name it, you leave it. Track how often you break this rule during practice — for people whose failure mode is second-guessing, this rule alone is often worth several questions.</p>
+      </div>
+
+      <h3>Recurring ABP answer patterns</h3>
+      <ul>
+        <li><strong>The exam rewards not over-testing.</strong> When a stem describes a benign variant in loving detail (erythema toxicum, Still murmur, orthostatic proteinuria, physiologic gynecomastia, umbilical granuloma) and offers four investigations, the answer is reassurance. ABP is written by practicing general pediatricians and consistently rewards clinical restraint.</li>
+        <li><strong>…except when there's a cannot-miss diagnosis</strong>, where the answer is aggressive and immediate: absent red reflex, bilious emesis, testicular torsion, SCFE, sentinel bruise in an infant, jaundice in the first 24 hours, direct hyperbilirubinemia, fever in a child with sickle cell disease. Learn which list a finding belongs to and most questions answer themselves.</li>
+        <li><strong>"Next step" is usually simpler than you think.</strong> History, physical exam, or a basic bedside test frequently beats advanced imaging. When two answers are both reasonable, choose the one that comes first in a real clinical sequence.</li>
+        <li><strong>Distractors that are true but don't answer the question.</strong> A statement can be entirely accurate and still be wrong for the question asked. Check every candidate answer against the actual question stem, not against your general knowledge.</li>
+        <li><strong>Treat, then confirm.</strong> When delay causes harm — adrenal crisis, congenital hypothyroidism, cerebral edema in DKA, anaphylaxis, meningitis, torsion — the answer treats first and confirms after. Options that obtain a confirmatory test before treating are the trap.</li>
+        <li><strong>Watch the two-part question.</strong> "Which is the most likely diagnosis <em>and</em> the most appropriate treatment?" — both halves must be right. Verify both.</li>
+        <li><strong>Guidelines that changed recently are prime targets.</strong> Isotonic maintenance fluids, doxycycline at any age, early peanut introduction, egg allergy and influenza vaccine, rear-facing car seats with no age cutoff, BRUE replacing ALTE, febrile infant risk stratification, universal lipid screening at 9–11. If you learned it more than a few years ago, verify it.</li>
+      </ul>
+
+      <h3>Never leave a question blank</h3>
+      <p>There is no penalty for a wrong answer. On a 340-question exam, blind guessing on 10 unanswered questions returns about 2.5 points; eliminating even one option first roughly doubles that. Before the last five minutes of each section, sweep for unanswered items and fill in every one.</p>
+    </div>
+
+    <div class="card">
+      <h2>Managing the anxiety, specifically</h2>
+      <p class="lede">A retake is harder than a first attempt, not easier — that is a real effect, and it is worth planning for rather than hoping it won't happen.</p>
+      <ul>
+        <li><strong>Practice under real conditions, starting Week 3.</strong> Anxiety on test day is largely a novelty response. The more closely your practice resembles the real thing — timed, uninterrupted, no lookups, seated at a desk, morning if possible — the less novel test day is. A block you pause to look something up in is not practice; it's studying.</li>
+        <li><strong>Have a written reset protocol for going blank.</strong> When it happens mid-section: flag the question, take one slow breath out (longer exhale than inhale), move to the next question, and return later. The goal is to make the response automatic so you're not deciding what to do while panicking. Rehearse it during practice blocks so it's a habit, not a plan.</li>
+        <li><strong>Score-check pressure is the enemy of pacing.</strong> Do not try to compute how you're doing mid-exam. You cannot, the estimate will be wrong, and it costs both time and composure. Your only in-section job is the current question and the clock.</li>
+        <li><strong>Expect several questions you have never seen material on.</strong> Every candidate gets them, including everyone who passes comfortably. The passing standard accounts for it. Encountering an unfamiliar question is not a signal about how you're doing — treat it as one question, guess intelligently, flag, and move.</li>
+        <li><strong>Between sections, do not review.</strong> Use the full break. Eat, drink, move, and go into the next section without re-litigating the last one.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================ TEST DAY ============================ -->
+  <section class="panel" id="p-testday" role="tabpanel">
+    <div class="card">
+      <h2>The pacing math</h2>
+      <p class="lede">Know these numbers cold so that on exam day you are checking against a target, not doing arithmetic under pressure.</p>
+
+      <div class="stats">
+        <div class="stat"><b>4</b><span>Sections</span></div>
+        <div class="stat"><b>1 h 45 m</b><span>Per section</span></div>
+        <div class="stat"><b>~85</b><span>Questions/section</span></div>
+        <div class="stat"><b>~74 s</b><span>Per question</span></div>
+        <div class="stat"><b>7 h</b><span>Total testing</span></div>
+        <div class="stat"><b>~9 h</b><span>Total at the center</span></div>
+      </div>
+
+      <p>105 minutes for roughly 85 questions is about <strong>74 seconds each</strong>. Practice at <strong>70 seconds</strong> so your natural pace has a built-in margin.</p>
+
+      <h3>Section checkpoints — memorize this row</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th class="num">At question…</th><th class="num">Time elapsed should be ≤</th><th class="num">Time remaining</th></tr></thead>
+          <tbody>
+            <tr><td class="num">20</td><td class="num">25 min</td><td class="num">80 min</td></tr>
+            <tr><td class="num">40</td><td class="num">50 min</td><td class="num">55 min</td></tr>
+            <tr><td class="num">60</td><td class="num">74 min</td><td class="num">31 min</td></tr>
+            <tr><td class="num">85</td><td class="num">105 min</td><td class="num">0 min</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Check the clock at questions <strong>20, 40, and 60 only</strong>. Checking more often costs time and feeds anxiety; checking less often lets a deficit grow past recovery. If you're behind at question 40, the correction is to start flagging and moving faster on anything that isn't resolving in 30 seconds — not to speed-read everything.</p>
+
+      <div class="callout warn">
+        <p><strong>The long stem trap.</strong> A handful of questions have stems two or three times normal length. They are not worth more points. Give one a maximum of about two minutes, then answer with your best read, flag it, and move — those extra minutes come directly out of the questions at the end of the section, which are often easier.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Stamina — the part people don't train</h2>
+      <p>Seven hours of testing is a physical event. Accuracy in section 4 is a trainable skill, and the only way to train it is to do it.</p>
+      <ul>
+        <li><strong>Week 7 and Week 8 each include a full-length simulation:</strong> four 105-minute blocks with 15-minute breaks, done in one sitting, starting at the same hour your real exam starts. Do not skip these or split them across days — the entire point is the fourth block.</li>
+        <li><strong>Plan your breaks in advance.</strong> Breaks are up to 15 minutes each between sections. Decide now what you eat and drink at each one, and rehearse it during the simulations. Protein and moderate carbohydrate; avoid a heavy meal that produces an afternoon crash and avoid so much caffeine that you're jittery by section 3.</li>
+        <li><strong>Move during every break.</strong> Stand, walk, stretch. Sitting for seven hours degrades attention measurably.</li>
+        <li><strong>Hydrate on a schedule, not by thirst</strong> — but calibrate during the simulations so you know exactly how much you can drink without needing an unscheduled bathroom break, which comes out of your testing time.</li>
+      </ul>
+
+      <h3>The last three days (Oct 12–14)</h3>
+      <ul>
+        <li><strong>Monday Oct 12:</strong> Light review of your error log only. No new material — new material this late produces anxiety, not retention. Confirm the test center location, drive or map the route, and lay out your ID.</li>
+        <li><strong>Tuesday Oct 13:</strong> Two hours maximum, all of it your own error log and the trap lists. Stop by early afternoon. Do something unrelated in the evening. Set two alarms.</li>
+        <li><strong>Wednesday Oct 14:</strong> Normal breakfast, arrive early, bring your ID and your planned snacks. No studying in the parking lot.</li>
+        <li><strong>Sleep is a performance intervention.</strong> Protect the two nights before, not just the last one — the night-before-last has a larger effect on cognition than the night before.</li>
+      </ul>
+
+      <div class="callout">
+        <p><strong>Logistics to confirm well before the week of the exam:</strong> your ABP eligibility and registration status, the scheduling permit and your Prometric appointment, the exact test center address and parking, the acceptable form of photo ID and that the name matches your registration exactly, and the center's rules for personal items and food storage. Sort these in September so that October has nothing in it but studying and sleep.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>The 24 domains, one line each</h2>
+      <p class="lede">A final-week skim. If any line makes you uneasy, that's your remaining study list.</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th class="num">Wt</th><th>Domain</th><th>The thing to have cold</th></tr></thead>
+          <tbody id="oneLiners"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p><strong>Educational use only.</strong> This is a personal study aid, not clinical guidance and not affiliated with or endorsed by the American Board of Pediatrics. Exam weights are quoted from the publicly available ABP General Pediatrics Content Outline (effective October 15, 2024). Confirm all clinical management against current guidelines and your own judgment.</p>
+    <p>Built for <a href="index.html">CloseDose for Providers</a>. Progress is stored only in this browser.</p>
+  </div>
+</footer>
+
+<script src="board-prep-data.js"></script>
+<script src="board-prep-data-b.js"></script>
+<script src="board-prep-cram.js"></script>
+<script src="board-prep-questions.js"></script>
+<script src="board-prep.js"></script>
+</body>
+</html>

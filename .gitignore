@@ -9,3 +9,10 @@ Icon?
 # Generated logo variants (produced at runtime)
 images/acetaminophen-tylenol.svg
 images/acetaminophen-generic.svg
+
+# Personal board-prep cram deck — contains individual ABP score-report data.
+# This repository is PUBLIC with GitHub Pages enabled; do not commit these.
+cram-sheets.html
+cram-cards*.js
+cram-render.js
+ABP-Peds-Cram-Infographics.pdf
