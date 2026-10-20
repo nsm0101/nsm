@@ -32,6 +32,17 @@ solely for use with the CloseDose project. Redistribution or modification of the
 logo assets is prohibited without express permission. See `LOGO_LICENSE.md` for
 the full license.
 
+## AI agent tooling (OpenHands)
+
+The open-source [OpenHands](https://docs.openhands.dev) agent is self-served here, no
+OpenHands Cloud account needed. Both pieces need an `LLM_API_KEY` (e.g. an Anthropic key).
+
+- **Claude Code skill:** `.claude/skills/openhands/` lets Claude hand tasks to OpenHands
+  (`bash .claude/skills/openhands/run.sh "task"`, or `run.sh serve` for the local web GUI).
+  To use it in every project, copy that folder to `~/.claude/skills/openhands/`.
+- **PR review:** `.github/workflows/openhands-pr-review.yml`. Add an `LLM_API_KEY` repository
+  secret, then label a PR `review-this`.
+
 ## Disclaimer
 
 These tools are for educational purposes only and are not a substitute for
